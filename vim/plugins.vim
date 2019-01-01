@@ -9,6 +9,7 @@ Plugin 'VundleVim/Vundle.vim'
 
 " ADD BELOW
 "==========
+Plugin 'python-mode/python-mode'
 Plugin 'flazz/vim-colorschemes'                     " Colorschemes
 Plugin 'vim-syntastic/syntastic'                    " Syntax Highlighting
 Plugin 'tpope/vim-fugitive'                         " Git integration
@@ -29,11 +30,10 @@ Plugin 'universal-ctags/ctags'                      " Exuberant CTags
 Plugin 'wakatime/vim-wakatime'                      " User statistics for VIM
 Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'    " Syntax for file explorer
 Plugin 'ap/vim-buftabline'                          " Info for open buffers
-" Plugin 'vim-scripts/Vim-JDE'                        " Java support
+Plugin 'vim-scripts/Vim-JDE'                        " Java support
 Plugin 'alvan/vim-closetag'                         " Surround html tags
 Plugin 'tomtom/tcomment_vim'                        " Comment assist
 Plugin 'pangloss/vim-javascript'                    " JavaScript support
-
 Plugin 'tmhedberg/SimpylFold'               " Code-folding
 Plugin 'vim-scripts/indentpython.vim'       " Auto-Indentation (python)
 Plugin 'nvie/vim-flake8'                    " PEP8 checking
@@ -43,7 +43,6 @@ Plugin 'shougo/vimshell.vim'                " Shell command line
 Plugin 'DrawIt'                             " ASCII drawingi
 Plugin 'vim-python/python-syntax'           " Python syntax highlighting
 Plugin 'davidhalter/jedi-vim'               " Python completion
-"Plugin 'scrooloose/nerdcommenter'
 Plugin 'tpope/vim-eunuch'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'w0rp/ale'
@@ -77,7 +76,7 @@ Plugin 'mattn/emmet-vim'
 Plugin 'othree/html5.vim'
 Plugin 'OmniSharp/omnisharp-vim'
 Plugin 'honza/vim-snippets'
-"Plugin 'SirVer/ultisnips'
+Plugin 'SirVer/ultisnips'
 Plugin 'mvolkmann/vim-tag-comment'
 Plugin 'jiangmiao/auto-pairs'
 Plugin 'OrangeT/vim-csharp'
@@ -110,6 +109,17 @@ Plugin 'tpope/vim-repeat'
 Plugin 'prettier/vim-prettier'
 Plugin 'waxlamp/jslint.vim'
 Plugin 'flowtype/vim-flow'
+Plugin 'tell-k/vim-autopep8'
+Plugin 'heavenshell/vim-pydocstring.git'
+Plugin 'mgedmin/python-imports.vim'
+Plugin 'ludovicchabant/vim-gutentags'
+Plugin 'https://github.com/fisadev/vim-isort'
+" Plugin 'vim-scripts/Pydiction'
+Plugin 'vim-scripts/taglist.vim'
+Plugin 'Vimjas/vim-python-pep8-indent'
+Plugin 'python-rope/ropevim'
+Plugin 'numirias/semshi'
+Plugin 'stsewd/isort.nvim'
 "==========
 " ADD ABOVE
 

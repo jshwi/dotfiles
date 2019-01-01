@@ -1,5 +1,5 @@
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""##### ## ## ############ ### ##### #### ####### ######## ######## # #######""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"##### ## ## ############ ### ##### #### ####### ######## ######## # #######""
 ""###### ## ## ############ ### ##### ## ####### ########## ######## # ######""
 ""####### ## ## ############ ### #####/ ####### ############ ######## # #####""
 ""########| | ##| |########## (_| )#### ######_#(_)##########_######## # ####""
@@ -31,7 +31,7 @@ filetype plugin indent on
 " Source html skeleton
 au BufNewFile *.html 0r ~/.vim/skeletons/html.skel | let IndentStyle = "html"
 
-
+syntax on
 
 " Default Behaviour
 " =================
@@ -44,7 +44,7 @@ set lines=24 columns=84
 
 " Display line numbers
 set nu
-
+set shell=/bin/bash
 " Margin for maximum code length
 set colorcolumn=80"
 
@@ -121,7 +121,7 @@ set hidden
 set noerrorbells visualbell t_vb=
 
 " Filetypes to use bulletpoint rules
-let g:bullets_enabled_file_types = [
+let bullets_enabled_file_types = [
     \ 'markdown',
     \ 'text',
     \ 'gitcommit',
@@ -129,19 +129,19 @@ let g:bullets_enabled_file_types = [
     \]
 
 " Default size for NERDTree
-let g:NERDTreeWinSize=20
+let NERDTreeWinSize=30
 
 " Default size for Tagbar
-let tagbar_width=25
+let tagbar_width=35
 
 " Ignore irrelevant files in file explorer
 let NERDTreeIgnore = ['\.DAT$', '\.LOG1$', '\.LOG1$']
 
 " Let NERDTree hijack netrw
-let g:NERDTreeHijackNetrw=0
+let NERDTreeHijackNetrw=0
 
 " Expand vim for tagbar
-let g:tagbar_expand = 1
+let tagbar_expand = 1
 
 " Key Mappings
 " ============
@@ -166,7 +166,47 @@ map <C-T> :ConqueTermSplit zsh<CR><ESC>:resize -10<CR>
 " Automatic Commands
 " ==================
 " Remove whitespace on save
-autocmd VimEnter * wincmd p
-autocmd BufWritePre * :%s/\s\+$//e
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-let g:python_highlight_all = 1
+" autocmd VimEnter * wincmd p
+" autocmd BufWritePre * :%s/\s\+$//e
+" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+let python_highlight_all = 1
+" let ale_python_pylint_options = '--load-plugins pylint_django'
+" let autopep8_on_save = 1
+autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
+
+" Syntax for files with no extension
+autocmd BufNewFile,BufRead * if expand('%:t') !~ '\.' | set syntax=sh | endif
+
+set tags=/usr/bin/ctags-exuberant
+
+function! TrimWhiteSpace()
+    %s/\s\+$//e
+endfunction
+autocmd BufWritePre     * :call TrimWhiteSpace()
+map <C-F> :Pydocstring<CR>
+:set vb t_vb=".
+au FileType python setlocal formatprg=autopep8\ -
+if has('gui')
+    set novb
+    set noerrorbells
+endif
+let g:gutentags_cache_dir='.tags'
+let g:pymode_python = 'python3'
+"Close NERDTree if it is the last open buffer
+autocmd WinEnter * call s:CloseIfOnlyNerdTreeLeft()
+
+" Close all open buffers on entering a window if the only
+" buffer that's left is the NERDTree buffer
+function! s:CloseIfOnlyNerdTreeLeft()
+  if exists("t:NERDTreeBufName")
+    if bufwinnr(t:NERDTreeBufName) != -1
+      if winnr("$") == 1
+        q
+      endif
+    endif
+  endif
+endfunction
+
+autocmd Filetype gitcommit setlocal spell textwidth=72
+autocmd BufWritePre * %s/\s\+$//e
+

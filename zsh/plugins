@@ -248,9 +248,9 @@ sudo
 #yum
 #z
 #zeus
-zsh-completions
+# zsh-completions
 #zsh-navigation-tools
 #zsh_reload
-zsh-nvm
+# zsh-nvm
 zsh-syntax-highlighting
 )

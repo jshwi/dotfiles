@@ -143,8 +143,10 @@
 #ZSH_THEME="agnosterzak-ohmyzsh-theme/agnosterzak"
 #ZSH_THEME="bullet-train.zsh/bullet-train"
 #ZSH_THEME="jdavis"
-#ZSH_THEME="powerlevel9k/powerlevel9k"
+# ZSH_THEME="powerlevel9k/powerlevel9k"
+# POWERLEVEL9K_MODE='nerdfont-complete'
 ZSH_THEME="spaceship"
+# source "$HOME"/.zsh/themes/spaceship.conf
 
 # Set list of themes to load
 # Setting this variable when ZSH_THEME=random
@@ -296,4 +298,6 @@ ZSH_THEME_RANDOM_CANDIDATES=(
 "xiong-chiamiov"
 "ys"
 "zhann"
+"powerlevel9k/powerlevel9k"
+
  )

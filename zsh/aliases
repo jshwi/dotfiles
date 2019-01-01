@@ -1,52 +1,41 @@
 #-----------------------------------------------------------------------------#
 #                                 ZSH ALIASES                                 #
 #-----------------------------------------------------------------------------#
-# Alias's for SSH
-# alias SERVERNAME='ssh YOURWEBSITE.com -l USERNAME -p PORTNUMBERHERE'
-alias ubuntu='ssh ubuntu -p 4752'
+alias edit='vim'
+#alias apt='sudo apt'
+#alias apt-get='sudo apt-get'
+alias fullapt='sudo python3 ~/Documents/Programming/Python/fullapt/fullapt.py'
 
-alias pyinit='python3 ~/Documents/Programming/Python/PycharmProjects/pyinit/pyinit/pyinit.py'
-
-alias clim='vim -u ~/.vimrc2 '
-
-# Alias's for VNC
-#alias SERVERNAME='vinagre YOURSERVER:${PORT}
-alias servervnc='vinagre 192.168.11.106:5901'
-alias ubuntuvnc='vinagre 192.168.11.143:5901'
-
+# 'mv' - but in rsync
 alias rsync-mv='rsync -az --progress --remove-source-files'
+# 'cp' - but in rsync
 alias rsync-cp='rsync -az --progress'
 
 # Terminal config files
-alias zrc='edit ~/.zshrc'                               # edit .zshrc
-alias srzrc='source ~/.zshrc'                           # load .zshrc
-alias excz="exec zsh"                                   # refresh shell
-alias zthm="edit ~/.zsh/theme.list"                  # edit theme selection
+alias zrc='edit ~/.zshrc'                           # edit .zshrc
+alias srcrc='source ~/.zshrc'                      # load .zshrc
+alias excz="exec zsh"                               # refresh shell
+alias zthm="edit ~/.zsh/theme.list"                 # edit theme selection
 alias plg="edit ~/.zsh/plugins.list"                # edit plugin selection
-alias vrc="edit ~/.vimrc"                               # edit .vimrc
+alias vrc="edit ~/.vimrc"                           # edit .vimrc
 alias vthm="edit ~/.vim/themes.vim"
 alias zalias="edit ~/.zsh/aliases"
 alias vundles="edit ~/.vim/plugins.vim"
-alias django-admin="/home/stephen/.local/bin/django-admin"
-alias django-admin.py="/home/stephen/.local/bin/django-admin.py"
+alias edship="edit ~/.zsh/conf/spaceship/spaceshiprc"
 
 # Alias for manual backup to server with Borg
 alias backup='sudo /etc/backup/borg.sh'
 
 # Gnupg
-alias gpge="gpg -e -r $USER"
+alias gpge='gpg -e -r $USER'
 alias gpgd="~/.local/bin/gpgargs.sh"
 
 # tar
 alias tgzc="~/.local/bin/tgzcargs.sh"
 alias tgzx="tar -zxvf"
 
-# .bin files
-alias fullapt="sudo /home/stephen/Documents/Programming/Shell/fullapt/fullapt.sh"
-alias charmenv="source ~/PycharmProjects/pyinit/venv/bin/activate"
+# venv
 alias dvenv="deactivate"
-alias eclimd="/home/stephen/.bin/.eclimd"
-alias venv='source ~/.venv/bin/activate'
 
 # Alias's to modified commands
 alias cp='cp -i'
@@ -55,8 +44,42 @@ alias rm='rm -iv'
 alias mkdir='mkdir -p'
 alias ps='ps auxf'
 alias ping='ping -c 3'
-alias apt-get='sudo apt-get'
+#alias apt-get='sudo apt-get'
 alias svim='sudo vim'
+
+#alias mx='chmod a+x'
+alias 000='chmod -R 000'
+alias 644='chmod -R 644'
+alias 666='chmod -R 666'
+alias 755='chmod -R 755'
+alias 777='chmod -R 777'
+
+# Search command line history
+# alias h="history | grep "
+
+# # Search running processes
+alias p="ps aux | grep "
+alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
+
+# Search files in the current folder
+alias f="find . | grep "
+
+# Alias's to show disk space and space used in a folder
+alias diskspace="du -S | sort -n -r |more"
+alias folders='du -h --max-depth=1'
+alias folderssort='find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn'
+alias tree='tree -CAhF --dirsfirst'
+alias treed='tree -CAFd'
+alias mountedinfo='df -hT'
+
+
+
+alias cls='colorls'
+
+
+#-----------------------------------------------------------------------------#
+#                                ARCHIVE                                      #
+#-----------------------------------------------------------------------------#
 
 # # cd into the old directory
 # alias bd='cd "$OLDPWD"'
@@ -81,24 +104,6 @@ alias svim='sudo vim'
 # alias ldir="ls -l | egrep '^d'" # directories only
 
 # # alias chmod commands
-#alias mx='chmod a+x'
-alias 000='chmod -R 000'
-alias 644='chmod -R 644'
-alias 666='chmod -R 666'
-alias 755='chmod -R 755'
-alias 777='chmod -R 777'
-
-# Search command line history
-# alias h="history | grep "
-
-# # Search running processes
-alias p="ps aux | grep "
-alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
-alias cpu="grep 'cpu ' /proc/stat | awk '{usage=(\$2+\$4)*100/(\$2+\$4+\$5)} END {print usage}' | awk '{printf(\"%.1f\n\", \$1)}'"
-
-# Search files in the current folder
-alias f="find . | grep "
-
 # # Count all files (recursively) in the current folder
 # alias countfiles="for t in files links directories; do echo \`find . -type \${t:0:1} | wc -l\` \$t; done 2> /dev/null"
 
@@ -114,14 +119,6 @@ alias f="find . | grep "
 # # Alias's for safe and forced reboots
 # alias rebootsafe='sudo shutdown -r now'
 # alias rebootforce='sudo shutdown -r -n now'
-
-# Alias's to show disk space and space used in a folder
-alias diskspace="du -S | sort -n -r |more"
-alias folders='du -h --max-depth=1'
-alias folderssort='find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn'
-alias tree='tree -CAhF --dirsfirst'
-alias treed='tree -CAFd'
-alias mountedinfo='df -hT'
 
 # # Alias's for archives
 # alias mktar='tar -cvf'
@@ -251,3 +248,77 @@ alias mountedinfo='df -hT'
 # External IP Lookup
 # 	echo -n "External IP: " ; wget http://smart-ip.net/myip -O - -q
 # }
+
+
+# alias ci="code-insiders"
+# alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
+# alias canary='/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary'
+#
+# # Kill Chrome because it gets stuck sometimes
+# alias chromekill="ps ux | grep '[C]hrome Helper --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"
+#
+# # Example aliases
+# # alias zshconfig="mate ~/.zshrc"
+# # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+
+#-----------------------------------------------------------------------------#
+#                               ZSH FUNCTIONS                                 #
+#-----------------------------------------------------------------------------#
+
+
+# Make pyfiiles
+# pyinit() {
+#     cd python3 ~/Documents/Programming/Python/ || exit
+#     cd PycharmProjects/pyinit/pyinit/pyinit.py || exit
+# }
+alias testjs='rm -rf ~/.pydex.json && cp ~/.pydex_tmp.json ~/.pydex.json'
+nosu() {
+    app="$1"
+    sudo -u kali -H "$app"
+}
+
+
+# Print glyphs on system (need to be in the directory)
+lsicons() {
+    names="$1"
+    pipe="$2"
+    iogrep="$3"
+    search="$4"
+    cd "$HOME"/.opt/icons-in-terminal/ || exit
+    ./print_icons.sh "$names" "$pipe" "$iogrep" "$search"
+    cd -- || exit
+}
+
+
+# Check CPU usage
+cpu() {
+    a="'cpu ' /proc/stat | awk '{usage=(\$2+\$4)*100/(\$2+\$4+\$5)} } "
+    b="END {print usage}' | awk '{printf(\"%.1f\n\", \$1)}'"
+    grep "${a}${b}"
+}
+
+
+venv() {
+    directory="$1"
+    if [ -z "$1" ]; then
+        directory='.'
+    fi
+    source "$directory"/venv/bin/activate
+}
+
+pydex() {
+    opts="$1"
+    args="$2"
+    if [[ "$VIRTUAL_ENV" == "" ]]
+    then
+        source ~/Documents/Programming/Python/PycharmProjects/pydex/venv/bin/activate
+    fi
+    python3 ~/Documents/Programming/Python/PycharmProjects/pydex/pydex/__main__.py $opts $args
+}
+
+notes() {
+    opts="$1"
+    args="$2"
+    /home/stephen/Documents/Programming/shell/quicknotes.sh $opts $args
+}
