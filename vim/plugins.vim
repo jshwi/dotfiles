@@ -3,8 +3,8 @@
 "============================================================================="
 set nocompatible
 filetype off
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+set rtp+=$HOME/.vim/bundle/Vundle.vim/
+call vundle#begin('$HOME/.vim/bundle/')
 Plugin 'VundleVim/Vundle.vim'
 
 " ADD BELOW
@@ -12,7 +12,7 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'python-mode/python-mode'
 Plugin 'flazz/vim-colorschemes'                     " Colorschemes
 Plugin 'vim-syntastic/syntastic'                    " Syntax Highlighting
-Plugin 'tpope/vim-fugitive'                         " Git integration
+" Plugin 'tpope/vim-fugitive'                         " Git integration
 Plugin 'majutsushi/tagbar'                          " Function buffer
 Plugin 'plasticboy/vim-markdown'                    " Syntax for MD files
 Plugin 'tpope/vim-surround'                         " Auto surround brackets
@@ -112,7 +112,7 @@ Plugin 'flowtype/vim-flow'
 Plugin 'tell-k/vim-autopep8'
 Plugin 'heavenshell/vim-pydocstring.git'
 Plugin 'mgedmin/python-imports.vim'
-Plugin 'ludovicchabant/vim-gutentags'
+"Plugin 'ludovicchabant/vim-gutentags'
 Plugin 'https://github.com/fisadev/vim-isort'
 " Plugin 'vim-scripts/Pydiction'
 Plugin 'vim-scripts/taglist.vim'

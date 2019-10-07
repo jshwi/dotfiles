@@ -1,11 +1,11 @@
 {
   // python
-  "python.pythonPath": "C:\\Python37\\python.exe",
-  "python.venvPath": "${workspaceFolder}/venv",
+  "python.pythonPath": "C:\\Users\\swhit\\OneDrive\\Documents\\Programming\\Python\\vs_venv\\Scripts\\python.exe",
+  "python.venvPath": "C:\\Users\\swhit\\OneDrive\\Documents\\Programming\\Python\\vs_venv",
   "python.envFile": "${workspaceFolder}/env",
   "python.formatting.provider": "autopep8",
-  "python.formatting.autopep8Path": "${workspaceFolder}/venv/bin/autopep8",
-  "python.linting.flake8Path": "${workspaceFolder}/venv/Scripts/flake8.exe",
+  "python.formatting.autopep8Path": "C:\\Users\\swhit\\OneDrive\\Documents\\Programming\\Python\\vs_venv\\Scripts\\autopep8",
+  "python.linting.flake8Path":  "C:\\Users\\swhit\\OneDrive\\Documents\\Programming\\Python\\vs_venv\\Scripts\\flake8",
   "python.linting.enabled": true,
   "python.linting.lintOnSave": true,
   "python.linting.pylintEnabled": false,
@@ -39,7 +39,7 @@
   "editor.rulers": [72, 79],
   "editor.detectIndentation": false,
   "workbench.colorTheme": "Material Theme Ocean High Contrast",
-  "window.zoomLevel": 2,
+  "window.zoomLevel": 1.5,
   "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
 "standard.autoFixOnSave": true,
 "python.jediEnabled": false

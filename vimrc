@@ -16,10 +16,10 @@
 " Modultes
 " ========
 " Plugins ( '$USER# vundles' to select )
-source ~/.vim/plugins.vim
+source $HOME/.vim/plugins.vim
 
 " Colorschemes ( '$USER# vthm' to select )
-source ~/.vim/themes.vim
+source $HOME/.vim/themes.vim
 
 
 
@@ -36,7 +36,7 @@ syntax on
 " Default Behaviour
 " =================
 " Systems default shell
-set shell=/usr/bin/zsh
+set shell=bash
 
 " Default terminal size when opening vim. Gnome terminals default is 24x80.
 " This makes room for line numbers
@@ -44,7 +44,7 @@ set lines=24 columns=84
 
 " Display line numbers
 set nu
-set shell=/bin/bash
+set shell=bash
 " Margin for maximum code length
 set colorcolumn=80"
 
@@ -63,11 +63,13 @@ set wrap
 " Dont allow vim to slice words over multiple lines
 set linebreak
 
+let $TMP=expand('~/tmp')
+
 " Save vim temp files here and don't pollute home directory
-set backupdir=~/.vim/tmp/
+set backupdir=$HOME/.vim/tmp/
 
 " Save vim swap files here
-set directory=~/.vim/swp/
+set directory=$HOME/.vim/swp/
 
 " Allow vim to run commands from file if instructed to
 set exrc
@@ -210,3 +212,5 @@ endfunction
 autocmd Filetype gitcommit setlocal spell textwidth=72
 autocmd BufWritePre * %s/\s\+$//e
 
+set backspace=2
+set backspace=indent,eol,start
