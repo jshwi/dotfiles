@@ -1,0 +1,177 @@
+#!/bin/zsh
+#-----------------------------------------------------------------------------#
+#                                 ZSH ALIASES                                 #
+#-----------------------------------------------------------------------------#
+# ==========
+#    MISC
+# ==========
+alias python=python3.7
+alias edit='vim'
+alias fullapt='sudo python3 ${HOME}Documents/Programming/Python/fullapt/fullapt.py'
+# mv
+alias rsync-mv='rsync -az --progress --remove-source-files'
+# cp
+alias rsync-cp='rsync -az --progress'
+# terminal config files
+alias zrc='edit ${HOME}/.zshrc'
+alias srcrc='source ${HOME}/.zshrc'
+# refresh shell
+alias excz="exec zsh"
+alias zthm='edit ${HOME}/.zsh/theme.list'
+alias zplug='edit ${HOME}/.zsh/plugins'
+alias vrc='edit ${HOME}/.vimrc'
+alias vthm='edit ${HOME}/.vim/themes.vim'
+alias zalias='edit ${HOME}/.zsh/aliases'
+alias zfunc='edit ${HOME}/.dotfiles/zsh/zsh/functions'
+alias vundles='edit ${HOME}/.vim/plugins.vim'
+alias edship='edit ${HOME}/.zsh/conf/spaceship/spaceshiprc'
+# alias for manual backup to server with Borg
+alias backup='sudo /etc/backup/borg.sh'
+# ===========
+#    GNUPG
+# ===========
+alias gpge='gpg -e -r $USER'
+alias gpgd='${HOME}.local/bin/gpgargs.sh'
+# =========
+#    TAR
+# =========
+alias tgzc='${HOME}.local/bin/tgzcargs.sh'
+alias tgzx="tar -zxvf"
+alias mktar='tar -cvf'
+alias mkbz2='tar -cvjf'
+alias mkgz='tar -cvzf'
+alias untar='tar -xvf'
+alias unbz2='tar -xvjf'
+alias ungz='tar -xvzf'
+# ==========
+#    VENV
+# ==========
+alias dvenv="deactivate"
+# =======================
+#    MODIFIED COMMANDS
+# =======================
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -iv'
+alias mkdir='mkdir -p'
+alias ps='ps auxf'
+alias ping='ping -c 3'
+# ==========
+#    SUDO
+# ==========
+alias svim='sudo vim'
+#alias mx='chmod a+x'
+# ===========
+#    CHMOD
+# ===========
+alias 000='chmod -R 000'
+alias 644='chmod -R 644'
+alias 666='chmod -R 666'
+alias 755='chmod -R 755'
+alias 777='chmod -R 777'
+# ==========
+#    HIST
+# ==========
+alias get_hist="history | grep "
+# ==========
+#    PROC
+# ==========
+alias p="ps aux | grep "
+alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
+# =================
+#    CURRENT DIR
+# =================
+# Search files in the current folder
+alias f="find . | grep "
+# Alias's to show disk space and space used in a folder
+# ================
+#    DISK SPACE
+# ================
+alias diskspace="du -S | sort -n -r |more"
+alias folders='du -h --max-depth=1'
+alias folderssort='find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn'
+alias tree='tree -CAhF --dirsfirst'
+alias treed='tree -CAFd'
+alias mountedinfo='df -hT'
+# date/time
+alias dt=date +"%Y-%m-%d %T"
+# ========
+#    LS
+# ========
+# show hidden files
+alias la='ls -Alh'
+# add colors and file type extensions
+alias ls='ls -aFh --color=always'
+# sort by extension
+alias lx='ls -lXBh'
+# sort by size
+alias lk='ls -lSrh'
+# sort by change time
+alias lc='ls -lcrh'
+# sort by access time
+alias lu='ls -lurh'
+# recursive ls
+alias lr='ls -lRh'
+# sort by date
+alias lt='ls -ltrh'
+# pipe through 'more'
+alias lm='ls -alh |more'
+# wide listing format
+alias lw='ls -xAh'
+# long listing format
+alias ll='ls -Fls'
+#alphabetical sort
+alias labc='ls -lap'
+# files only
+alias lf="ls -l | egrep -v '^d'"
+# directories only
+alias ldir="ls -l | egrep '^d'"
+# To see if a command is aliased, a file, or a built-in command
+alias checkcommand="type -t"
+# Show current network connections to the server
+# Show open ports
+alias openports='netstat -nape --inet'
+# Alias's for safe and forced reboots
+alias rebootsafe='sudo shutdown -r now'
+alias rebootforce='sudo shutdown -r -n now'
+alias sha1='openssl sha1'
+# -------------------------------------------------------------------
+# Git aliases
+# -------------------------------------------------------------------
+alias gaa='git add -A'
+alias gp='git push'
+alias gl='git log'
+alias gs='git status'
+alias gd='git diff'
+alias gmsg='git commit -m'
+alias gmsga='git commit -am'
+alias gb='git branch'
+alias gc='git checkout'
+alias gra='git remote add'
+alias grr='git remote rm'
+alias git_down='git pull'
+alias gcl='git clone'
+alias gta='git tag -a -m'
+alias gf='git reflog'
+alias gfa='git fetch --all'
+# leverage an alias from the ${HOME}.gitconfig
+alias gh='git hist'
+alias glg1='git lg1'
+alias glg2='git lg2'
+alias glg='git lg'
+# exa file list
+alias la="exa --git --color=automatic -x"
+# `cat` with beautiful colors. requires: pip install -U Pygments
+alias c='pygmentize -O style=borland -f console256 -g'
+alias myip='curl ip.appspot.com'
+# memHogsTop, memHogsPs:  Find memory hogs
+# alias memHogsTop='top -l 1 -o rsize | head -20'
+alias memHogsPs='ps wwaxm -o pid,stat,vsize,rss,time,command | head -10'
+# cpuHogs:  Find CPU hogs
+alias cpu_hogs='ps wwaxr -o pid,stat,%cpu,time,command | head -10'
+alias flushDNS='dscacheutil -flushcache'
+# # Reload dns
+alias reloaddns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
+alias windir='cd /mnt/c/Users/swhit'
+alias winhome='cd /mnt/c/Users/swhit'
+alias dos2nixdir='find . -type f -print0 | xargs -0 dos2unix'

@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-/home/stephen/.dotfiles/vim/rc/vimrc
-=======
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "##### ## ## ############ ### ##### #### ####### ######## ######## # #######""
 ""###### ## ## ############ ### ##### ## ####### ########## ######## # ######""
@@ -13,10 +10,16 @@
 ""############# ## ## ########## # ## ### ##09/04/2018############ ######## #""
 ""############################# # ## ### ###### ################### ########.""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Modultes
 " ========
 " Plugins ( '$USER# vundles' to select )
+<<<<<<< HEAD
+source $HOME/.vim/plugins.vim
+
+=======
 source ~/.vim/plugins.vim
+>>>>>>> 2674e49e... working on vim
 " Colorschemes ( '$USER# vthm' to select )
 source $HOME/.vim/themes.vim
 
@@ -31,7 +34,12 @@ syntax on
 " Default Behaviour
 " =================
 " Systems default shell
+<<<<<<< HEAD
+set shell=bash
+
+=======
 set shell=/usr/bin/zsh
+>>>>>>> 2674e49e... working on vim
 " Default terminal size when opening vim. Gnome terminals default is 24x80.
 " This makes room for line numbers
 set lines=24 columns=84
@@ -50,10 +58,22 @@ set smartindent
 set wrap
 " Dont allow vim to slice words over multiple lines
 set linebreak
+<<<<<<< HEAD
+
+let $TMP=expand('~/tmp')
+
+" Save vim temp files here and don't pollute home directory
+set backupdir=$HOME/.vim/tmp/
+
+" Save vim swap files here
+set directory=$HOME/.vim/swp/
+
+=======
 " Save vim temp files here and don't pollute home directory
 set backupdir=~/.vim/tmp/
 " Save vim swap files here
 set directory=~/.vim/swp/
+>>>>>>> 2674e49e... working on vim
 " Allow vim to run commands from file if instructed to
 set exrc
 " Mitigates exrc risks somewhat
@@ -97,9 +117,9 @@ let bullets_enabled_file_types = [
     \ 'scratch'
     \]
 " Default size for NERDTree
-let NERDTreeWinSize=40
+let NERDTreeWinSize=30
 " Default size for Tagbar
-let tagbar_width=45
+let tagbar_width=35
 " Ignore irrelevant files in file explorer
 let NERDTreeIgnore = ['\.DAT$', '\.LOG1$', '\.LOG1$']
 " Let NERDTree hijack netrw
@@ -151,21 +171,7 @@ endif
 let g:gutentags_cache_dir="~/.tags"
 " for the pymode addon use python3
 let g:pymode_python = 'python3'
-let g:pymode_rope = 0
-let g:pymode_lint = 0
-" ???
-autocmd Filetype gitcommit setlocal spell textwidth=72
-" ???
-" open NERDTree on startup
-au VimEnter *  NERDTree
-" open Tagbar on startup
-autocmd VimEnter * nested :TagbarOpen
-" jump to the main window.
-autocmd VimEnter * wincmd p
-
-autocmd BufWritePre * %s/\s\+$//e
-" Close all open buffers on entering a window if the only
-" buffer that's left is the NERDTree buffer
+" don't leave vim open for NERDTree
 function! s:CloseIfOnlyNerdTreeLeft()
   if exists("t:NERDTreeBufName")
     if bufwinnr(t:NERDTreeBufName) != -1
@@ -175,6 +181,24 @@ function! s:CloseIfOnlyNerdTreeLeft()
     endif
   endif
 endfunction
-
+" ???
 autocmd Filetype gitcommit setlocal spell textwidth=72
->>>>>>> 702004d... {"Lots of zsh edits": "Fri 18 Oct 16:27:55 AEDT 2019"}
+" ???
+autocmd BufWritePre * %s/\s\+$//e
+" open NERDTree on startup
+au VimEnter *  NERDTree
+" open Tagbar on startup
+autocmd VimEnter * nested :TagbarOpen
+
+<<<<<<< HEAD
+set backspace=2
+set backspace=indent,eol,start
+=======
+function! StartUp()
+    if 0 == argc()
+        NERDTree
+    end
+endfunction
+
+autocmd VimEnter * call StartUp()
+>>>>>>> 1cd17589... vim templates

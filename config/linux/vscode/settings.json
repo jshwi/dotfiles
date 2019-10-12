@@ -1,0 +1,47 @@
+{
+  // python
+  "python.envFile": "${workspaceFolder}/.env",
+  "python.venvPath": "${workspaceFolder}/venv",
+  "python.pythonPath": "/home/stephen/.dotfiles/venv/bin/python",
+  "python.linting.flake8Path":  "${workspaceFolder}/venv/bin/flake8",
+  "python.linting.enabled": true,
+  "python.linting.lintOnSave": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+
+  // Conditional
+  "[python]": {
+    "editor.tabSize": 4
+  },
+  "[javascript]": {
+    "editor.tabSize": 2
+  },
+
+  // other
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.sideBar.location": "left",
+  "terminal.integrated.rendererType": "dom",
+  "files.trimTrailingWhitespace": true,
+  "breadcrumbs.enabled": true,
+  "files.exclude": {
+    "**/.eslintrc": true,
+    "**/.idea": true,
+    "**/.prettierrc": true,
+    "**/.tags": true,
+    "**/.vscode": true,
+    "**/.pre-commit-config.yaml": true,
+    "**/.travis.yaml": true,
+    "**/.venv": true,
+    "**/.flake8": true,
+    "**/node_modules": true,
+    "**/package-lock.json": true,
+    "**/venv": true,
+  },
+  "editor.rulers": [72, 79],
+  "editor.detectIndentation": false,
+  "workbench.colorTheme": "Material Theme Ocean High Contrast",
+  "window.zoomLevel": 1,
+"standard.autoFixOnSave": true,
+"python.jediEnabled": false,
+"shellcheck.disableVersionCheck": true
+}

@@ -47,8 +47,8 @@ plugins=(
 #cp
 #cpanm
 #debian
-#dircycle
-#dirhistory
+dircycle
+dirhistory
 #dirpersist
 #django
 #dnf
@@ -81,7 +81,7 @@ plugins=(
 #gem
 git
 #git-extras
-#gitfast
+gitfast
 #git-flow
 #git-flow-avh
 github
@@ -112,7 +112,7 @@ git-prompt
 #jhbuild
 #jira
 #jruby
-#jsontools
+jsontools
 #jump
 #kate
 #kitchen

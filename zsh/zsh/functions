@@ -1,0 +1,41 @@
+#!/bin/zsh
+venv() {
+    # activate virtualenv
+    # :param path_: path to the virtual env
+    # :param env:   name of the virtual env
+    dotfiles="$HOME/.dotfiles"
+    path_="${1:="."}"
+    env="${2:="venv"}"
+    venv="$dotfiles/$path_/$env"
+    activate="$venv/bin/activate"
+    source "$activate"
+}
+
+
+notes() {
+    # open new notes in a with a well organised /year/month/day/time.txt format
+    # note: if note in the dirname of the notes path, a whole new path will be
+    # created
+    # :param path_ : path tp the notebook directory
+    path_="${1:="."}"
+    dir_="notebook"
+    subdirs="$(date +"%Y/%m/%d")"
+    note="$(date +"%T").md"
+    fullpath="$path_/$dir_/$subdirs"
+    mkdir -p "$fullpath"
+    vim "$fullpath/$note"
+}
+
+
+venv_module() {
+    if [[ "$VIRTUAL_ENV" == "" ]]
+    then
+        venv
+    fi
+}
+
+
+gitstamp() {
+    msg="${1:=""}"
+    git commit -m "{\"$msg\": \"$(dt)\"}"
+}
