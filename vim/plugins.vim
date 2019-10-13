@@ -30,7 +30,7 @@ Plugin 'universal-ctags/ctags'                      " Exuberant CTags
 Plugin 'wakatime/vim-wakatime'                      " User statistics for VIM
 Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'    " Syntax for file explorer
 Plugin 'ap/vim-buftabline'                          " Info for open buffers
-Plugin 'vim-scripts/Vim-JDE'                        " Java support
+" Plugin 'vim-scripts/Vim-JDE'                        " Java support
 Plugin 'alvan/vim-closetag'                         " Surround html tags
 Plugin 'tomtom/tcomment_vim'                        " Comment assist
 Plugin 'pangloss/vim-javascript'                    " JavaScript support

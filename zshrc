@@ -64,6 +64,10 @@ unsetopt BEEP
 
 # Unset manpath so we can inherit from /etc/manpath via the `manpath` command
 unset MANPATH # delete if you already modified MANPATH elsewhere in your config
+export MANPATH="$NPM_PACKAGES/share/man:$(manpath)"
+export PATH="$HOME/.rbenv/bin:$PATH"
+# eval "$(rbenv init -)"
+# export PATH="/home/stephen/.gem/ruby/2.5.0/bin:$PATH"
 
 #
 # # Set to this to use case-sensitive completion
@@ -468,4 +472,5 @@ ZSH_THEME="spaceship" in your .zshrc.
 
 eval "$(ssh-agent -s)" &> /dev/null
 ssh-add ~/.ssh/id_rsa_github &> /dev/null
+ZSH_THEME="spaceship"
 
