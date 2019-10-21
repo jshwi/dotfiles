@@ -7,7 +7,6 @@
 # ==========
 alias python=python3.7
 alias edit='vim'
-alias fullapt='sudo python3 ${HOME}Documents/Programming/Python/fullapt/fullapt.py'
 # mv
 alias rsync-mv='rsync -az --progress --remove-source-files'
 # cp

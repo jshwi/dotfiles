@@ -3,10 +3,9 @@ venv() {
     # activate virtualenv
     # :param path_: path to the virtual env
     # :param env:   name of the virtual env
-    dotfiles="$HOME/.dotfiles"
     path_="${1:="."}"
     env="${2:="venv"}"
-    venv="$dotfiles/$path_/$env"
+    venv="$path_/$env"
     activate="$venv/bin/activate"
     source "$activate"
 }
@@ -38,4 +37,9 @@ venv_module() {
 gitstamp() {
     msg="${1:=""}"
     git commit -m "{\"$msg\": \"$(dt)\"}"
+}
+
+sign_prev() {
+    commit=$1
+    git rebase --exec 'git commit --amend --no-edit -n -S' -i "${commit}"
 }
