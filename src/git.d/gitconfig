@@ -9,4 +9,4 @@
 [commit]
 	template = ~/.git.d/committemplate
 [pull]
-	ff = only
+	rebase = true

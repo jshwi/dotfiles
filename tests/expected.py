@@ -6,7 +6,7 @@ import os
 
 SRC = os.path.join(".dotfiles", "src")
 BASH = ".bash"
-VSCODED = "vscode.d"
+VSCODED = ".vscode.d"
 CONFIGD = ".config"
 SETTINGS_JSON = "settings.json"
 KEYBINDINGS_JSON = "keybindings.json"
@@ -35,12 +35,14 @@ PAIRS = {
     os.path.join(".neomutt", "neomuttrc"): ".neomuttrc",
     os.path.join(SRC, "vim"): ".vim",
     os.path.join(".vim", "vimrc"): ".vimrc",
+    os.path.join(SRC, "vscode.d"): VSCODED,
     os.path.join(SRC, "zsh"): ".zsh",
     os.path.join(".zsh", "zshrc"): ".zshrc",
-    os.path.join(SRC, VSCODED, SETTINGS_JSON): os.path.join(
+    os.path.join(".vim", "rc", "vimrc.vim"): os.path.join(".vim", "vimrc"),
+    os.path.join(VSCODED, SETTINGS_JSON): os.path.join(
         CONFIGD, "Code", "User", SETTINGS_JSON
     ),
-    os.path.join(SRC, VSCODED, KEYBINDINGS_JSON): os.path.join(
+    os.path.join(VSCODED, KEYBINDINGS_JSON): os.path.join(
         CONFIGD, "Code", "User", KEYBINDINGS_JSON
     ),
 }

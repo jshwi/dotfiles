@@ -10,7 +10,7 @@ import sys
 
 import pytest
 
-import dotpy
+import dotfiles
 
 
 class NoColorCapsys:
@@ -96,70 +96,69 @@ def fixture_repo_dir(test_dir):
 
 @pytest.fixture(name="package_dir")
 def fixture_package_dir(repo_dir):
-    """The absolute path to the ``dotpy`` package.
+    """The absolute path to the ``dotfiles`` package.
 
     :param repo_dir:    The absolute path to this repository.
-    :return:            The absolute path to the ``dotpy`` package.
+    :return:            The absolute path to the ``dotfiles`` package.
     """
-    return os.path.join(repo_dir, "dotpy")
+    return os.path.join(repo_dir, "dotfiles")
 
 
 @pytest.fixture(name="entry_point")
 def fixture_init_py(package_dir):
-    """The absolute path to the __init__.py file in the ``dotpy``
+    """The absolute path to the __init__.py file in the ``dotfiles``
     package.
 
-    :param package_dir: The absolute path to the ``dotpy`` package.
+    :param package_dir: The absolute path to the ``dotfiles`` package.
     """
     return os.path.join(package_dir, "__init__.py")
 
 
-@pytest.fixture(name="dot_constants", autouse=True)
-def dot_constants(nocolorcapsys, monkeypatch, tmpdir, entry_point):
-    """Run the install process and return it's output stripped of any
-    ANSI escaped color codes. The returned output can be used or ignored
-    to control the stream of stdout/ stderr.
+@pytest.fixture(name="sysargv", autouse=True)
+def fixture_sysargv(entry_point):
+    """Clear any arguments that might exist within ``sys.argv`` and
+    replace them with the single argument necessary - the script being
+    called. As this is only for ``argparse.ArgumentParser`` this really
+    could be anything as the first argument gets removed anyway. For
+    completeness sake and to avoid confusion we will just make it what
+    it actually is. This cannot be empty as ``argparse.ArgumentParser``
+    will then try to remove nothing and throw an IndexError.
 
-    :param entry_point:
-    :param tmpdir:
-    :param monkeypatch:
-    :param nocolorcapsys:   The ``capsys`` fixture altered to remove
-                            ANSI escape codes.
-    :return:                Stdout.
+    :param entry_point: The absolute path to the __init__.py file in the
+                        ``dotfiles`` package.
     """
-
-    def expanduser(path):
-        return path.replace("~/.", f"{tmpdir}/.")
-
     sys.argv = [entry_point]
-    monkeypatch.setattr(dotpy.install.os.path, "expanduser", expanduser)
-    dotpy.install.HOME = tmpdir
-    dotpy.install.CONFIGDIR = os.path.join(
-        dotpy.install.HOME, ".config", __name__
-    )
-    dotpy.install.CONFIG = os.path.join(
-        dotpy.install.CONFIGDIR, __name__ + ".yaml"
-    )
+
+
+@pytest.fixture(name="dotfiles_home", autouse=True)
+def fixture_dotfiles_home(tmpdir):
+    """Mock the ``dotfiles.HOME`` object, which internally is where the
+     whole dotfiles install process centres itself, by replacing the
+     actual home with the ``tmpdir`` fixture.
+
+    :param tmpdir:  The temporary directory ``pytest`` fixture.
+    """
+    dotfiles.HOME = tmpdir
 
 
 @pytest.fixture(name="dotclone")
 def fixture_dotclone(tmpdir):
-    """Get the path to the mock .dotpy repository clone.
+    """Get the path to the mock .dotfiles repository clone.
 
     :param tmpdir:  The temporary directory ``pytest`` fixture.
-    :return:        The mock .dotpy repository clone.
+    :return:        The mock .dotfiles repository clone.
     """
     return os.path.join(tmpdir, ".dotfiles")
 
 
 @pytest.fixture(name="suffix")
 def fixture_suffix():
-    """Get the accurate timestamp from ``dotpy.SUFFIX`` so that there
+    """Get the accurate timestamp from ``dotfiles.SUFFIX`` so that there
     is no discrepancy between the test time and the module's time.
 
     :return: Timestamp to be appended to backed up files.
     """
-    return dotpy.SUFFIX
+    return dotfiles.SUFFIX
 
 
 @pytest.fixture(name="clone_self", autouse=True)
