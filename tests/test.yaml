@@ -1,0 +1,18 @@
+bash:
+- bashrc
+- bash_profile
+dir_colors.d:
+- dir_colors
+gem:
+- gemrc
+git.d:
+- gitconfig
+hidden.d:
+- hidden
+neomutt:
+- neomuttrc
+vim:
+- vimrc
+vscode.d: []
+zsh:
+- zshrc

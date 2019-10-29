@@ -205,4 +205,4 @@ alias ctags="ctags-exuberant"
 alias dcode="date +'%Y%m%dT%S%M%H'"
 alias tcommit="git add .; git commit -m \$(dcode)"
 alias tcommitp="tcommit; git push"
-alias dotfiles="make"
+alias fit='fossil'

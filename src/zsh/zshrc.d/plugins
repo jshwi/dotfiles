@@ -76,7 +76,7 @@ plugins=(
     #fedora
     #firewalld
     #forklift
-    #fossil
+    fossil
     #frontend-search
     #gas
     #gb
