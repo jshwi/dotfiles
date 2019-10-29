@@ -4,9 +4,9 @@ REPO 	:= $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 NAME	:= $(shell basename $(REPO))
 SETUP 	:= $(REPO)/setup.py
 BIN 	:= $(REPO)/bin
-LIBSH	:= $(REPO)/lib
-DOTSH	:= $(LIBSH)/dotsh
-LIBSH 	:= $(DOTSH)/lib.sh
+LIB 	:= $(BIN)/lib.sh
+BUILD	:= $(BIN)/build
+WHICH	:= $(BIN)/which
 BASH	:= /bin/bash
 PYTHON	:= /bin/python3
 NAME	:= $(shell $(PYTHON) $(SETUP) --name)
@@ -25,89 +25,89 @@ help:  ## Show this help message and exit
 
 .PHONY: which
 which:  ## Check that pipenv is installed
-	@$(BASH) -c "$(BIN)/which-pipenv"
+	@$(BASH) -c "$(WHICH)"
 
 
 .PHONY: install
 install: which  ## Install bin executable
-	@$(BASH) -c "source $(LIBSH); install"
+	@$(BASH) -c "source $(LIB); install"
 
 
 .PHONY: docs
 docs: which  ## Compile documentation
-	@$(BASH) -c "source $(LIBSH); make_html"
+	@$(BASH) -c "source $(LIB); make_html"
 
 
 .PHONY: tests
 tests: which  ## Run unittests
-	@$(BASH) -c "source $(LIBSH); run_tests"
+	@$(BASH) -c "source $(LIB); run_tests"
 
 
 .PHONY: clean
 clean:  ## Remove all untracked dirs and files
-	@$(BASH) -c "source $(LIBSH) --no-install; clean_repo"
+	@$(BASH) -c "source $(LIB) --no-install; clean_repo"
 
 
 .PHONY: uninstall
 uninstall: which  ## Uninstall binary
-	@$(BASH) -c "source $(LIBSH) --no-install; uninstall"
+	@$(BASH) -c "source $(LIB) --no-install; uninstall"
 
 
 .PHONY: format
 format: which  ## Format all .py project files
-	@$(BASH) -c "source $(LIBSH); format_py"
+	@$(BASH) -c "source $(LIB); format_py"
 
 
 .PHONY: lint
 lint: which  ## Show possible .py file corrections
-	@$(BASH) -c "source $(LIBSH); lint_files"
+	@$(BASH) -c "source $(LIB); lint_files"
 
 
 .PHONY: coverage
 coverage: which  ## Run unittests with coverage
-	@$(BASH) -c "source $(LIBSH); run_test_cov"
+	@$(BASH) -c "source $(LIB); run_test_cov"
 
 
 .PHONY: typecheck
 typecheck: which  ## Inspect files for type errors
-	@$(BASH) -c "source $(LIBSH); inspect_types"
+	@$(BASH) -c "source $(LIB); inspect_types"
 
 
 .PHONY: unused
 unused: which  ## Inspect files for unused attributes
-	@$(BASH) -c "source $(LIBSH); vulture"
+	@$(BASH) -c "source $(LIB); vulture"
 
 
 .PHONY: whitelist
 whitelist: which  ## Update whitelist.py
-	@$(BASH) -c "source $(LIBSH); whitelist"
+	@$(BASH) -c "source $(LIB); whitelist"
 
 
 .PHONY: toc
 toc: which  ## Update docs/<PACKAGENAME>.rst
-	@$(BASH) -c "source $(LIBSH); make_toc"
+	@$(BASH) -c "source $(LIB); make_toc"
 
 
 .PHONY: requirements
 requirements: which  ## Pipfile.lock -> requirements.txt
-	@$(BASH) -c "source $(LIBSH); pipfile_to_requirements"
+	@$(BASH) -c "source $(LIB); pipfile_to_requirements"
 
 
 .PHONY: files
 files: which  ## Requirements, toc and whitelist
-	@$(BASH) -c "source $(LIBSH); make_files"
+	@$(BASH) -c "source $(LIB); make_files"
 
 
 .PHONY: deploy-docs
 deploy-docs: which  ## Deploy Sphinx docs to gh-pages
-	@$(BASH) -c "source $(LIBSH); deploy_cov"
+	@$(BASH) -c "source $(LIB); deploy_cov"
 
 
 .PHONY: deploy-cov
 deploy-cov: which  ## Deploy code coverage to Codecov
-	@$(BASH) -c "source $(LIBSH); deploy_cov"
+	@$(BASH) -c "source $(LIB); deploy_cov"
 
 
 .PHONY: build
 build: which  ## Run all checks, install and deploy
-	@$(BASH) -c "$(BIN)/build-repo"
+	@$(BASH) -c "source $(BUILD); do_build"

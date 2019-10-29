@@ -1,7 +1,9 @@
 *coverage*
+!.coveragerc
 .cache/
 .env
 .idea/
+.mypy_cache
 .netrwhist
 __pycache__/
 _build

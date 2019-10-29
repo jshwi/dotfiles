@@ -5,8 +5,7 @@ tests._test.py
 import os
 import sys
 
-import dotpy
-
+import dotfiles
 from . import expected
 
 
@@ -19,15 +18,8 @@ def install(nocolorcapsys):
                             ANSI escape codes.
     :return:                Stdout.
     """
-    dotpy.install.main()
+    dotfiles.main()
     return nocolorcapsys.stdout()
-
-
-def test_clone_self(clone_self, dotclone):
-    # testing above fixture
-    vimrc_link = os.path.join(dotclone, "src", "vim", "vimrc")
-    assert os.path.isdir(dotclone)
-    assert os.path.islink(vimrc_link)
 
 
 def test_locations(nocolorcapsys):
@@ -48,7 +40,7 @@ def test_output(nocolorcapsys):
     :return:                Stdout.
     """
     out = install(nocolorcapsys)
-    assert out == expected.output(dotpy.install.HOME)
+    assert out == expected.output(dotfiles.HOME)
 
 
 def test_symlinks(nocolorcapsys):
@@ -59,10 +51,10 @@ def test_symlinks(nocolorcapsys):
                             ANSI escape codes.
     """
     install(nocolorcapsys)
-    contents = os.listdir(dotpy.install.HOME)
+    contents = os.listdir(dotfiles.HOME)
     for _, val in expected.PAIRS.items():
         if val in expected.FOLLOW_PATH:
-            path = os.path.join(dotpy.install.HOME, val)
+            path = os.path.join(dotfiles.HOME, val)
             assert os.path.islink(path)
         else:
             assert val in contents
@@ -75,12 +67,12 @@ def test_backups(nocolorcapsys, suffix):
     :param nocolorcapsys:   The ``capsys`` fixture altered to remove
                             ANSI escape codes.
     :param suffix:          The time suffix fixture to be appended to
-                            the file taken from the ``dotpy.SUFFIX``
+                            the file taken from the ``dotfiles.SUFFIX``
                             constant so as to ensure a match.
     """
     test_output(nocolorcapsys)
     out = install(nocolorcapsys)
-    assert out == expected.backups(dotpy.install.HOME, suffix)
+    assert out == expected.backups(dotfiles.HOME, suffix)
 
 
 def test_dry_run(nocolorcapsys):
@@ -93,10 +85,10 @@ def test_dry_run(nocolorcapsys):
                             ANSI escape codes.
     """
     sys.argv.append("--dry")
-    freeze_dir = os.listdir(dotpy.install.HOME)
+    freeze_dir = os.listdir(dotfiles.HOME)
     out = install(nocolorcapsys)
-    assert out == expected.dry_run(dotpy.install.HOME)
-    updated_dir = os.listdir(dotpy.install.HOME)
+    assert out == expected.dry_run(dotfiles.HOME)
+    updated_dir = os.listdir(dotfiles.HOME)
     assert updated_dir == freeze_dir
 
 
@@ -112,10 +104,10 @@ def test_dry_run_backups(nocolorcapsys, suffix):
     """
     test_output(nocolorcapsys)
     sys.argv.append("--dry")
-    freeze_dir = os.listdir(dotpy.install.HOME)
+    freeze_dir = os.listdir(dotfiles.HOME)
     out = install(nocolorcapsys)
-    assert out == expected.dry_run_backups(dotpy.install.HOME, suffix)
-    updated_dir = os.listdir(dotpy.install.HOME)
+    assert out == expected.dry_run_backups(dotfiles.HOME, suffix)
+    updated_dir = os.listdir(dotfiles.HOME)
     assert updated_dir == freeze_dir
 
 
@@ -127,6 +119,6 @@ def test_broken_symlink(nocolorcapsys):
                             ANSI escape codes.
     """
     install(nocolorcapsys)
-    vimrc = os.path.join(dotpy.install.HOME, ".vim", "vimrc")
+    vimrc = os.path.join(dotfiles.HOME, ".vim", "vimrc")
     os.remove(vimrc)  # break link
     install(nocolorcapsys)

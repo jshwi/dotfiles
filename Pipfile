@@ -26,7 +26,6 @@ prompt-toolkit = "*"
 [packages]
 appdirs = "1.4.4"
 pyaml = "20.4.0"
-python-gnupg = "0.4.6"
 
 [requires]
 python_version = "3.9"
