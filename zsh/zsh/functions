@@ -17,9 +17,10 @@ notes() {
     # created
     # :param path_ : path tp the notebook directory
     path_="${1:="."}"
+    extension="${2:='md'}"
     dir_="notebook"
     subdirs="$(date +"%Y/%m/%d")"
-    note="$(date +"%T").md"
+    note="$(date +"%T").${extension}"
     fullpath="$path_/$dir_/$subdirs"
     mkdir -p "$fullpath"
     vim "$fullpath/$note"
@@ -39,7 +40,29 @@ gitstamp() {
     git commit -m "{\"$msg\": \"$(dt)\"}"
 }
 
+dtname() {
+    # return a name in the following format
+    # name.date:time.extension
+    name="${1:=""}"
+    extension="${2}"
+    output="${name}.$(date +'%Y.%m.%d:%H.%M.%S')"
+    if [ -z "$2" ]; then
+        echo "${output}"
+    else
+        echo "${output}"."${extension}"
+    fi
+}
+
+redir() {
+    # redirect stdout of a command into a file with the `dtname` format. eg...
+    # redir speedtest extension
+    # > speedtest.date:time.extension
+    cmd="$1"
+    extension="$2"
+    "$cmd" > $(dtname "$cmd" "$extension")
+}
+
 sign_prev() {
     commit=$1
-    git rebase --exec 'git commit --amend --no-edit -n -S' -i "${commit}"
+    git rebase --exec 'git commit --amend --no-edit -n -S' -i "${commit:="HEAD^"}"
 }
