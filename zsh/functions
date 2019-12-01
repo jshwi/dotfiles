@@ -3,8 +3,8 @@ venv() {
     # activate virtualenv
     # :param path_: path to the virtual env
     # :param env:   name of the virtual env
-    path_="${1:="."}"
-    env="${2:="venv"}"
+    env="${1:="venv"}"
+    path_="${2:="."}"
     venv="$path_/$env"
     activate="$venv/bin/activate"
     source "$activate"
@@ -65,4 +65,16 @@ redir() {
 sign_prev() {
     commit=$1
     git rebase --exec 'git commit --amend --no-edit -n -S' -i "${commit:="HEAD^"}"
+}
+
+vimide() {
+    rm -f "$HOME/.dotfiles/vim/vimrc" > /dev/null 2>&1
+    ln -s "$HOME/.dotfiles/vim/rc/vim-ide" "$HOME/.dotfiles/vim/vimrc"
+    /usr/bin/vim "$@"
+}
+
+vim() {
+    rm -f "$HOME/.dotfiles/vim/vimrc" > /dev/null 2>&1
+    ln -s "$HOME/.dotfiles/vim/rc/vimrc" "$HOME/.dotfiles/vim/vimrc"
+    /usr/bin/vim "$@"
 }

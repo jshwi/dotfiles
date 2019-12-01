@@ -21,7 +21,7 @@ alias zplug='edit ${HOME}/.zsh/plugins'
 alias vrc='edit ${HOME}/.vimrc'
 alias vthm='edit ${HOME}/.vim/themes.vim'
 alias zalias='edit ${HOME}/.zsh/aliases'
-alias zfunc='edit ${HOME}/.dotfiles/zsh/zsh/functions'
+alias zfunc='edit ${HOME}/.dotfiles/zsh/functions'
 alias vundles='edit ${HOME}/.vim/plugins.vim'
 alias edship='edit ${HOME}/.zsh/conf/spaceship/spaceshiprc'
 # alias for manual backup to server with Borg
