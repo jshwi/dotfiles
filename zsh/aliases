@@ -174,3 +174,5 @@ alias reloaddns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 alias windir='cd /mnt/c/Users/swhit'
 alias winhome='cd /mnt/c/Users/swhit'
 alias dos2nixdir='find . -type f -print0 | xargs -0 dos2unix'
+# alias color-logs='journalctl -b -k -f | ccze [-A] [-o nolookups]'
+alias color-logs='journalctl -b -k -f | ccze -o nolookups'

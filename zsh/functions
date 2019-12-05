@@ -78,3 +78,7 @@ vim() {
     ln -s "$HOME/.dotfiles/vim/rc/vimrc" "$HOME/.dotfiles/vim/vimrc"
     /usr/bin/vim "$@"
 }
+
+logs() {
+    journalctl $@ | ccze -A -o nolookups
+}
