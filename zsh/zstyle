@@ -1,0 +1,8 @@
+#!/bin/zsh
+zstyle :compinstall filename "$ZSHRC"
+zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
+zstyle ':completion:*:killall:*'   force-list always
+zstyle ':completion:*:*:killall:*' menu yes select
+zstyle ':completion:*:kill:*'   force-list always
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'

@@ -64,7 +64,7 @@ set splitbelow
 " Split to the right of original buffer when splitting vertically
 set splitright
 " Default number of characters for tab
-set tabstop=4 softtabstop=4
+set tabstop=2 softtabstop=2
 set shiftwidth=4 textwidth=79
 " Auto indent for tabs
 set expandtab autoindent
@@ -143,9 +143,12 @@ endif
 " put ctags cache in home dotfile
 let g:gutentags_cache_dir="~/.tags"
 " for the pymode addon use python3
-let g:pymode_python = 'python3'
+let g:pymode_python = 'python3.8'
 let g:pymode_rope = 0
 let g:pymode_lint = 0
 " ???
 autocmd Filetype gitcommit setlocal spell textwidth=72
 " ???
+set backspace=indent,eol,start
+
+vnoremap <c-f> y<ESC>/<c-r>"<CR>

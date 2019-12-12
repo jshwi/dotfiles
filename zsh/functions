@@ -1,10 +1,27 @@
 #!/bin/zsh
+DOTFILES="$HOME/.dotfiles"
+VIM="$DOTFILES/vim"
+VIMRC="$vim/vimrc"
+
+
 venv() {
     # activate virtualenv
     # :param path_: path to the virtual env
     # :param env:   name of the virtual env
-    env="${1:="venv"}"
+    default="venv"
+    if [[ ! -d venv ]]; then
+        default=".venv"
+    fi
+    env="${1:="$default"}"
     path_="${2:="."}"
+    if [[ ! -d "$env" ]]; then
+        env=".venv"
+    fi
+    if [[ ! -d "$env" ]]; then
+        printf "Cannot find \`venv\` or \`.venv\`"$'\n'
+        printf "Enter virtual environment directory manually"$'\n'
+        printf "i.e. venv <VIRTUALENV>"$'\n'
+    fi
     venv="$path_/$env"
     activate="$venv/bin/activate"
     source "$activate"
@@ -17,13 +34,23 @@ notes() {
     # created
     # :param path_ : path tp the notebook directory
     path_="${1:="."}"
-    extension="${2:='md'}"
-    dir_="notebook"
-    subdirs="$(date +"%Y/%m/%d")"
-    note="$(date +"%T").${extension}"
-    fullpath="$path_/$dir_/$subdirs"
-    mkdir -p "$fullpath"
-    vim "$fullpath/$note"
+    lower="$path_/notebook"
+    caps="$path_/Notebook"
+    if [[ ! -d "$lower" && ! -d "$caps" ]]; then
+        echo "'$lower' or '$caps' don't exist"
+    else
+        if [ -d "$lower" ]; then
+            fullpath="$lower"
+        elif [ -d "$caps" ]; then
+            fullpath="$caps"
+        fi
+        extension="${2:='md'}"
+        subdirs="$(date +"%Y/%m/%d")"
+        note="$(date +"%T").$extension"
+        notepath="$fullpath/$subdirs"
+        mkdir -p "$notepath"
+        vim "$notepath/$note"
+    fi
 }
 
 
@@ -40,18 +67,20 @@ gitstamp() {
     git commit -m "{\"$msg\": \"$(dt)\"}"
 }
 
+
 dtname() {
     # return a name in the following format
     # name.date:time.extension
     name="${1:=""}"
-    extension="${2}"
-    output="${name}.$(date +'%Y.%m.%d:%H.%M.%S')"
+    extension="$2"
+    output="$name.$(date +'%Y.%m.%d:%H.%M.%S')"
     if [ -z "$2" ]; then
-        echo "${output}"
+        echo "$output"
     else
-        echo "${output}"."${extension}"
+        echo "$output"."$extension"
     fi
 }
+
 
 redir() {
     # redirect stdout of a command into a file with the `dtname` format. eg...
@@ -62,23 +91,49 @@ redir() {
     "$cmd" > $(dtname "$cmd" "$extension")
 }
 
-sign_prev() {
+sign-prev() {
     commit=$1
-    git rebase --exec 'git commit --amend --no-edit -n -S' -i "${commit:="HEAD^"}"
+    if [ $# -eq 0 ]; then
+        git cat-file -e HEAD^ > /dev/null 2>&1
+        [ $? -eq 0 ] && commit="HEAD^" || commit="--root"
+    fi
+    git rebase --exec 'git commit --amend --no-edit -n -S' -i $commit
 }
 
-vimide() {
-    rm -f "$HOME/.dotfiles/vim/vimrc" > /dev/null 2>&1
-    ln -s "$HOME/.dotfiles/vim/rc/vim-ide" "$HOME/.dotfiles/vim/vimrc"
-    /usr/bin/vim "$@"
-}
 
 vim() {
-    rm -f "$HOME/.dotfiles/vim/vimrc" > /dev/null 2>&1
-    ln -s "$HOME/.dotfiles/vim/rc/vimrc" "$HOME/.dotfiles/vim/vimrc"
+    rm -f "$VIMRC" > /dev/null 2>&1
+    ln -s "$VIM/rc/vimrc" "$VIMRC"
     /usr/bin/vim "$@"
 }
 
-logs() {
-    journalctl $@ | ccze -A -o nolookups
+no-ci-commit() {
+    git commit -m "[no ci] $@"
 }
+
+multiclear() {
+    for i in {1..10}; do clear; done
+}
+
+pkgtest() {
+    multiclear
+    ../.venv/bin/python3.8 -m pytest ../tests
+}
+
+
+rcommit() {
+  git add .
+  gitstamp
+}
+
+rcomp() {
+  rcommit
+  git push
+}
+
+
+git-unused() {
+  git ls-files | xargs ctags
+  unused --ignore /home/stephen/.noSync/Projects/jnotes/tests/
+}
+

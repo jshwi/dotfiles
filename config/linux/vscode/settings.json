@@ -1,8 +1,7 @@
 {
   // python
   "python.envFile": "${workspaceFolder}/.env",
-  "python.venvPath": "${workspaceFolder}/.venv",
-  "python.pythonPath": "/home/stephen/.dotfiles/.venv/bin/python",
+  "python.venvPath": "${workspaceFolder}",
   "python.linting.flake8Path":  "${workspaceFolder}/.venv/bin/flake8",
   "python.linting.enabled": true,
   "python.linting.lintOnSave": true,
@@ -19,7 +18,7 @@
 
   // other
   "workbench.iconTheme": "material-icon-theme",
-  "workbench.colorTheme": "Material Theme Ocean High Contrast",
+  "workbench.colorTheme": "Community Material Theme Ocean High Contrast",
 
   "workbench.sideBar.location": "left",
   "terminal.integrated.rendererType": "dom",
@@ -38,10 +37,11 @@
     "**/node_modules": true,
     "**/package-lock.json": true,
     "**/venv": true,
+    "**/.*": true,
   },
-  "editor.rulers": [72, 79],
+//   "editor.rulers": [72, 79],
 "editor.detectIndentation": false,
-  "window.zoomLevel": 1,
+  "window.zoomLevel": -1,
 "standard.autoFixOnSave": true,
 "python.jediEnabled": false,
 "shellcheck.disableVersionCheck": true,
@@ -107,5 +107,10 @@
     "dotfiles",
     "fullapt",
     "jshwisolutions"
-]
+],
+"editor.wordWrap": "on",
+"editor.wordWrapColumn": 150,
+"launch": {
+
+}
 }

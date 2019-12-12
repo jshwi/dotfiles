@@ -5,7 +5,7 @@
 # ==========
 #    MISC
 # ==========
-alias python=python3.7
+alias python=python3.8
 alias edit='vim'
 # mv
 alias rsync-mv='rsync -az --progress --remove-source-files'
@@ -174,5 +174,11 @@ alias reloaddns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 alias windir='cd /mnt/c/Users/swhit'
 alias winhome='cd /mnt/c/Users/swhit'
 alias dos2nixdir='find . -type f -print0 | xargs -0 dos2unix'
-# alias color-logs='journalctl -b -k -f | ccze [-A] [-o nolookups]'
-alias color-logs='journalctl -b -k -f | ccze -o nolookups'
+alias python="python3.8"
+alias pip-update-all="pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U"
+alias git-ctags="git ls-files | xargs ctags"
+alias yay="yay --aur"
+alias keyid="echo 8F15D24F"
+# alias pac-r-orph="sudo pacman -Rns $(pacman -Qtdq)"
+# alias pacman="sudo pacman $@"
+alias mypy="mypy --config-file .mypyrc --ignore-missing $@"

@@ -1,4 +1,4 @@
-"=============================================================================  :"
+" ============================================================================"
 "                                VIM PLUGINS                                  "
 "============================================================================="
 set nocompatible              " be iMproved, required
@@ -82,7 +82,7 @@ Plugin 'vim-scripts/SearchComplete'
 Plugin 'severin-lemaignan/vim-minimap'
 Plugin 'Shougo/unite.vim'
 Plugin 'shougo/vimshell.vim'
-Plugin 'SirVer/ultisnips'
+" Plugin 'SirVer/ultisnips'
 Plugin 'sk1418/blockit'
 Plugin 'StanAngeloff/php.vim'
 Plugin 'stephpy/vim-php-cs-fixer'
