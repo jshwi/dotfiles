@@ -1,0 +1,4 @@
+set mbox_type=Maildir
+set folder=/home/stephen/Documents/Projects/jshwisolutions.com/mail/jshwisolutions.com/stephen
+set spoolfile=/home/stephen/Documents/Projects/jshwisolutions.com/mail/jshwisolutions.com/stephen
+set header_cache=/home/stephen/.cache/mutt

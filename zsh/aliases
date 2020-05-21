@@ -2,6 +2,7 @@
 #-----------------------------------------------------------------------------#
 #                                 ZSH ALIASES                                 #
 #-----------------------------------------------------------------------------#
+source ~/.zsh/secret
 # ==========
 #    MISC
 # ==========
@@ -161,7 +162,7 @@ alias glg='git lg'
 # exa file list
 alias la="exa --git --color=automatic -x"
 # `cat` with beautiful colors. requires: pip install -U Pygments
-alias c='pygmentize -O style=borland -f console256 -g'
+alias c='pygmentize -O style=monokai -f console256 -g'
 alias myip='curl ip.appspot.com'
 # memHogsTop, memHogsPs:  Find memory hogs
 # alias memHogsTop='top -l 1 -o rsize | head -20'
@@ -179,6 +180,10 @@ alias pip-update-all="pip list --outdated --format=freeze | grep -v '^\-e' | cut
 alias git-ctags="git ls-files | xargs ctags"
 alias yay="yay --aur"
 alias keyid="echo 8F15D24F"
-# alias pac-r-orph="sudo pacman -Rns $(pacman -Qtdq)"
+alias pac-r-orph="pacman -Rns $(pacman -Qtdq)"
 # alias pacman="sudo pacman $@"
-alias mypy="mypy --config-file .mypyrc --ignore-missing $@"
+# alias mypy="mypy --config-file .mypyrc --ignore-missing $@"
+alias purge-untracked="git clean -fdx"
+alias file-proc="ls -l /proc/$(pidof dropbox)/fd | egrep -v 'pipe:|socket:|/dev'"
+alias screenfetch="CONFIG+=qml_debug && clear && screenfetch"
+alias pacman="powerpill"

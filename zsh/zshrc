@@ -14,7 +14,7 @@ source "$ZSH_AUTOLOAD"
 source "$ZSH_EXPORTS"
 source "$ZSH_ZSTYLE"
 source "$ZSH_SYNTAX"
-source "$TRAVIS"
+# source "$TRAVIS"
 
 setopt autocd
 setopt correctall

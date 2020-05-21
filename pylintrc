@@ -1,5 +1,0 @@
-[MASTER]
-init-hook='import sys;sys.path.append("/home/stephen/.noSync/Repositories/Projects/Python/jnotes");sys.path.append("/home/stephen/.noSync/Repositories/Projects/Python/jnotes/jnotes")'
-
-[MESSAGES CONTROL]
-disable=duplicate-code, unnecessary-pass, useless-super-delegation, no-self-use

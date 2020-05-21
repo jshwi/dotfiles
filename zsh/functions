@@ -1,7 +1,6 @@
-#!/bin/zsh
 DOTFILES="$HOME/.dotfiles"
 VIM="$DOTFILES/vim"
-VIMRC="$vim/vimrc"
+VIMRC="$VIM/vimrc"
 
 
 venv() {
@@ -25,32 +24,6 @@ venv() {
     venv="$path_/$env"
     activate="$venv/bin/activate"
     source "$activate"
-}
-
-
-notes() {
-    # open new notes in a with a well organised /year/month/day/time.txt format
-    # note: if note in the dirname of the notes path, a whole new path will be
-    # created
-    # :param path_ : path tp the notebook directory
-    path_="${1:="."}"
-    lower="$path_/notebook"
-    caps="$path_/Notebook"
-    if [[ ! -d "$lower" && ! -d "$caps" ]]; then
-        echo "'$lower' or '$caps' don't exist"
-    else
-        if [ -d "$lower" ]; then
-            fullpath="$lower"
-        elif [ -d "$caps" ]; then
-            fullpath="$caps"
-        fi
-        extension="${2:='md'}"
-        subdirs="$(date +"%Y/%m/%d")"
-        note="$(date +"%T").$extension"
-        notepath="$fullpath/$subdirs"
-        mkdir -p "$notepath"
-        vim "$notepath/$note"
-    fi
 }
 
 
@@ -107,6 +80,13 @@ vim() {
     /usr/bin/vim "$@"
 }
 
+
+vimide() {
+    rm -f "$VIMRC" > /dev/null 2>&1
+    ln -s "$VIM/rc/vim-ide" "$VIMRC"
+    /usr/bin/vim "$@"
+}
+
 no-ci-commit() {
     git commit -m "[no ci] $@"
 }
@@ -132,8 +112,13 @@ rcomp() {
 }
 
 
-git-unused() {
+git-unused () {
   git ls-files | xargs ctags
-  unused --ignore /home/stephen/.noSync/Projects/jnotes/tests/
 }
 
+
+lynis-go () {
+    pacman -Syyu
+    sysctl --system
+    lynis audit system
+}
