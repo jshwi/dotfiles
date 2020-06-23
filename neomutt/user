@@ -1,0 +1,4 @@
+source "$HOME/.neomutt/colorscheme"
+source ""$HOME"/.neomutt/format"
+set folder="$HOME/.Mail"
+set spoolfile="/var/mail/$USER"

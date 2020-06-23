@@ -1,4 +1,4 @@
-source $HOME/.vim/rc/vimrc
+source $HOME/.vim/rc/vimrc.vim
 " Default size for NERDTree
 let NERDTreeWinSize=40
 " Default size for Tagbar

@@ -550,11 +550,3 @@ if version >= 508 || !exists("did_python_syn_inits")
 endif
 
 let b:current_syntax = "python"
-
-" open NERDTree on startup
-au VimEnter *  NERDTree
-" open Tagbar on startup
-autocmd VimEnter * nested :TagbarOpen
-" jump to the main window.
-autocmd VimEnter * wincmd p
-

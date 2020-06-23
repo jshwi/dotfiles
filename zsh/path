@@ -1,4 +1,3 @@
-#!/bin/zsh
 export PATH="$RBENV_BIN:$PATH"
 export PATH="$RUBYBUILD_BIN:$PATH"
 export PATH="$RUBY_GEM_BIN:$PATH"

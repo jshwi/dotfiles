@@ -1,3 +1,0 @@
-#!/bin/zsh
-autoload -U promptinit && promptinit  # command prompt
-autoload -Uz compinit && compinit  # advanced tab-completion

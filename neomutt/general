@@ -1,0 +1,23 @@
+source "$HOME/.neomutt/bindings"
+
+#set my_gpass1   = `gpg -q -d ~/.my_pass.gpg`
+#set my_gpass2   = `gpg -q -d ~/.my_pass2.gpg`
+#account-hook imap.account1 'set imap_user=account1@gmail.com
+#imap_pass=`gpg -q -d ~/.my_pass.gpg`'
+#account-hook imap.account2 'set imap_user=account2@gmail.com
+#imap_pass=$my_gpass2'
+
+# pgp
+#set crypt_replyencrypt
+#set crypt_replysign
+#set crypt_replysignencrypted
+#set pgp_show_unusable           ="no"
+
+# general globals
+set fast_reply
+alternative_order               = "text/plain text/enriched text/html"
+auto_view                       = "text/html"
+# New mail notification
+#set new_mail_command            ="~/bin/newmail.sh &"
+set resolve                     = "no"
+

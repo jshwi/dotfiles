@@ -1,12 +1,31 @@
-DOTFILES="$HOME/.dotfiles"
-VIM="$DOTFILES/vim"
-VIMRC="$VIM/vimrc"
+#!/bin/bash -
+#==============================================================================
+#
+#          FILE: functions.sh
+#
+#         USAGE: ./functions.sh
+#
+#   DESCRIPTION:
+#
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: YOUR NAME (),
+#  ORGANIZATION:
+#       CREATED: 08/08/20 11:14
+#      REVISION:  ---
+#==============================================================================
 
 
+# =============================================================================
+# venv
+# Activate virtualenv
+#
+# :param env:   Name of the virtual env
+# :param path:  Path to the virtual env
+# =============================================================================
 venv() {
-    # activate virtualenv
-    # :param path_: path to the virtual env
-    # :param env:   name of the virtual env
     default="venv"
     if [[ ! -d venv ]]; then
         default=".venv"
@@ -27,27 +46,39 @@ venv() {
 }
 
 
+# =============================================================================
+# venv_module
+# Activate virtualenv if not activated
+# =============================================================================
 venv_module() {
-    if [[ "$VIRTUAL_ENV" == "" ]]
-    then
+    if [[ "$VIRTUAL_ENV" == "" ]]; then
         venv
     fi
 }
 
 
+# =============================================================================
+# gitstamp
+# Automatic commit with message and timestamp
+# =============================================================================
 gitstamp() {
     msg="${1:=""}"
     git commit -m "{\"$msg\": \"$(dt)\"}"
 }
 
 
+# =============================================================================
+# dtname
+# Return a name in the following format
+# name.date:time.extension
+#
+# :param name: The command's name
+# =============================================================================
 dtname() {
-    # return a name in the following format
-    # name.date:time.extension
     name="${1:=""}"
     extension="$2"
     output="$name.$(date +'%Y.%m.%d:%H.%M.%S')"
-    if [ -z "$2" ]; then
+    if [[ -z "$2" ]]; then
         echo "$output"
     else
         echo "$output"."$extension"
@@ -55,45 +86,41 @@ dtname() {
 }
 
 
+# =============================================================================
+# redir
+# Redirect stdout of a command into a file with the `dtname' format. eg...
+# redir speedtest extension
+# > speedtest.date:time.extension
+#
+# :param cmd: The command's stdout and stderr
+# =============================================================================
 redir() {
-    # redirect stdout of a command into a file with the `dtname` format. eg...
-    # redir speedtest extension
-    # > speedtest.date:time.extension
     cmd="$1"
     extension="$2"
     "$cmd" > $(dtname "$cmd" "$extension")
 }
 
+
+# =============================================================================
+# sign-prev
+# Gpg sign and rebase previous commits
+#
+# :optional param: commit hash - default: previous commit
+# =============================================================================
 sign-prev() {
     commit=$1
-    if [ $# -eq 0 ]; then
+    if [[ $# -eq 0 ]]; then
         git cat-file -e HEAD^ > /dev/null 2>&1
-        [ $? -eq 0 ] && commit="HEAD^" || commit="--root"
+        [[ $? -eq 0 ]] && commit="HEAD^" || commit="--root"
     fi
-    git rebase --exec 'git commit --amend --no-edit -n -S' -i $commit
+    git rebase --exec 'git commit --amend --no-edit -n -S' -i "$commit"
 }
 
-
-vim() {
-    rm -f "$VIMRC" > /dev/null 2>&1
-    ln -s "$VIM/rc/vimrc" "$VIMRC"
-    /usr/bin/vim "$@"
-}
-
-
-vimide() {
-    rm -f "$VIMRC" > /dev/null 2>&1
-    ln -s "$VIM/rc/vim-ide" "$VIMRC"
-    /usr/bin/vim "$@"
-}
-
-no-ci-commit() {
-    git commit -m "[no ci] $@"
-}
 
 multiclear() {
-    for i in {1..10}; do clear; done
+    for i in 1 2 3 4 5 6 7 8 9 10; do clear; done
 }
+
 
 pkgtest() {
     multiclear
@@ -101,24 +128,39 @@ pkgtest() {
 }
 
 
-rcommit() {
-  git add .
-  gitstamp
-}
-
-rcomp() {
-  rcommit
-  git push
-}
-
-
-git-unused () {
-  git ls-files | xargs ctags
-}
-
-
 lynis-go () {
     pacman -Syyu
     sysctl --system
     lynis audit system
+}
+
+
+cpbak () {
+    src="$1"; dst="$2";
+    srcfile="$(basename "$src")"
+    dstname="$(date +'%Y.%m.%d:%H.%M.%S').${srcfile}"
+    fulldst="$dst/$dstname"
+    cp "$srcfile" "$fulldst"
+    echo "backed up \`$src' to \`$fulldst'"
+}
+
+
+# =============================================================================
+# vim
+# Override /usr/bin/vim to add option to run the ide version of vim in
+# .dotfiles/vim/rc or the simplified version (both alternately symlinked to
+# .dotfiles/vim/vimrc)
+#
+# :optional param arg: -i/--ide switch - default: false
+# =============================================================================
+vim () {
+    if [[ "$1" == "-i" ]] || [[ "$1" == "--ide" ]]; then
+        shift
+        select="$VIMRCIDE"
+    else
+        select="$VIMRCBASE"
+    fi
+    rm -f "$VIMRCLINK" > /dev/null 2>&1
+    ln -s "$select" "$VIMRCLINK"
+    "$VIMBIN" "$@"
 }

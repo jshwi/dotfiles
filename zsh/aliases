@@ -1,11 +1,9 @@
-#!/bin/zsh
 #-----------------------------------------------------------------------------#
 #                                 ZSH ALIASES                                 #
 #-----------------------------------------------------------------------------#
-source ~/.zsh/secret
-# ==========
+# =============================================================================
 #    MISC
-# ==========
+# =============================================================================
 alias python=python3.8
 alias edit='vim'
 # mv
@@ -27,14 +25,14 @@ alias vundles='edit ${HOME}/.vim/plugins.vim'
 alias edship='edit ${HOME}/.zsh/conf/spaceship/spaceshiprc'
 # alias for manual backup to server with Borg
 alias backup='sudo /etc/backup/borg.sh'
-# ===========
+# =============================================================================
 #    GNUPG
-# ===========
+# =============================================================================
 alias gpge='gpg -e -r $USER'
 alias gpgd='${HOME}.local/bin/gpgargs.sh'
-# =========
+# =============================================================================
 #    TAR
-# =========
+# =============================================================================
 alias tgzc='${HOME}.local/bin/tgzcargs.sh'
 alias tgzx="tar -zxvf"
 alias mktar='tar -cvf'
@@ -43,50 +41,50 @@ alias mkgz='tar -cvzf'
 alias untar='tar -xvf'
 alias unbz2='tar -xvjf'
 alias ungz='tar -xvzf'
-# ==========
+# =============================================================================
 #    VENV
-# ==========
+# =============================================================================
 alias dvenv="deactivate"
-# =======================
+# =============================================================================
 #    MODIFIED COMMANDS
-# =======================
+# =============================================================================
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -iv'
 alias mkdir='mkdir -p'
 alias ps='ps auxf'
 alias ping='ping -c 3'
-# ==========
+# =============================================================================
 #    SUDO
-# ==========
+# =============================================================================
 alias svim='sudo vim'
 #alias mx='chmod a+x'
-# ===========
+# =============================================================================
 #    CHMOD
-# ===========
+# =============================================================================
 alias 000='chmod -R 000'
 alias 644='chmod -R 644'
 alias 666='chmod -R 666'
 alias 755='chmod -R 755'
 alias 777='chmod -R 777'
-# ==========
+# =============================================================================
 #    HIST
-# ==========
+# =============================================================================
 alias get_hist="history | grep "
-# ==========
+# =============================================================================
 #    PROC
-# ==========
+# =============================================================================
 alias p="ps aux | grep "
 alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
-# =================
+# =============================================================================
 #    CURRENT DIR
-# =================
+# =============================================================================
 # Search files in the current folder
 alias f="find . | grep "
 # Alias's to show disk space and space used in a folder
-# ================
+# =============================================================================
 #    DISK SPACE
-# ================
+# =============================================================================
 alias diskspace="du -S | sort -n -r |more"
 alias folders='du -h --max-depth=1'
 alias folderssort='find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn'
@@ -95,9 +93,9 @@ alias treed='tree -CAFd'
 alias mountedinfo='df -hT'
 # date/time
 alias dt=date +"%Y-%m-%d %T"
-# ========
+# =============================================================================
 #    LS
-# ========
+# =============================================================================
 # show hidden files
 alias la='ls -Alh'
 # add colors and file type extensions
@@ -135,9 +133,9 @@ alias openports='netstat -nape --inet'
 alias rebootsafe='sudo shutdown -r now'
 alias rebootforce='sudo shutdown -r -n now'
 alias sha1='openssl sha1'
-# -------------------------------------------------------------------
+# =============================================================================
 # Git aliases
-# -------------------------------------------------------------------
+# =============================================================================
 alias gaa='git add -A'
 alias gp='git push'
 alias gl='git log'
@@ -161,6 +159,13 @@ alias glg2='git lg2'
 alias glg='git lg'
 # exa file list
 alias la="exa --git --color=automatic -x"
+alias git-unused="git ls-files | xargs ctags"
+alias rcommit="git add && gitstamp"
+alias rcomp="rcommit && git push"
+alias no-ci-commit='git commit -m "[no ci] $@"'
+# =============================================================================
+# MISC
+# =============================================================================
 # `cat` with beautiful colors. requires: pip install -U Pygments
 alias c='pygmentize -O style=monokai -f console256 -g'
 alias myip='curl ip.appspot.com'
@@ -170,7 +175,7 @@ alias memHogsPs='ps wwaxm -o pid,stat,vsize,rss,time,command | head -10'
 # cpuHogs:  Find CPU hogs
 alias cpu_hogs='ps wwaxr -o pid,stat,%cpu,time,command | head -10'
 alias flushDNS='dscacheutil -flushcache'
-# # Reload dns
+# Reload dns
 alias reloaddns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 alias windir='cd /mnt/c/Users/swhit'
 alias winhome='cd /mnt/c/Users/swhit'
@@ -180,10 +185,20 @@ alias pip-update-all="pip list --outdated --format=freeze | grep -v '^\-e' | cut
 alias git-ctags="git ls-files | xargs ctags"
 alias yay="yay --aur"
 alias keyid="echo 8F15D24F"
-alias pac-r-orph="pacman -Rns $(pacman -Qtdq)"
-# alias pacman="sudo pacman $@"
-# alias mypy="mypy --config-file .mypyrc --ignore-missing $@"
 alias purge-untracked="git clean -fdx"
 alias file-proc="ls -l /proc/$(pidof dropbox)/fd | egrep -v 'pipe:|socket:|/dev'"
 alias screenfetch="CONFIG+=qml_debug && clear && screenfetch"
-alias pacman="powerpill"
+alias rm-thumbs="rm -rf ${HOME}/.cache/thumbnails/* && nautilus -q"
+alias tagunused="git-ctags && unused"
+alias pip="pip3"
+alias purge-untracked="git clean -fdx"
+alias file-proc="ls -l /proc/$(pidof dropbox)/fd | egrep -v 'pipe:|socket:|/dev'"
+alias screenfetch="CONFIG+=qml_debug && clear && screenfetch"
+alias mail="neomutt"
+alias savedmail="neomutt -f /root/.Mail/root"
+alias keyid="echo 8F15D24F"
+alias lsusers="cut -d: -f1 /etc/passwd"
+alias sshr="ssh -p $SSH_PORT root@ddwrt"
+alias sshu="ssh -p $SSH_PORT ubuntu"
+alias sshp="ssh -p $SSH_PORT proxy"
+alias sshl="ssh -p $SSH_PORT legacy"
