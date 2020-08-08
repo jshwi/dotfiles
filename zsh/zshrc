@@ -4,11 +4,14 @@
 # __init__
 ZSH_GLOBAL="$HOME/.dotfiles/zsh/globals"
 source "$ZSH_GLOBAL"
-if [[ ! -f "$SECRET" ]]; then
-    echo 'SSH_PORT="22"' > "$SECRET"
-fi
+[[ ! -f "$SECRET" ]] && echo 'SSH_PORT="22"' > "$SECRET"
 source "$SECRET"
 VIMBIN="$(which vim)"
+[[ -d "$TRAVIS"  ]] && source "$TRAVIS"
+travissh="$HOME/.travis/travis.sh"
+[ -f "$travissh"  ] && source "$travissh"
+CNF="/usr/share/doc/pkgfile/command-not-found.zsh"
+[[ -f "$CNF" ]] && source "$CNF"
 
 # source global variables
 source "$ZSH_ALIASES"
@@ -20,17 +23,12 @@ source "$ZSH_SH"
 source "$ZSH_ZSTYLE"
 source "$ZSH_SYNTAX"
 source "$SECRET"
-source "$TRAVIS"
-source /usr/share/doc/pkgfile/command-not-found.zsh
 
 setopt autocd
 setopt correctall
 unsetopt BEEP
 umask 077
 eval "$(dircolors "$DIRCOLORS")"
-
-# added by travis gem
-[ -f /home/stephen/.travis/travis.sh ] && source /home/stephen/.travis/travis.sh
 
 autoload -U promptinit && promptinit  # command prompt
 autoload -Uz compinit && compinit  # advanced tab-completion

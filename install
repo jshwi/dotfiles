@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""
+install
+=======
+"""
+import argparse
+import datetime
+import os
+
+
+def colors(code, *args):
+    """Return a colored string or a tuple of strings
+
+    :param code:    Ansi escape code
+    :param args:    String or strings
+    :return:        String or tuple of strings
+    """
+    def _color(_code, _arg):
+        return f"\u001b[0;3{_code};40m{_arg}\u001b[0;0m"
+
+    result = [_color(code, arg) for arg in args]
+    return result[0] if len(result) == 1 else tuple(result)
+
+
+def argument_parser():
+    """Get help or add ```dry-mode``` argument to the process
+
+    :return: ArgumentParser Namespace
+    """
+    colors(6, "install")
+    parser = argparse.ArgumentParser(
+        prog=colors(6, "./install"),
+        description=(
+            "run without any arguments to link all dotfiles to your home "
+            "directory or run with `dry-run' first to test"
+        ),
+    )
+    parser.add_argument(
+        "-d",
+        "--dry-run",
+        action="store_true",
+        help="see what actions would take place",
+    )
+    return parser.parse_args()
+
+
+def symlink(src, dst, dry):
+    """Symlink dotfile to its usable location and display what is
+    happening
+
+    :param src: The file in this repository
+    :param dst: The symlink's path
+    :param dry: Print what would but do not do anything if True
+                Announce that this is happening
+    """
+    bullet, arrow = colors(6, "[SYMLINK]", "->")  # cyan
+    print(f"{bullet} {src} {arrow} {dst}")
+    if dry:
+        print(colors(5, "[DRY-RUN] Not making symlink"))
+    else:
+        os.symlink(src, dst)
+
+
+def move(src, dst, dry):
+    """Move file if it exists to make way for new symlink without
+    destroying the old file
+
+    Append the date and time to the old backup to avoid name collisions
+
+    :param src: The old, existing, file
+    :param dst: The dotfiles symlink
+    :param dry: Print what would but do not do anything if True
+                Announce that this is happening
+    """
+    bullet, arrow = colors(3, "[BACKUP ]", "->")  # yellow
+    print(f"{bullet} {src} {arrow} {dst}")
+    if dry:
+        print(colors(5, "[DRY-RUN] Not moving file"))
+    else:
+        os.rename(src, f"{dst}")
+
+
+def linkdst(src, dst, dry):
+    """Determine that a path exists to back it up first
+
+    Attempt to symlink the dotfile
+
+    If a FileExistsError occurs move was unable to move the file and it
+    is most likely a dead-link - the file is safe to remove
+
+    Again attempt to symlink - which this time should work
+
+    Scenario where it won't: On a Windows machine without administrative
+    privilege
+
+    :param src: root-file, child-file and key of main loop
+    :param dst: root-file and basename of dotfile to link
+    :param dry: Pass this argument on to the ```move``` process and the
+                ```symlink``` process
+    """
+    suffix = datetime.datetime.now().strftime("%d%m%YT%H%M%S")
+    if os.path.exists(dst):
+        move(dst, f"{dst}.{suffix}", dry)
+    try:
+        symlink(src, dst, dry)
+    except FileExistsError:
+        os.remove(dst)
+        symlink(src, dst, dry)
+
+
+def get_dst(root, dirname, basename):
+    """Get the destination path of a symlink
+
+    The ```vimrc``` file is internally linked for the global function
+    written in zsh to account for the ```vim -i``` option which will
+    open vim with more features
+
+    :param root:        The parent of all the subdirectories
+    :param dirname:     The first child of the root
+    :param basename:    The basename for the vimrc process
+    :return:            The destination for the symlink
+    """
+    if basename == "vimrc.vim":
+        return os.path.join(root, f".{dirname}", basename.split(".")[0])
+    return os.path.join(root, f".{basename}")
+
+
+def iterate(root, dirname, basenames, dotdir, dry):
+    """Recursive process to find file locations and symlink locations
+    mapped out in the main dictionary object
+
+    :param root:        The parent of all the subdirectories
+    :param dirname:     The first child of the root
+    :param basenames:   The dictionary object to iterate through
+    :param dotdir:      The destination basename
+    :param dry:         True or False for whether running in
+                        ```dry-mode```
+    """
+    for key, val in basenames.items():
+        src = os.path.join(root, dirname, key)
+        if isinstance(val, dict):
+            iterate(root, src, val, dotdir, dry)
+        else:
+            dst = get_dst(root, dotdir, key)
+            linkdst(src, dst, dry)
+
+
+def main():
+    """Entry point"""
+    args = argument_parser()
+    dry = args.dry_run
+    home = os.path.expanduser("~")
+    basenames = {
+        "bash": {"bashrc": ".bashrc", "bash_profile": ".bash_profile"},
+        "zsh": {"dir_colors": ".dir_colors", "zshrc": ".zshrc"},
+        "vim": {"rc": {"vimrc.vim": "vimrc"}, "vimrc": ".vimrc"},
+        "python": {"pylintrc": ".pylintrc"},
+        "git": {"gitconfig": ".gitconfig"},
+        "neomutt": {"neomuttrc": ".neomuttrc"},
+        "gem": {"gemrc": ".gemrc"},
+    }
+    for key, val in basenames.items():
+        src = os.path.join(home, ".dotfiles", key)
+        dst = os.path.join(home, f".{key}")
+        linkdst(src, dst, dry)
+        iterate(home, os.path.basename(dst), val, key, dry)
+
+
+if __name__ == "__main__":
+    main()
