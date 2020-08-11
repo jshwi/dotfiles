@@ -10,82 +10,19 @@
 ""############# ## ## ########## # ## ### ##09/04/2018############ ######## #""
 ""############################# # ## ### ###### ################### ########.""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Modultes
-" ========
-" Plugins ( '$USER# vundles' to select )
-source ~/.vim/plugins.vim
-" Colorschemes ( '$USER# vthm' to select )
+" =============================================================================
+" MODULES
+" =============================================================================
+source $HOME/.vim/plugins.vim
 source $HOME/.vim/themes.vim
 
-" Filetypes
-" =========
-" Loads ftplugin (filetype plugin) and indent rules for filetypes
-filetype plugin indent on
-" Source html skeleton
-au BufNewFile *.html 0r ~/.vim/skeletons/html.skel | let IndentStyle = "html"
-syntax on
 
-" Default Behaviour
-" =================
-" Systems default shell
-set shell=/usr/bin/zsh
-" Default terminal size when opening vim. Gnome terminals default is 24x80.
-" This makes room for line numbers
-set lines=24 columns=84
-" Display line numbers
-set nu
-set shell=bash
-" Margin for maximum code length
-set colorcolumn=80"
-" Linux computer here
-set fileformat=unix
-" utf-8 rule
-set encoding=utf-8
-" Follow prior indents
-set smartindent
-" Wrap text
-set wrap
-" Dont allow vim to slice words over multiple lines
-set linebreak
-" Save vim temp files here and don't pollute home directory
-set backupdir=~/.vim/tmp/
-" Save vim swap files here
-set directory=~/.vim/swp/
-" Allow vim to run commands from file if instructed to
-set exrc
-" Mitigates exrc risks somewhat
-set secure
-" Rule for code folding
-set foldmethod=indent
-" Opens all folds regardless of method to fold
-set foldlevel=99
-" Split below original buffer when splitting horizontally
-set splitbelow
-" Split to the right of original buffer when splitting vertically
-set splitright
-" Default number of characters for tab
-set tabstop=2 softtabstop=2
-set shiftwidth=4 textwidth=79
-" Auto indent for tabs
-set expandtab autoindent
-" Allow access to system clipboard for vim
-set clipboard=unnamed
-" Rule for wrapping
-set breakindent
-" Show when a line has been broken
-set showbreak=>\ \ \
-" Change the default dollar sign for end of line character
-set listchars=tab:▸\ ,eol:¬
-" Turn of Vi compatibility and remain Vi Improved
-set nocompatible
-" Allow use od mouse within vim like a regular text editor
-set mouse=a
-" Highlight the current line
-set cursorline
-" Buffers
-set hidden
-" Turn off annoying terminal bell sound
-set noerrorbells visualbell t_vb=
+" =============================================================================
+" FILETYPES
+" =============================================================================
+filetype plugin indent on
+au BufNewFile *.html 0r $HOME/.vim/skeletons/html.skel | let IndentStyle = "html"
+syntax on
 " Filetypes to use bulletpoint rules
 let bullets_enabled_file_types = [
     \ 'markdown',
@@ -93,62 +30,110 @@ let bullets_enabled_file_types = [
     \ 'gitcommit',
     \ 'scratch'
     \]
-" Ignore irrelevant files in file explorer
+
+
+" =============================================================================
+" BEHAVIOUR
+" =============================================================================
+set shell=zsh
+set lines=24 columns=84  "terminal size on open
+set nu  "line numbers
+set colorcolumn=80
+set fileformat=unix
+set encoding=utf-8
+set tags=/usr/bin/ctags
+"--- indenting ---
+set autoindent  " Auto indent for tabs
+set smartindent  " follow prior indent
+set tabstop=4
+set backspace=indent,eol,start
+set softtabstop=4
+set wrap
+set breakindent  " Rule for wrapping
+set linebreak
+set foldmethod=indent  " Rule for code folding
+set foldlevel=99
+set shiftwidth=4
+set textwidth=79
+set expandtab
+" --- file-locations ---
+set backupdir=$HOME/.vim/tmp/
+set directory=$HOME/.vim/swp/
+set exrc  " allow vim to run commands from file if instructed to
+set secure  " mitigates exrc risks somewhat
+set splitbelow  " split below buffer when splitting horizontally
+set splitright  " split to the right of buffer when splitting vertically
+set clipboard=unnamed  " allow access to system clipboard for vim
+set showbreak=>\ \ \  " show when a line has been broken
+set listchars=tab:▸\ ,eol:¬  " replace the dollar sign for end of line character
+set nocompatible  " Turn of Vi compatibility and remain Vi Improved
+set mouse=a  " Allow use od mouse within vim like a regular text editor
+set cursorline
+set hidden
+"--- Turn off annoying terminal bell sound ---
+set noerrorbells
+set visualbell
+set vb
+set t_vb=".
+
+" =============================================================================
+" NERDTREE
+" =============================================================================
 let NERDTreeIgnore = ['\.DAT$', '\.LOG1$', '\.LOG1$']
-" Let NERDTree hijack netrw
 let NERDTreeHijackNetrw=0
-" Expand vim for tagbar
+let g:NERDTreeDirArrows = 1
+let g:NERDTreeDirArrowExpandable = '▸'
+let g:NERDTreeDirArrowCollapsible = '▾'
+let g:NERDTreeGlyphReadOnly = "RO"
+
+
+" =============================================================================
+" NERDTREE
+" =============================================================================
 let tagbar_expand = 1
 
-" Key Mappings
-" ============
-" Toggle Tagbar
+
+" =============================================================================
+" PYMODE
+" =============================================================================
+let g:pymode_python = 'python3.8'
+let g:pymode_rope = 0
+let g:pymode_lint = 0
+let python_highlight_all = 1
+
+
+" =============================================================================
+" GUTENTAGS
+" =============================================================================
+let g:gutentags_cache_dir="~/.tags"
+
+
+" =============================================================================
+" KEY MAPPING
+" =============================================================================
 nmap <F8> :TagbarToggle<CR>
-" Toggle NERDTree
 map <C-n> :NERDTreeToggle<CR>
-" Easily change buffers
 nnoremap <C-N> :bnext<CR>
 nnoremap <C-P> :bprev<CR>
-" Use spacebar to fold text ins visual mode
 nnoremap <space> za
-" Map ConqueTerm for in vim terminal
 map <C-T> :ConqueTermSplit zsh<CR><ESC>:resize -10<CR>
+map <C-F> :Pydocstring<CR>
+vnoremap <c-f> y<ESC>/<c-r>"<CR>
 
-" Auto Commands
-" ==================
-" Remove whitespace on save
+
+" =============================================================================
+" KEY MAPPING
+" =============================================================================
 autocmd BufWritePre * :%s/\s\+$//e
-let python_highlight_all = 1
-" let ale_python_pylint_options = '--load-plugins pylint_django'
-" let autopep8_on_save = 1
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
-" Syntax for files with no extension
 autocmd BufNewFile,BufRead * if expand('%:t') !~ '\.' | set syntax=sh | endif
-" for gutentags
-set tags=/usr/bin/ctags-exuberant
-" go the pre-commit hook but still useful
 function! TrimWhiteSpace()
     %s/\s\+$//e
 endfunction
-" don't know which one is the good one
 autocmd BufWritePre     * :call TrimWhiteSpace()
-" addon for better docstrings
-map <C-F> :Pydocstring<CR>
-set vb t_vb=".
 au FileType python setlocal formatprg=autopep8\ -
 if has('gui')
     set novb
     set noerrorbells
 endif
-" put ctags cache in home dotfile
-let g:gutentags_cache_dir="~/.tags"
-" for the pymode addon use python3
-let g:pymode_python = 'python3.8'
-let g:pymode_rope = 0
-let g:pymode_lint = 0
-" ???
 autocmd Filetype gitcommit setlocal spell textwidth=72
-" ???
-set backspace=indent,eol,start
-
-vnoremap <c-f> y<ESC>/<c-r>"<CR>

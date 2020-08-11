@@ -22,7 +22,6 @@ source "$ZSH_PATHS"
 source "$ZSH_SH"
 source "$ZSH_ZSTYLE"
 source "$ZSH_SYNTAX"
-source "$SECRET"
 
 setopt autocd
 setopt correctall

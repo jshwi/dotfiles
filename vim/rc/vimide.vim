@@ -1,8 +1,8 @@
 source $HOME/.vim/rc/vimrc.vim
 " Default size for NERDTree
-let NERDTreeWinSize=40
+let NERDTreeWinSize=30
 " Default size for Tagbar
-let tagbar_width=45
+let tagbar_width=35
 " open NERDTree on startup
 au VimEnter *  NERDTree
 " open Tagbar on startup
