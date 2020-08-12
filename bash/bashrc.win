@@ -1,15 +1,22 @@
-#!/bin/bash -
+# ==================================================================== #
+#                             .dotfiles .zshrc                         #
+# ==================================================================== #
+ZSH_GLOBAL="$HOME/.dotfiles/zsh/globals"
+# source global variables
 GIT_PS1_SHOWDIRTYSTATE=1
 GIT_PS1_SHOWUNTRACKEDFILES=1
 GIT_PS1_SHOWSTASHSTATE=1
 GIT_PS1_SHOWUPSTREAM="auto verbose"
+VIMRC="$HOME/.dotfiles/vim/rc/vimwin.vim"
+export ZSH_GLOBAL
 export GIT_PS1_SHOWDIRTYSTATE
 export GIT_PS1_SHOWUNTRACKEDFILES
 export GIT_PS1_SHOWSTASHSTATE
 export GIT_PS1_SHOWUPSTREAM
+export VIMRC
 # MSYSTEM=''
 # TITLEPREFIX=''
-ETC="/c/Users/swhitlock/scoop/apps/git/current/etc"
+ETC="$HOME/scoop/apps/git/current/etc"
 
 if [[ -f "$ETC/profile.d/git-sdk.sh" ]]; then
     TITLEPREFIX=SDK-${MSYSTEM#MINGW}
@@ -42,9 +49,10 @@ if [[ -f "$COMPLETION_PATH/git-prompt.sh" ]]; then
 fi
 
 PS1="$PS1"'\[\033[0m\]'  # change color
-PS1="$PS1"'\n\[\033[35m\]>_\[\033[0m\]
-'  # new line:
-alias l="
+PS1="$PS1"'\n\[\033[35m\]>_\[\033[0m\] '  # new line:
+alias l="ls -al"
 
-
-ls -al"
+umask 077
+DIRCOLORS="$HOME/.dotfiles/zsh/dir_colors"
+eval "$(dircolors "$DIRCOLORS")
+"
