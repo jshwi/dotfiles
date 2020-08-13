@@ -13,8 +13,8 @@
 " =============================================================================
 " MODULES
 " =============================================================================
-source $HOME/.dotfiles/vim/pluginswin.vim
-source $HOME/.dotfiles/vim/themes.vim
+source $HOME/.dotfiles/vim/plugins/pluginswin.vim
+source $HOME/.dotfiles/vim/plugins/themes.vim
 
 "
 "=============================================================================
@@ -36,7 +36,7 @@ let bullets_enabled_file_types = [
 " BEHAVIOUR
 " =============================================================================
 set lines=24
-set columns=84  "terminal size on open
+set columns=87  "terminal size on open
 set nu  "line numbers
 set colorcolumn=80
 set fileformat=unix
