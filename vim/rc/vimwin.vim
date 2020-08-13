@@ -13,9 +13,8 @@
 " =============================================================================
 " MODULES
 " =============================================================================
-source $HOME/.dotfiles/vim/plugins.vim
+source $HOME/.dotfiles/vim/pluginswin.vim
 source $HOME/.dotfiles/vim/themes.vim
-
 
 "
 "=============================================================================
@@ -98,9 +97,11 @@ let tagbar_expand = 1
 " PYMODE
 " =============================================================================
 "let g:pymode_python = 'python3.8'
-let g:pymode_rope = 0
-let g:pymode_lint = 0
-let python_highlight_all = 1
+
+"let g:python_host_prog = '/c/Users/swhitlock/scoop/apps/python/3.8.5/python.exe'
+"let g:pymode_rope = 0
+"let g:pymode_lint = 0
+"let python_highlight_all = 1
 
 
 " =============================================================================
@@ -126,15 +127,16 @@ vnoremap <c-f> y<ESC>/<c-r>"<CR>
 " KEY MAPPING
 " =============================================================================
 autocmd BufWritePre * :%s/\s\+$//e
-autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
+"autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 autocmd BufNewFile,BufRead * if expand('%:t') !~ '\.' | set syntax=sh | endif
 function! TrimWhiteSpace()
     %s/\s\+$//e
 endfunction
 autocmd BufWritePre     * :call TrimWhiteSpace()
-au FileType python setlocal formatprg=autopep8\ -
+"au FileType python setlocal formatprg=autopep8\ -
 if has('gui')
     set novb
     set noerrorbells
 endif
 autocmd Filetype gitcommit setlocal spell textwidth=72
+
