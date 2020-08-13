@@ -54,5 +54,5 @@ alias l="ls -al"
 
 umask 077
 DIRCOLORS="$HOME/.dotfiles/zsh/dir_colors"
-eval "$(dircolors "$DIRCOLORS")
-"
+eval "$(dircolors "$DIRCOLORS")"
+alias rm="rm -v"
