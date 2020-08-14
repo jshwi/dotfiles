@@ -15,6 +15,8 @@
 #  ORGANIZATION:
 #       CREATED: 08/08/20 11:14
 #      REVISION:  ---
+#
+# shellcheck source=/dev/null
 #==============================================================================
 
 
@@ -97,7 +99,7 @@ dtname() {
 redir() {
     cmd="$1"
     extension="$2"
-    "$cmd" > $(dtname "$cmd" "$extension")
+    "$cmd" > "$(dtname "$cmd" "$extension")"
 }
 
 
@@ -154,13 +156,65 @@ cpbak () {
 # :optional param arg: -i/--ide switch - default: false
 # =============================================================================
 vim () {
+    base="$DOTFILES/vim/rc/vimrc.vim"
+    ide="$DOTFILES/vim/rc/vimide.vim"
+    link="$DOTFILES/vim/vimrc"
     if [[ "$1" == "-i" ]] || [[ "$1" == "--ide" ]]; then
         shift
-        select="$VIMRCIDE"
+        select="$ide"
     else
-        select="$VIMRCBASE"
+        select="$base"
     fi
-    rm -f "$VIMRCLINK" > /dev/null 2>&1
-    ln -s "$select" "$VIMRCLINK"
-    "$VIMBIN" "$@"
+    rm -f "$link" > /dev/null 2>&1
+    ln -s "$select" "$link"
+    "$_VIM" "$@"
+}
+
+
+# =============================================================================
+# vim
+# Compress a file or directory whilst adding a timestamp and then relocate it
+# to a dated archive directory
+#
+# :param file: File or directory (relative path)
+# =============================================================================
+mkarchive () {
+    file="$1"
+    _date="$(date +'%Y/%m/%d')"
+    time="$(date +'%H%M%S')"
+    basename="Documents/Archive"
+    archivedir="$HOME/$basename"
+    _path="$archivedir/$_date"
+    archive="${file}${time}.tar.gz"
+    fullpath="$_path/$archive"
+    # shellcheck disable=SC2088
+    simplified="~/$basename/$_date/$archive"
+    if [[ ! -d "$_path" ]]; then
+        mkdir -p "$_path"
+        printf "added %s"$'\n' "\`$_path'"
+    fi
+    printf "making archive:"$'\n'
+    tar czf "$archive" "$file"
+    printf "....created %s"$'\n' "\`$archive'"
+    printf "storing archive:"$'\n'
+    mv "$archive" "$fullpath"
+    printf "....%s -> %s"$'\n' "$archive" "$simplified"
+    printf "done"$'\n'
+}
+
+
+no-ci () {
+    git commit -m "[no ci]" "$@"
+}
+
+
+mkportfile () {
+    if [[ ! -f "$SECRET" ]]; then
+        {
+            echo '#!/bin/bash -'
+            echo 'SSH_PORT="22"'
+            echo 'export SSH_PORT'
+
+        } > "$SECRET"
+    fi
 }

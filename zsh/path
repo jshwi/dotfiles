@@ -1,7 +1,0 @@
-export PATH="$RBENV_BIN:$PATH"
-export PATH="$RUBYBUILD_BIN:$PATH"
-export PATH="$RUBY_GEM_BIN:$PATH"
-export PATH="$LOCAL_BIN:$PATH"
-export PATH="$NPM_BIN:$PATH"
-export PATH="$PATH:/usr/lib/jvm/java-14-openjdk/bin"
-export JAVA_HOME=/usr/lib/jvm/java-14-openjdk/bin
