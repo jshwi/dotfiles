@@ -6,8 +6,6 @@ install
 import argparse
 import datetime
 import os
-import shutil
-
 
 ISWINDOWS = os.name == "nt"
 
@@ -64,10 +62,12 @@ def move(src, dst, dry):
                 Announce that this is happening
     """
     bullet, arrow = symbols("[BACKUP ]", 3)
-    print(f"{bullet} {src} {arrow} {dst}")
+    notify = f"{bullet} {src} {arrow} {dst}"
     if dry:
-        print(colors(5, "[DRY-RUN] Not moving file"))
+        notify_dry = f"[{colors(5, 'DRY-RUN')}]"
+        print(f"{notify_dry}{notify}")
     else:
+        print(notify)
         os.rename(src, f"{dst}")
 
 
@@ -86,10 +86,12 @@ def symlink(src, dst, dry):
                 Announce that this is happening
     """
     bullet, arrow = symbols("[SYMLINK]", 6)
-    print(f"{bullet} {src} {arrow} {dst}")
+    notify = f"{bullet} {src} {arrow} {dst}"
     if dry:
-        print(colors(5, "[DRY-RUN] Not making symlink"))
+        notify_dry = f"[{colors(5, 'DRY-RUN')}]"
+        print(f"{notify_dry}{notify}")
     else:
+        print(notify)
         method = sourcefile if ISWINDOWS else os.symlink
         method(src, dst)
 
@@ -178,6 +180,9 @@ def main():
         dst = os.path.join(home, f".{key}")
         linkdst(src, dst, dry)
         iterate(home, os.path.basename(dst), val, key, dry)
+    if dry:
+        notice = colors(5, '***')
+        print(f"\n{notice} No files have been changed {notice}")
 
 
 if __name__ == "__main__":
