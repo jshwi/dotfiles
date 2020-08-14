@@ -7,7 +7,9 @@ import argparse
 import datetime
 import os
 
-ISWINDOWS = os.name == "nt"
+
+def is_windows(windows):
+    return windows or os.name == "nt"
 
 
 def colors(code, *args):
@@ -17,6 +19,7 @@ def colors(code, *args):
     :param args:    String or strings
     :return:        String or tuple of strings
     """
+
     def _color(_code, _arg):
         return f"\u001b[0;3{_code};40m{_arg}\u001b[0;0m"
 
@@ -42,6 +45,9 @@ def argument_parser():
         "--dry-run",
         action="store_true",
         help="see what actions would take place",
+    )
+    parser.add_argument(
+        "-w", "--windows", action="store_true", help="force Windows process"
     )
     return parser.parse_args()
 
@@ -76,14 +82,15 @@ def sourcefile(src, dst):
         file.write(f'source "{src}"')
 
 
-def symlink(src, dst, dry):
+def symlink(src, dst, dry, iswindows):
     """Symlink dotfile to its usable location and display what is
     happening
 
-    :param src: The file in this repository
-    :param dst: The symlink's path
-    :param dry: Print what would but do not do anything if True
-                Announce that this is happening
+    :param src:         The file in this repository
+    :param dst:         The symlink's path
+    :param dry:         Print what would but do not do anything if True
+                        Announce that this is happening
+    :param iswindows:
     """
     bullet, arrow = symbols("[SYMLINK]", 6)
     notify = f"{bullet} {src} {arrow} {dst}"
@@ -92,11 +99,11 @@ def symlink(src, dst, dry):
         print(f"{notify_dry}{notify}")
     else:
         print(notify)
-        method = sourcefile if ISWINDOWS else os.symlink
+        method = sourcefile if iswindows else os.symlink
         method(src, dst)
 
 
-def linkdst(src, dst, dry):
+def linkdst(src, dst, dry, iswindows):
     """Determine that a path exists to back it up first
 
     Attempt to symlink the dotfile
@@ -109,19 +116,20 @@ def linkdst(src, dst, dry):
     Scenario where it won't: On a Windows machine without administrative
     privilege
 
-    :param src: root-file, child-file and key of main loop
-    :param dst: root-file and basename of dotfile to link
-    :param dry: Pass this argument on to the ```move``` process and the
-                ```symlink``` process
+    :param src:         root-file, child-file and key of main loop
+    :param dst:         root-file and basename of dotfile to link
+    :param dry:         Pass this argument on to the ```move``` process
+                        and the ```symlink``` process
+    :param iswindows:
     """
     suffix = datetime.datetime.now().strftime("%d%m%YT%H%M%S")
     if os.path.exists(dst):
         move(dst, f"{dst}.{suffix}", dry)
     try:
-        symlink(src, dst, dry)
+        symlink(src, dst, dry, iswindows)
     except FileExistsError:
         os.remove(dst)
-        symlink(src, dst, dry)
+        symlink(src, dst, dry, iswindows)
 
 
 def get_dst(root, dirname, basename):
@@ -141,7 +149,7 @@ def get_dst(root, dirname, basename):
     return os.path.join(root, f".{basename}")
 
 
-def iterate(root, dirname, basenames, dotdir, dry):
+def iterate(root, dirname, basenames, dotdir, dry, iswindows):
     """Recursive process to find file locations and symlink locations
     mapped out in the main dictionary object
 
@@ -151,20 +159,22 @@ def iterate(root, dirname, basenames, dotdir, dry):
     :param dotdir:      The destination basename
     :param dry:         True or False for whether running in
                         ```dry-mode```
+    :param iswindows:
     """
     for key, val in basenames.items():
         src = os.path.join(root, dirname, key)
         if isinstance(val, dict):
-            iterate(root, src, val, dotdir, dry)
+            iterate(root, src, val, dotdir, dry, iswindows)
         else:
             dst = get_dst(root, dotdir, key)
-            linkdst(src, dst, dry)
+            linkdst(src, dst, dry, iswindows)
 
 
 def main():
     """Entry point"""
     args = argument_parser()
     dry = args.dry_run
+    iswindows = is_windows(args.windows)
     home = os.path.expanduser("~")
     basenames = {
         "bash": {"bashrc": ".bashrc", "bash_profile": ".bash_profile"},
@@ -178,10 +188,10 @@ def main():
     for key, val in basenames.items():
         src = os.path.join(home, ".dotfiles", key)
         dst = os.path.join(home, f".{key}")
-        linkdst(src, dst, dry)
-        iterate(home, os.path.basename(dst), val, key, dry)
+        linkdst(src, dst, dry, iswindows)
+        iterate(home, os.path.basename(dst), val, key, dry, iswindows)
     if dry:
-        notice = colors(5, '***')
+        notice = colors(5, "***")
         print(f"\n{notice} No files have been changed {notice}")
 
 
