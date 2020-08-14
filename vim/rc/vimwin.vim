@@ -75,6 +75,7 @@ set noerrorbells
 set visualbell
 set vb
 set t_vb=".
+set viminfo+=n~/.dotfiles/vim/viminfo
 
 " =============================================================================
 " NERDTREE

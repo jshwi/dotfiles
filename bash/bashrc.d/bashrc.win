@@ -1,5 +1,6 @@
+#!/bin/bash -
 # ==================================================================== #
-#                             .dotfiles .zshrc                         #
+#                             .dotfiles .bashrc                        #
 # ==================================================================== #
 ZSH_GLOBAL="$HOME/.dotfiles/zsh/globals"
 # source global variables
@@ -8,6 +9,7 @@ GIT_PS1_SHOWUNTRACKEDFILES=1
 GIT_PS1_SHOWSTASHSTATE=1
 GIT_PS1_SHOWUPSTREAM="auto verbose"
 VIMRC="$HOME/.dotfiles/vim/rc/vimwin.vim"
+HISTFILE="$HOME/.dotfiles/bash/bash/bash_history"
 export ZSH_GLOBAL
 export GIT_PS1_SHOWDIRTYSTATE
 export GIT_PS1_SHOWUNTRACKEDFILES

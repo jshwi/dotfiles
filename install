@@ -6,6 +6,10 @@ install
 import argparse
 import datetime
 import os
+import shutil
+
+
+ISWINDOWS = os.name == "nt"
 
 
 def colors(code, *args):
@@ -44,21 +48,8 @@ def argument_parser():
     return parser.parse_args()
 
 
-def symlink(src, dst, dry):
-    """Symlink dotfile to its usable location and display what is
-    happening
-
-    :param src: The file in this repository
-    :param dst: The symlink's path
-    :param dry: Print what would but do not do anything if True
-                Announce that this is happening
-    """
-    bullet, arrow = colors(6, "[SYMLINK]", "->")  # cyan
-    print(f"{bullet} {src} {arrow} {dst}")
-    if dry:
-        print(colors(5, "[DRY-RUN] Not making symlink"))
-    else:
-        os.symlink(src, dst)
+def symbols(bullet, color):
+    return colors(color, bullet, "->")
 
 
 def move(src, dst, dry):
@@ -72,12 +63,35 @@ def move(src, dst, dry):
     :param dry: Print what would but do not do anything if True
                 Announce that this is happening
     """
-    bullet, arrow = colors(3, "[BACKUP ]", "->")  # yellow
+    bullet, arrow = symbols("[BACKUP ]", 3)
     print(f"{bullet} {src} {arrow} {dst}")
     if dry:
         print(colors(5, "[DRY-RUN] Not moving file"))
     else:
         os.rename(src, f"{dst}")
+
+
+def sourcefile(src, dst):
+    with open(dst, "w") as file:
+        file.write(f'source "{src}"')
+
+
+def symlink(src, dst, dry):
+    """Symlink dotfile to its usable location and display what is
+    happening
+
+    :param src: The file in this repository
+    :param dst: The symlink's path
+    :param dry: Print what would but do not do anything if True
+                Announce that this is happening
+    """
+    bullet, arrow = symbols("[SYMLINK]", 6)
+    print(f"{bullet} {src} {arrow} {dst}")
+    if dry:
+        print(colors(5, "[DRY-RUN] Not making symlink"))
+    else:
+        method = sourcefile if ISWINDOWS else os.symlink
+        method(src, dst)
 
 
 def linkdst(src, dst, dry):
