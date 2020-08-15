@@ -16,7 +16,7 @@ export ZSHRC_CONFIG
 
 
 # --- GLOBAL ---
-PATH=$HOME/bin:/usr/local/bin:$PATH
+PATH=$HOME/.local/bin:/usr/local/bin:$PATH
 MANPATH="/usr/share/man:$MANPATH"
 _VIM="/usr/bin/vim"
 LANG=en_AU.UTF-8
