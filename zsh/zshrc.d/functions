@@ -19,7 +19,6 @@
 # shellcheck source=/dev/null
 #==============================================================================
 
-
 # =============================================================================
 # venv
 # Activate virtualenv
@@ -112,15 +111,18 @@ redir() {
 sign-prev() {
     commit=$1
     if [[ $# -eq 0 ]]; then
-        git cat-file -e HEAD^ > /dev/null 2>&1
-        [[ $? -eq 0 ]] && commit="HEAD^" || commit="--root"
+        if git cat-file -e HEAD^ > /dev/null 2>&1 -eq 0; then
+            commit="HEAD^"
+        else
+            commit="--root"
+        fi
     fi
     git rebase --exec 'git commit --amend --no-edit -n -S' -i "$commit"
 }
 
 
 multiclear() {
-    for i in 1 2 3 4 5 6 7 8 9 10; do clear; done
+    for _ in 1 2 3 4 5 6 7 8 9 10; do clear; done
 }
 
 
@@ -190,14 +192,14 @@ mkarchive () {
     # shellcheck disable=SC2088
     simplified="~/$basename/$_date/$archive"
     if [[ ! -d "$_path" ]]; then
-        mkdir -p "$_path"
+        mkdir -p "$_path" || return 1
         printf "added %s"$'\n' "\`$_path'"
     fi
     printf "making archive:"$'\n'
-    tar czf "$archive" "$file"
+    tar czf "$archive" "$file" || return 1
     printf "....created %s"$'\n' "\`$archive'"
     printf "storing archive:"$'\n'
-    mv "$archive" "$fullpath"
+    mv "$archive" "$fullpath" || return 1
     printf "....%s -> %s"$'\n' "$archive" "$simplified"
     printf "done"$'\n'
 }
@@ -216,5 +218,94 @@ mkportfile () {
             echo 'export SSH_PORT'
 
         } > "$SECRET"
+    fi
+}
+
+
+cryptdir () {
+    recipient="$1"; directory="$2"
+    if [[ "$#" != 2 ]] || [[ "$1" == "-h" ]]; then
+        printf "usage: chrclone [-h] recipient directory"$'\n\n'
+        printf "positional arguments:"$'\n'
+        printf "  recipient     the gpg key-id or email"$'\n'
+        printf "  directory     the directory to compress and encrypt"$'\n\n'
+        printf "optional arguments:"$'\n'
+        printf "  -h, --help    show this help message and exit"$'\n'
+        return 0
+    fi
+    tardir="${directory}.tar.gz"
+    gpgdir="${tardir}.gpg"
+    printf "compressing %s"$'\n' "\`$directory'"
+    tar czf "$tardir" "$directory" || return 1
+    printf "....%s -> %s"$'\n' "\`$directory'" "\`$tardir'"
+    printf "removing %s"$'\n' "\`$directory'"
+    rm -rf "$directory" >/dev/null 2>&1 || return 1
+    printf "....%s removed"$'\n' "\`$directory'"
+    printf "encrypting %s"$'\n' "\`$tardir'"
+    gpg -o "$gpgdir" -r "$recipient" -e "$tardir" || return 1
+    printf "....%s -> %s"$'\n' "\`$tardir'" "\`$gpgdir'"
+    printf "removing %s"$'\n' "$tardir"
+    rm -rf "$tardir" >/dev/null 2>&1 || return 1
+    printf "....%s removed"$'\n' "\`$tardir'"
+    printf "done"$'\n'
+}
+
+
+decryptdir () {
+    directory=$(echo "$1" | cut -f 1 -d '.')
+    tardir="${directory}.tar.gz"
+    gpgdir="${tardir}.gpg"
+
+    printf "decrypting %s"$'\n' "\`$gpgdir'"
+    gpg -o "$tardir" -d "$gpgdir" || return 1
+
+    printf "....%s -> %s"$'\n' "\`$gpgdir'" "\`$tardir'"
+
+    printf "removing %s"$'\n' "\`$gpgdir'"
+    rm -rf "$gpgdir" >/dev/null 2>&1 || return 1
+
+    printf "....%s removed"$'\n' "\`$gpgdir'"
+
+    printf "extracting %s"$'\n' "\`$tardir'"
+    tar xzf "$tardir" || return 1
+
+    printf "....%s -> %s"$'\n' "\`$tardir'" "\`$directory'"
+
+    printf "removing %s"$'\n' "\`$tardir'"
+    rm -rf "$tardir" >/dev/null 2>&1 || return 1
+
+    printf "....%s removed"$'\n' "\`$tardir'"
+
+    printf "done"$'\n'
+}
+
+
+kcryptdir () {
+    directory="$1"
+    cryptdir "$KEYID" "$directory"
+}
+
+
+reset-chmod () {
+    opt="$1"; _path="$2"
+    if [[ "$opt" == "-f" ]] || [[ "$opt" == "--file" ]] || [[ "$opt" == "--all" ]]; then
+        find "$_path" -type f -exec chmod 644 {} \;
+    fi
+    if [[ "$opt" == "-d" ]] || [[ "$opt" == "--dir" ]] || [[ "$opt" == "--all" ]]; then
+        find "$_path" -type d -exec chmod 755 {} \;
+    fi
+}
+
+
+cwdpurge () {
+    arg="$1"; item="$2"
+    if [[ "$arg" == "empty" ]]; then
+        if [[ "$item" == "dir" ]]; then
+            find . -type d -empty -delete
+        fi
+    elif [[ "$arg" == "broken" ]]; then
+        if [[ "$arg" == "item" ]]; then
+            find . -xtype l -delete
+        fi
     fi
 }

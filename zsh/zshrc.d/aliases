@@ -13,12 +13,12 @@ alias rsync-cp='rsync -az --progress'  # copy
 alias zrc='edit "$HOME/.zshrc"'
 alias srcrc='source "$HOME/.zshrc"'
 alias excz="exec zsh"  # refresh shell
-alias zthm='edit "$HOME/.zsh/theme.list"'
-alias zplug='edit "$HOME/.zsh/plugins"'
+alias zthm='edit "$ZSHRC_CONFIG/themes"'
+alias zplug='edit "$ZSHRC_CONFIG/plugins"'
 alias vrc='edit "$HOME/.vimrc"'
 alias vthm='edit "$HOME/.vim/themes.vim"'
-alias zalias='edit "$HOME/.zsh/aliases"'
-alias zfunc='edit "$HOME/.dotfiles/zsh/functions"'
+alias zalias='edit "$ZSHRC_CONFIG/aliases"'
+alias zfunc='edit "$ZSHRC_CONFIG/functions"'
 alias vundles='edit "$HOME/.vim/plugins.vim"'
 alias edship='edit "$HOME/.zsh/conf/spaceship/spaceshiprc"'
 
@@ -176,7 +176,6 @@ alias python="python3.8"
 alias pip-update-all="pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U"
 alias git-ctags="git ls-files | xargs ctags"
 alias yay="yay --aur"
-alias keyid="echo 8F15D24F"
 alias purge-untracked="git clean -fdx"
 alias file-proc='ls -l /proc/$(pidof dropbox)/fd | egrep -v "pipe:|socket:|/dev"'
 alias screenfetch="CONFIG+=qml_debug && clear && screenfetch"
@@ -197,3 +196,4 @@ alias sshl='ssh -p $SSH_PORT legacy'
 alias ssha='ssh -p $SSH_PORT archlinux'
 alias fullapt="sudo /usr/local/bin/fullapt --level 4"
 alias reset-gnome="killall -SIGQUIT gnome-shell"
+alias keyid="echo 8F15D24F"
