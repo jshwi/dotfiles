@@ -181,7 +181,7 @@ vim () {
 # :param file: File or directory (relative path)
 # =============================================================================
 mkarchive () {
-    file="$1"
+    file="$1"; shift; exclude="$1"; shift
     _date="$(date +'%Y/%m/%d')"
     time="$(date +'%H%M%S')"
     basename="Documents/Archive"
@@ -189,8 +189,16 @@ mkarchive () {
     _path="$archivedir/$_date"
     archive="${file}${time}.tar.gz"
     fullpath="$_path/$archive"
+    tmp="/tmp/mkarchive.exclude"
     # shellcheck disable=SC2088
     simplified="~/$basename/$_date/$archive"
+    if [[ "$exclude" == "-e" ]] || [[ "$exclude" == "--exclude" ]]; then
+        files=( "${@}" )
+        mkdir "$tmp"
+        for f in "${files[@]}"; do
+            mv "$file/$f" "$tmp/$f"
+        done
+    fi
     if [[ ! -d "$_path" ]]; then
         mkdir -p "$_path" || return 1
         printf "added %s"$'\n' "\`$_path'"
@@ -201,6 +209,10 @@ mkarchive () {
     printf "storing archive:"$'\n'
     mv "$archive" "$fullpath" || return 1
     printf "....%s -> %s"$'\n' "$archive" "$simplified"
+    if [[ -d ".tmp" ]]; then
+        mv "$tmp/*" "$file"
+        mv "$tmp/.*" "$file"
+    fi
     printf "done"$'\n'
 }
 
