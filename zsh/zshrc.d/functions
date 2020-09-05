@@ -27,19 +27,19 @@
 # :param path:  Path to the virtual env
 # =============================================================================
 venv() {
-    default="venv"
-    if [[ ! -d venv ]]; then
-        default=".venv"
-    fi
-    env="${1:="$default"}"
-    path_="${2:="."}"
+    env="${1:-"venv"}"; path_="${2:-"."}"
     if [[ ! -d "$env" ]]; then
         env=".venv"
     fi
     if [[ ! -d "$env" ]]; then
-        printf "Cannot find \`venv\` or \`.venv\`"$'\n'
-        printf "Enter virtual environment directory manually"$'\n'
-        printf "i.e. venv <VIRTUALENV>"$'\n'
+        if [ $# -eq 0 ]; then
+            printf "cannot find \`venv' or \`.venv' in this directory"$'\n'
+            printf ". try entering the path to the virtual environment manually"$'\n'
+            printf "  i.e. \`venv \"/path/to/virtualenv\"'"$'\n'
+        else
+            printf "cannot find %s"$'\n' "$1"
+        fi
+        return 1
     fi
     venv="$path_/$env"
     activate="$venv/bin/activate"
@@ -53,7 +53,7 @@ venv() {
 # =============================================================================
 venv_module() {
     if [[ "$VIRTUAL_ENV" == "" ]]; then
-        venv
+        venv "$@"
     fi
 }
 
@@ -181,7 +181,10 @@ vim () {
 # :param file: File or directory (relative path)
 # =============================================================================
 mkarchive () {
-    file="$1"; shift; exclude="$1"; shift
+    file="$1"; shift;
+    if [[ $# -ne 0 ]]; then
+    	exclude="$1"; shift
+    fi
     _date="$(date +'%Y/%m/%d')"
     time="$(date +'%H%M%S')"
     basename="Documents/Archive"

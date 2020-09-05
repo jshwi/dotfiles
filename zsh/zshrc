@@ -16,7 +16,8 @@ export ZSHRC_CONFIG
 
 
 # --- GLOBAL ---
-PATH=$HOME/.local/bin:/usr/local/bin:$PATH
+PATH="$HOME/.local/bin:/usr/local/bin":"$PATH"
+PATH="/home/stephen/.gem/ruby/2.7.0/bin":"$PATH"
 MANPATH="/usr/share/man:$MANPATH"
 _VIM="/usr/bin/vim"
 LANG=en_AU.UTF-8
@@ -128,3 +129,6 @@ mkportfile && source "$SECRET"
 
 # --- LOAD SETTINGS ---
 source "$ZSH/oh-my-zsh.sh"
+
+# added by travis gem
+[ ! -s /home/stephen/.travis/travis.sh ] || source /home/stephen/.travis/travis.sh

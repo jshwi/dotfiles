@@ -54,7 +54,7 @@ set linebreak
 set foldmethod=indent  " Rule for code folding
 set foldlevel=99
 set shiftwidth=4
-set textwidth=79
+" set textwidth=79
 set expandtab
 " --- file-locations ---
 set backupdir=$HOME/.vim/tmp/
@@ -137,3 +137,10 @@ if has('gui')
     set noerrorbells
 endif
 autocmd Filetype gitcommit setlocal spell textwidth=72
+set clipboard+=ideaput
+
+" replace currently selected text with default register
+" without yanking it
+vnoremap <leader>p "_dP
+xnoremap p pgvy
+
