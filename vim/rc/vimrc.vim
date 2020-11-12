@@ -38,16 +38,16 @@ let bullets_enabled_file_types = [
 set shell=zsh
 set lines=24 columns=84  "terminal size on open
 set nu  "line numbers
-set colorcolumn=80
+set colorcolumn=72,80
 set fileformat=unix
 set encoding=utf-8
 set tags=/usr/bin/ctags
 "--- indenting ---
 set autoindent  " Auto indent for tabs
 set smartindent  " follow prior indent
-set tabstop=4
+set tabstop=2
 set backspace=indent,eol,start
-set softtabstop=4
+set softtabstop=2
 set wrap
 set breakindent  " Rule for wrapping
 set linebreak
