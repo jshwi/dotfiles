@@ -5,7 +5,6 @@
 # =============================================================================
 #    MISC
 # =============================================================================
-alias python=python3.8
 alias edit='vim'
 alias rsync-mv='rsync -az --progress --remove-source-files'  # move
 alias rsync-cp='rsync -az --progress'  # copy
@@ -101,8 +100,8 @@ alias dt=date +"%Y-%m-%d %T"
 # =============================================================================
 #    LS
 # =============================================================================
+alias ls='ls --color=always -Isnap'  # add colors and file type extensions
 alias la='ls -Alh'  # show hidden files
-alias ls='ls -aFh --color=always'  # add colors and file type extensions
 alias lx='ls -lXBh'  # sort by extension
 alias lk='ls -lSrh'  # sort by size
 alias lc='ls -lcrh'  # sort by change time
@@ -151,7 +150,8 @@ alias glg='git lg'
 # --- exa file list ---
 alias la="exa --git --color=automatic -x"
 alias git-unused="git ls-files | xargs ctags"
-alias rcommit="git add && gitstamp"
+alias rcommit="git add . && gitstamp"
+alias rcomd="rcommit && git push -u deploy"
 alias rcomp="rcommit && git push"
 
 
@@ -172,7 +172,7 @@ alias reloaddns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 alias windir='cd /mnt/c/Users/swhit'
 alias winhome='cd /mnt/c/Users/swhit'
 alias dos2nixdir='find . -type f -print0 | xargs -0 dos2unix'
-alias python="python3.8"
+alias python="python3.9"
 alias pip-update-all="pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U"
 alias git-ctags="git ls-files | xargs ctags"
 alias yay="yay --aur"
@@ -194,6 +194,7 @@ alias sshu='ssh -p $SSH_PORT ubuntu'
 alias sshp='ssh -p $SSH_PORT proxy'
 alias sshl='ssh -p $SSH_PORT legacy'
 alias ssha='ssh -p $SSH_PORT archlinux'
-alias fullapt="sudo /usr/local/bin/fullapt --level 4"
+# alias fullapt="sudo /usr/local/bin/fullapt --level 4"
 alias reset-gnome="killall -SIGQUIT gnome-shell"
 alias keyid="echo 8F15D24F"
+alias blobsha="~/.zsh/zshrc.d/blobsha.sh"
