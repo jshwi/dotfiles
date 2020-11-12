@@ -28,7 +28,7 @@ def colors(code, *args):
 
 
 def argument_parser():
-    """Get help or add ```dry-mode``` argument to the process
+    """Get help or add ``dry-mode`` argument to the process
 
     :return: ArgumentParser Namespace
     """
@@ -37,7 +37,7 @@ def argument_parser():
         prog=colors(6, "./install"),
         description=(
             "run without any arguments to link all dotfiles to your home "
-            "directory or run with `dry-run' first to test"
+            "directory or run with 'dry-run' first to test"
         ),
     )
     parser.add_argument(
@@ -118,8 +118,8 @@ def linkdst(src, dst, dry, iswindows):
 
     :param src:         root-file, child-file and key of main loop
     :param dst:         root-file and basename of dotfile to link
-    :param dry:         Pass this argument on to the ```move``` process
-                        and the ```symlink``` process
+    :param dry:         Pass this argument on to the ``move`` process
+                        and the ``symlink`` process
     :param iswindows:
     """
     suffix = datetime.datetime.now().strftime("%d%m%YT%H%M%S")
@@ -135,8 +135,8 @@ def linkdst(src, dst, dry, iswindows):
 def get_dst(root, dirname, basename):
     """Get the destination path of a symlink
 
-    The ```vimrc``` file is internally linked for the global function
-    written in zsh to account for the ```vim -i``` option which will
+    The ``vimrc`` file is internally linked for the global function
+    written in zsh to account for the ``vim -i`` option which will
     open vim with more features
 
     :param root:        The parent of all the subdirectories
@@ -158,7 +158,7 @@ def iterate(root, dirname, basenames, dotdir, dry, iswindows):
     :param basenames:   The dictionary object to iterate through
     :param dotdir:      The destination basename
     :param dry:         True or False for whether running in
-                        ```dry-mode```
+                        ``dry-mode``
     :param iswindows:
     """
     for key, val in basenames.items():
@@ -180,10 +180,10 @@ def main():
         "bash": {"bashrc": ".bashrc", "bash_profile": ".bash_profile"},
         "zsh": {"dir_colors": ".dir_colors", "zshrc": ".zshrc"},
         "vim": {"rc": {"vimrc.vim": "vimrc"}, "vimrc": ".vimrc"},
-        "python": {"pylintrc": ".pylintrc"},
         "git": {"gitconfig": ".gitconfig"},
         "neomutt": {"neomuttrc": ".neomuttrc"},
         "gem": {"gemrc": ".gemrc"},
+        "_hidden": {"hidden": ".hidden"}
     }
     for key, val in basenames.items():
         src = os.path.join(home, ".dotfiles", key)
