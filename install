@@ -19,14 +19,11 @@ def colors(code, *args):
     :param args:    String or strings
     :return:        String or tuple of strings
     """
-
-    def _color(_code, _arg):
-        return f"\u001b[0;3{_code};40m{_arg}\u001b[0;0m"
-
-    result = [_color(code, arg) for arg in args]
+    result = [f"\u001b[0;3{code};40m{arg}\u001b[0;0m" for arg in args]
     return result[0] if len(result) == 1 else tuple(result)
 
 
+# noinspection PyTypeChecker
 def argument_parser():
     """Get help or add ``dry-mode`` argument to the process
 
@@ -176,20 +173,35 @@ def main():
     dry = args.dry_run
     iswindows = is_windows(args.windows)
     home = os.path.expanduser("~")
-    basenames = {
+    nested = {
         "bash": {"bashrc": ".bashrc", "bash_profile": ".bash_profile"},
         "zsh": {"dir_colors": ".dir_colors", "zshrc": ".zshrc"},
         "vim": {"rc": {"vimrc.vim": "vimrc"}, "vimrc": ".vimrc"},
         "git": {"gitconfig": ".gitconfig"},
         "neomutt": {"neomuttrc": ".neomuttrc"},
         "gem": {"gemrc": ".gemrc"},
-        "_hidden": {"hidden": ".hidden"}
     }
-    for key, val in basenames.items():
+    singles = {
+        os.path.join("hidden"): {"hidden": ".hidden"},
+        os.path.join("config", "linux", "vscode"): {
+            "keybindings.json": os.path.join(
+                ".config", "Code", "User", "keybindings.json"
+            ),
+            "settings.json": os.path.join(
+                ".config", "Code", "User", "settings.json"
+            ),
+        },
+    }
+    for key, val in nested.items():
         src = os.path.join(home, ".dotfiles", key)
         dst = os.path.join(home, f".{key}")
         linkdst(src, dst, dry, iswindows)
         iterate(home, os.path.basename(dst), val, key, dry, iswindows)
+    for key, val in singles.items():
+        for nest_key, nest_val in val.items():
+            src = os.path.join(home, ".dotfiles", key, nest_key)
+            dst = os.path.join(home, nest_val)
+            linkdst(src, dst, dry, iswindows)
     if dry:
         notice = colors(5, "***")
         print(f"\n{notice} No files have been changed {notice}")

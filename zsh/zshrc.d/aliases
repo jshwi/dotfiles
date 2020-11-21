@@ -198,3 +198,7 @@ alias ssha='ssh -p $SSH_PORT archlinux'
 alias reset-gnome="killall -SIGQUIT gnome-shell"
 alias keyid="echo 8F15D24F"
 alias blobsha="~/.zsh/zshrc.d/blobsha.sh"
+alias echoxproc='c "$(pwd)/.pytest_cache/d/.xprocess/mailserver/xprocess.log"'
+alias lsblk='lsblk -o name,mountpoint,label,size,fstype,uuid | egrep -v "^loop"'
+alias sudo="sudo "
+alias ctags="ctags-exuberant"
