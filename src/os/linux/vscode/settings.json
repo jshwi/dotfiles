@@ -14,9 +14,7 @@
     "[javascript]": {
         "editor.tabSize": 2
     },
-    // other
-    "workbench.iconTheme": "material-icon-theme",
-    "workbench.colorTheme": "Community Material Theme Ocean High Contrast",
+    "workbench.colorTheme": "Material Theme Ocean High Contrast",
     "workbench.sideBar.location": "left",
     "terminal.integrated.rendererType": "dom",
     "files.trimTrailingWhitespace": true,

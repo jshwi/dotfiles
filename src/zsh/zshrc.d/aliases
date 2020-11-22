@@ -202,3 +202,5 @@ alias echoxproc='c "$(pwd)/.pytest_cache/d/.xprocess/mailserver/xprocess.log"'
 alias lsblk='lsblk -o name,mountpoint,label,size,fstype,uuid | egrep -v "^loop"'
 alias sudo="sudo "
 alias ctags="ctags-exuberant"
+alias dcode="date +'%Y%m%dT%S%M%H'"
+alias tcommit="git add .; git commit -m \$(dcode)"

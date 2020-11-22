@@ -158,18 +158,20 @@ cpbak () {
 # :optional param arg: -i/--ide switch - default: false
 # =============================================================================
 vim () {
-    base="$DOTFILES/vim/rc/vimrc.vim"
-    ide="$DOTFILES/vim/rc/vimide.vim"
-    link="$DOTFILES/vim/vimrc"
-    if [[ "$1" == "-i" ]] || [[ "$1" == "--ide" ]]; then
-        shift
-        select="$ide"
-    else
-        select="$base"
-    fi
-    rm -f "$link" > /dev/null 2>&1
-    ln -s "$select" "$link"
-    "$_VIM" "$@"
+  vim_dir="$HOME/.vim"
+  rc_dir="$vim_dir/rc"
+  base="$rc_dir/vimrc.vim"
+  ide="$rc_dir/vimide.vim"
+  link="$vim_dir/vimrc"
+  if [[ "$1" == "-i" ]] || [[ "$1" == "--ide" ]]; then
+      shift
+      select="$ide"
+  else
+      select="$base"
+  fi
+  rm -f "$link" > /dev/null 2>&1
+  ln -s "$select" "$link"
+  "$_VIM" "$@"
 }
 
 
