@@ -1,0 +1,39 @@
+import argparse
+import os
+import typing
+
+HOME: typing.Union[bytes, str, os.PathLike]
+SUFFIX: str
+DOTCONTENTS: typing.Dict[
+    str, typing.List[typing.Union[bytes, str, os.PathLike]]
+]
+
+def colors(code: int, *args: str) -> str: ...
+
+class Parser(argparse.ArgumentParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self._args: argparse.Namespace = ...
+        self.dry: bool = ...
+    def _add_arguments(self) -> None: ...
+
+def symbols(bullet: str, color: int) -> str: ...
+def move(
+    src: typing.Union[bytes, str, os.PathLike],
+    dst: typing.Union[bytes, str, os.PathLike],
+    dry: bool,
+) -> None: ...
+def symlink(
+    src: typing.Union[bytes, str, os.PathLike],
+    dst: typing.Union[bytes, str, os.PathLike],
+    dry: bool,
+) -> None: ...
+def linkdst(
+    src: typing.Union[bytes, str, os.PathLike],
+    dst: typing.Union[bytes, str, os.PathLike],
+    dry: bool,
+) -> None: ...
+def link_vimrc(dry: bool) -> None: ...
+def link_vscode_contents(dry: bool) -> None: ...
+def link_mains(dry: bool) -> None: ...
+def main() -> None: ...
