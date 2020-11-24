@@ -6,6 +6,8 @@ import argparse
 import datetime
 import os
 import pathlib
+import shutil
+import subprocess
 
 HOME = str(pathlib.Path.home())
 SUFFIX = datetime.datetime.now().strftime("%d%m%YT%H%M%S")
@@ -20,6 +22,7 @@ DOTCONTENTS = {
     "vscode.d": [],
     "zsh": ["zshrc"],
 }
+WINDOWS = os.name == "nt"
 
 
 def colors(code, *args):
@@ -90,6 +93,23 @@ def move(src, dst, dry):
     print(notify)
 
 
+def cp_windows(src, dst, _):
+    try:
+        method = shutil.copy if os.path.isfile(src) else shutil.copytree
+        method(src, dst)
+        subprocess.check_call(["attrib", "+H", dst])
+    except FileNotFoundError:
+        pass
+
+
+def link_unix(src, dst, dry):
+    try:
+        symlink(src, dst, dry)
+    except FileExistsError:
+        os.remove(dst)
+        symlink(src, dst, dry)
+
+
 def symlink(src, dst, dry):
     """Symlink dotfile to its usable location and display what is
     happening
@@ -101,9 +121,9 @@ def symlink(src, dst, dry):
     """
     bullet, arrow = symbols("[SYMLINK]", 6)
     notify = f"{bullet} {src} {arrow} {dst}"
+    method = cp_windows if WINDOWS else link_unix
     if not dry:
-        os.symlink(src, dst)
-
+        method(src, dst, dry)
     else:
         notify = f"[{colors(5, 'DRY-RUN')}]{notify}"
 

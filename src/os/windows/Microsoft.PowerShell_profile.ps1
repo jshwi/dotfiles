@@ -1,9 +1,9 @@
-Import-Module 'C:\Users\swhitlock\.posh-git\src\posh-git.psd1'
-. 'C:\Users\swhitlock\.DirColors\src\DirColors.psd1'
+# Import-Module "${HOME}\.posh-git\src\posh-git.psd1"
+# . 'C:\Users\swhitlock\.DirColors\src\DirColors.psd1'
 #$GitPromptSettings.DefaultPromptPrefix.Text = '$(Get-Date -f "MM-dd HH:mm:ss") '
-$GitPromptSettings.DefaultPromptPrefix.ForegroundColor = [ConsoleColor]::Magenta
-$GitPromptSettings.DefaultPromptPath.ForegroundColor = 'orange'
-$GitPromptSettings.DefaultPromptBeforeSuffix.Text = '`n'
+# $GitPromptSettings.DefaultPromptPrefix.ForegroundColor = [ConsoleColor]::Magenta
+# $GitPromptSettings.DefaultPromptPath.ForegroundColor = 'orange'
+# $GitPromptSettings.DefaultPromptBeforeSuffix.Text = '`n'
 
 # Run this as a Computer Startup script to allow installing fonts from C:\InstallFont\
 # Based on http://www.edugeek.net/forums/windows-7/123187-installation-fonts-without-admin-rights-2.html
