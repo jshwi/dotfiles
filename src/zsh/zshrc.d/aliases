@@ -94,7 +94,7 @@ alias tree='tree -CAhF --dirsfirst'
 alias treed='tree -CAFd'
 alias mountedinfo='df -hT'
 # --- date/time ---
-alias dt=date +"%Y-%m-%d %T"
+#alias dt=date +"%Y-%m-%d %T"
 
 
 # =============================================================================

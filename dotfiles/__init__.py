@@ -6,6 +6,8 @@ import argparse
 import datetime
 import os
 import pathlib
+import shutil
+import subprocess
 
 HOME = str(pathlib.Path.home())
 SUFFIX = datetime.datetime.now().strftime("%d%m%YT%H%M%S")
@@ -20,6 +22,7 @@ DOTCONTENTS = {
     "vscode.d": [],
     "zsh": ["zshrc"],
 }
+WINDOWS = os.name == "nt"
 
 
 def colors(code, *args):
@@ -90,7 +93,43 @@ def move(src, dst, dry):
     print(notify)
 
 
-def symlink(src, dst, dry):
+def cp_windows(src, dst):
+    """For NT systems where symlinks require elevated privilege copying
+    and sourcing is the preferred option.
+
+    :param src: The file in this repository
+    :param dst: The symlink's path
+    """
+    try:
+        method = shutil.copy if os.path.isfile(src) else shutil.copytree
+        method(src, dst)
+
+        # make the file hidden as the dot prefix is not enough
+        subprocess.check_call(["attrib", "+H", dst])
+
+    except FileNotFoundError:
+        pass
+
+
+def link_unix(src, dst):
+    """For Unix-like systems where symlinks do not require elevated
+    privilege this is the preferred option.
+
+    :param src: The file in this repository
+    :param dst: The symlink's path
+    """
+    try:
+        os.symlink(src, dst)
+
+    except FileExistsError:
+
+        # in the case of broken symlink - safe as file is already backed
+        # up
+        os.remove(dst)
+        os.symlink(src, dst)
+
+
+def install_files(src, dst, dry):
     """Symlink dotfile to its usable location and display what is
     happening
 
@@ -99,10 +138,18 @@ def symlink(src, dst, dry):
     :param dry:         Print what would but do not do anything if True
                         Announce that this is happening
     """
-    bullet, arrow = symbols("[SYMLINK]", 6)
+    if WINDOWS:
+        method = cp_windows
+        announce = "[COPYING]"
+
+    else:
+        method = link_unix
+        announce = "[SYMLINK]"
+
+    bullet, arrow = symbols(announce, 6)
     notify = f"{bullet} {src} {arrow} {dst}"
     if not dry:
-        os.symlink(src, dst)
+        method(src, dst)
 
     else:
         notify = f"[{colors(5, 'DRY-RUN')}]{notify}"
@@ -129,12 +176,7 @@ def linkdst(src, dst, dry):
     if os.path.exists(dst):
         move(dst, f"{dst}.{SUFFIX}", dry)
 
-    # in the case of broken symlink - safe as file is already backed up
-    try:
-        symlink(src, dst, dry)
-    except FileExistsError:
-        os.remove(dst)
-        symlink(src, dst, dry)
+    install_files(src, dst, dry)
 
 
 def link_vimrc(dry):
@@ -146,7 +188,7 @@ def link_vimrc(dry):
     vimrc = os.path.join(vimd, "vimrc")
     base_vimrc = os.path.join(vimd, "rc", "vimrc.vim")
     if not os.path.exists(vimrc):
-        symlink(base_vimrc, vimrc, dry)
+        install_files(base_vimrc, vimrc, dry)
 
 
 def link_vscode_contents(dry):

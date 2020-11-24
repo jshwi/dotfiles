@@ -1,0 +1,134 @@
+# shellcheck source=/dev/null
+
+
+# --- ENV ---
+ZSH="$HOME/.oh-my-zsh"
+ZSH_CUSTOM="$ZSH/custom"
+DOTFILES="$HOME/.dotfiles"
+DOTFILES_SRC="$DOTFILES/src"
+DIR_COLORS="$DOTFILES_SRC/dir_colors.d"
+ZSHRC_CONFIG="$ZSH_DIR/zshrc.d"
+export ZSH
+export ZSH_CUSTOM
+export DOTFILES
+export ZSH_DIR
+export ZSHRC_CONFIG
+
+
+# --- GLOBAL ---
+PATH="$HOME/.local/bin:/usr/local/bin":"$PATH"
+PATH="/home/stephen/.gem/ruby/2.7.0/bin":"$PATH"
+MANPATH="/usr/share/man:$MANPATH"
+_VIM="/usr/bin/vim"
+LANG=en_AU.UTF-8
+HISTFILE="$ZSH_DIR/zsh_history"
+HISTSIZE='10000'
+SAVEHIST="$HISTSIZE"
+TERM="xterm-256color"
+THEMES="$ZSHRC_CONFIG/themes"
+PLUGINS="$ZSHRC_CONFIG/plugins"
+FUNCTIONS="$ZSHRC_CONFIG/functions"
+SECRET="$ZSHRC_CONFIG/secret"
+ALIASES="$ZSHRC_CONFIG/aliases"
+TRAVIS="$HOME/.travis"
+export _VIM
+export MANPATH
+export PATH
+export LANG
+export SAVEHIST
+export TERM
+export DOTDIR
+export THEMES
+export PLUGINS
+export FUNCTIONS
+export ALIASES
+export SECRET
+export TRAVIS
+
+
+# --- OH-MY-ZSH ---
+CASE_SENSITIVE="false"
+HYPHEN_INSENSITIVE="false"
+DISABLE_AUTO_UPDATE="false"
+DISABLE_UPDATE_PROMPT="false"
+UPDATE_ZSH_DAYS=13
+DISABLE_MAGIC_FUNCTIONS="false"
+DISABLE_LS_COLORS="false"
+DISABLE_AUTO_TITLE="false"
+ENABLE_CORRECTION="true"
+COMPLETION_WAITING_DOTS="true"
+DISABLE_UNTRACKED_FILES_DIRTY="false"
+HIST_STAMPS="dd/mm/yyyy"
+export CASE_SENSITIVE
+export HYPHEN_INSENSITIVE
+export DISABLE_AUTO_UPDATE
+export DISABLE_UPDATE_PROMPT
+export UPDATE_ZSH_DAYS
+export DISABLE_MAGIC_FUNCTIONS
+export DISABLE_LS_COLORS
+export DISABLE_AUTO_TITLE
+export ENABLE_CORRECTION
+export COMPLETION_WAITING_DOTS
+export DISABLE_UNTRACKED_FILES_DIRTY
+export HIST_STAMPS
+
+
+# --- SYNTAX ---
+typeset -A ZSH_HIGHLIGHT_STYLES
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
+ZSH_HIGHLIGHT_STYLES[alias]='fg=cyan,bold'
+ZSH_HIGHLIGHT_STYLES[bracket-level-1]='fg=blue,bold'
+ZSH_HIGHLIGHT_STYLES[bracket-level-2]='fg=red,bold'
+ZSH_HIGHLIGHT_STYLES[bracket-level-3]='fg=yellow,bold'
+ZSH_HIGHLIGHT_STYLES[bracket-level-4]='fg=magenta,bold'
+ZSH_HIGHLIGHT_STYLES[cursor]='bg=pink'
+ZSH_HIGHLIGHT_STYLES[path]='fg=magenta'
+ZSH_HIGHLIGHT_STYLES[root]='bg=red'
+export ZSH_HIGHLIGHT_HIGHLIGHTERS
+export ZSH_HIGHLIGHT_STYLES
+
+
+# # --- ZSTYLE ---
+# zstyle :compinstall filename "$ZSHRC"
+# zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
+# zstyle ':completion:*:killall:*'   force-list always
+# zstyle ':completion:*:*:killall:*' menu yes select
+# zstyle ':completion:*:kill:*'   force-list always
+# zstyle ':completion:*:*:kill:*' menu yes select
+# zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
+
+
+# --- TERMINAL DEFAULTS ---
+# setopt autocd
+# setopt correctall
+# unsetopt BEEP
+umask 077
+eval "$(dircolors "$DIR_COLORS/dir_colors")"
+# autoload -U promptinit && promptinit  # command prompt
+# autoload -Uz compinit && compinit  # advanced tab-completion
+
+
+# -- RUNTIME ---
+source "$THEMES"
+source "$PLUGINS"
+source "$FUNCTIONS"
+source "$ALIASES"
+
+
+# --- ENSURE FUNCTIONS ---
+VISUAL=vim
+EDITOR="$VISUAL"
+export VISUAL
+export EDITOR
+
+
+# --- CONDITIONAL ---
+mkportfile && source "$SECRET"
+[[ -d "$TRAVIS"  ]] && source "$TRAVIS"
+
+
+# # --- LOAD SETTINGS ---
+# source "$ZSH/oh-my-zsh.sh"
+
+# added by travis gem
+[ ! -s /home/stephen/.travis/travis.sh ] || source /home/stephen/.travis/travis.sh
