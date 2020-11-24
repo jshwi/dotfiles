@@ -1,5 +1,4 @@
 {
-    // python
     "python.envFile": "${workspaceFolder}/.env",
     "python.venvPath": "${workspaceFolder}",
     "python.linting.flake8Path":  "${workspaceFolder}/.venv/bin/flake8",
@@ -7,7 +6,6 @@
     "python.linting.lintOnSave": true,
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
-    // Conditional
     "[python]": {
         "editor.tabSize": 4
     },
@@ -32,9 +30,9 @@
         "**/node_modules": true,
         "**/package-lock.json": true,
         "**/venv": true,
-        "**/.*": true,
+        "**/.*": true
     },
-    //   "editor.rulers": [72, 79],
+   "editor.rulers": [72, 79],
     "editor.detectIndentation": false,
     "window.zoomLevel": -1,
     "standard.autoFixOnSave": true,

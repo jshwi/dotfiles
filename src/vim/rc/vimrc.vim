@@ -143,5 +143,4 @@ set clipboard+=ideaput
 " without yanking it
 vnoremap <leader>p "_dP
 xnoremap p pgvy
-let Tlist_Ctags_Cmd = '/usr/bin/ctags-exuberant'
 
