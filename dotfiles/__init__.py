@@ -19,6 +19,8 @@ WINDOWS = os.name == "nt"
 
 
 class Colors:
+    """Return strings in color."""
+
     codes = {
         "black": 0,
         "red": 1,
@@ -33,11 +35,23 @@ class Colors:
     def __init__(self, color):
         self.color = self.codes[color]
 
-    def get_tuple(self, *args):
+    def get_list(self, *args):
+        """Get the colored string(s) in their list state.
+
+        :param args:    Strings(s) to color.
+        :return:        List of colored string(s)
+        """
         return [f"\u001b[0;3{self.color};40m{arg}\u001b[0;0m" for arg in args]
 
     def get(self, *args):
-        result = self.get_tuple(*args)
+        """Get a list of strings if there are multiple strings or just
+        return the single string if there is only one.
+
+        :param args:    String(s) to color.
+        :return:        Single colored string or a list of colored
+                        strings.
+        """
+        result = self.get_list(*args)
         return result[0] if len(result) == 1 else result
 
 
@@ -66,13 +80,15 @@ class Parser(argparse.ArgumentParser):
 
 
 class DevNull:
+    """Silence the output of ``print``"""
+
     def __init__(self):
         self.stdout = sys.stdout
 
     @staticmethod
     def write(*args):
         """pass to suppress stdout"""
-        pass
+        pass  # pylint: disable=W0107
 
     def __enter__(self):
         sys.stdout = self
@@ -82,6 +98,11 @@ class DevNull:
 
 
 def source_file(src, dst):
+    """Create a file with an instruction to source a particular dotfile.
+
+    :param src: Path to the file to source.
+    :param dst: Path to the file containing the instruction to source.
+    """
     with open(dst, "w") as file:
         if os.path.basename(src) == "bashrc":
             src = os.path.join(os.path.dirname(src), "bashrc.d", "bashrc.win")
@@ -123,6 +144,8 @@ def link(src, dst):
 
 
 class Install:
+    """Resolve file locations and install the dotfiles to $HOME"""
+
     def __init__(self, dry):
         self.dry = dry
         self.dotcontents = {
@@ -236,6 +259,11 @@ class Install:
 
 
 def reminder(dry):
+    """Let the user know if dry mode is True and that no files have
+    been changed.
+
+    :param dry: Dry-run: True or False.
+    """
     if dry:
         notice = Colors("magenta").get("***")
         print(f"\n{notice} No files have been changed {notice}")
