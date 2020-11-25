@@ -118,6 +118,14 @@ def test_broken_symlink(nocolorcapsys):
 
 @unittest.mock.patch("dotfiles.WINDOWS")
 def test_as_windows(mock_windows, nocolorcapsys):
+    """Test that the method to install the files is to copy rather than
+    symlink for Windows.
+
+    :param mock_windows:    Mock the ``WINDOWS`` constant to always
+                            return True
+    :param nocolorcapsys:   The ``capsys`` fixture altered to remove
+                            ANSI escape codes.
+    """
     mock_windows.return_value = True
     out = install(nocolorcapsys)
     assert "[COPYING]" in out
@@ -128,9 +136,10 @@ def test_output_windows(mock_windows, nocolorcapsys):
     """Test that the actual output informing the user of the process
     matches the expected output.
 
+    :param mock_windows:    Mock the ``WINDOWS`` constant to always
+                            return True
     :param nocolorcapsys:   The ``capsys`` fixture altered to remove
                             ANSI escape codes.
-    :return:                Stdout.
     """
     mock_windows.return_value = True
     out = install(nocolorcapsys)
@@ -139,6 +148,13 @@ def test_output_windows(mock_windows, nocolorcapsys):
 
 @unittest.mock.patch("dotfiles.WINDOWS")
 def test_copies_windows(mock_windows, nocolorcapsys):
+    """Test that the copies exist after installing.
+
+    :param mock_windows:    Mock the ``WINDOWS`` constant to always
+                            return True
+    :param nocolorcapsys:   The ``capsys`` fixture altered to remove
+                            ANSI escape codes.
+    """
     mock_windows.return_value = True
     install(nocolorcapsys)
     contents = os.listdir(dotfiles.HOME)
