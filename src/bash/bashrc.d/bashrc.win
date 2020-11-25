@@ -55,6 +55,4 @@ PS1="$PS1"'\n\[\033[35m\]>_\[\033[0m\] '  # new line:
 alias l="ls -al"
 
 umask 077
-DIRCOLORS="$HOME/.dotfiles/zsh/dir_colors"
-eval "$(dircolors "$DIRCOLORS")"
 alias rm="rm -v"

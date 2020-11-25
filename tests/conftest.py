@@ -139,6 +139,9 @@ def fixture_dotfiles_home(tmpdir):
     :param tmpdir:  The temporary directory ``pytest`` fixture.
     """
     dotfiles.HOME = tmpdir
+    dotfiles.REPO = os.path.join(dotfiles.HOME, ".dotfiles")
+    dotfiles.SOURCE = os.path.join(dotfiles.REPO, "src")
+    dotfiles.PACKAGE = os.path.join(dotfiles.REPO, "dotfiles")
 
 
 @pytest.fixture(name="dotclone")

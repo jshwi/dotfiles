@@ -39,7 +39,6 @@ PAIRS = {
     os.path.join(SRC, "vscode.d"): VSCODED,
     os.path.join(SRC, "zsh"): ".zsh",
     os.path.join(".zsh", "zshrc"): ".zshrc",
-    os.path.join(".vim", "rc", "vimrc.vim"): os.path.join(".vim", "vimrc"),
     os.path.join(VSCODED, SETTINGS_JSON): os.path.join(
         CONFIGD, "Code", "User", SETTINGS_JSON
     ),
