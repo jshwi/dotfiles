@@ -25,6 +25,24 @@ DOTCONTENTS = {
 WINDOWS = os.name == "nt"
 
 
+class EnterDir:
+    """Change to the selected directory entered as an argument and when
+    actions are complete return to the previous directory.
+
+    :param path: Enter the directory to temporarily change to.
+    """
+
+    def __init__(self, path):
+        self.saved_path = os.getcwd()
+        self.enter_path = os.path.expanduser(path)
+
+    def __enter__(self):
+        os.chdir(self.enter_path)
+
+    def __exit__(self, _, value, __):
+        os.chdir(self.saved_path)
+
+
 def colors(code, *args):
     """Return a colored string or a tuple of strings
 
@@ -93,25 +111,28 @@ def move(src, dst, dry):
     print(notify)
 
 
-def cp_windows(src, dst):
+def cp_nt(src, dst):
     """For NT systems where symlinks require elevated privilege copying
     and sourcing is the preferred option.
 
     :param src: The file in this repository
     :param dst: The symlink's path
     """
+    # try:
+    method = shutil.copy if os.path.isfile(src) else shutil.copytree
+    method(src, dst)
+
+    # make the file hidden as the dot prefix is not enough
     try:
-        method = shutil.copy if os.path.isfile(src) else shutil.copytree
-        method(src, dst)
-
-        # make the file hidden as the dot prefix is not enough
         subprocess.check_call(["attrib", "+H", dst])
-
     except FileNotFoundError:
         pass
 
+    # except FileNotFoundError:
+    #     pass
 
-def link_unix(src, dst):
+
+def link_nix(src, dst):
     """For Unix-like systems where symlinks do not require elevated
     privilege this is the preferred option.
 
@@ -138,19 +159,11 @@ def install_files(src, dst, dry):
     :param dry:         Print what would but do not do anything if True
                         Announce that this is happening
     """
-    if WINDOWS:
-        method = cp_windows
-        announce = "[COPYING]"
-
-    else:
-        method = link_unix
-        announce = "[SYMLINK]"
-
-    bullet, arrow = symbols(announce, 6)
+    func, bullet = (cp_nt, "[COPYING]") if WINDOWS else (link_nix, "[SYMLINK]")
+    bullet, arrow = symbols(bullet, 6)
     notify = f"{bullet} {src} {arrow} {dst}"
     if not dry:
-        method(src, dst)
-
+        func(src, dst)
     else:
         notify = f"[{colors(5, 'DRY-RUN')}]{notify}"
 
@@ -179,16 +192,20 @@ def linkdst(src, dst, dry):
     install_files(src, dst, dry)
 
 
+def relative_link(path, src, dst, dry):
+    with EnterDir(path):
+        if not os.path.exists(dst):
+            install_files(src, dst, dry)
+
+
 def link_vimrc(dry):
     """Link the "$HOME/.vimrc" file from the current vim symlink.
 
     :param dry: Dry-run: On or off.
     """
     vimd = os.path.join(HOME, ".vim")
-    vimrc = os.path.join(vimd, "vimrc")
-    base_vimrc = os.path.join(vimd, "rc", "vimrc.vim")
-    if not os.path.exists(vimrc):
-        install_files(base_vimrc, vimrc, dry)
+    rc_vimrc = os.path.join("rc", "vimrc.vim")
+    relative_link(vimd, rc_vimrc, "vimrc", dry)
 
 
 def link_vscode_contents(dry):

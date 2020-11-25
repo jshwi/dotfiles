@@ -4,6 +4,7 @@ tests._test.py
 """
 import os
 import sys
+import unittest.mock
 
 import dotfiles
 from . import expected
@@ -113,3 +114,37 @@ def test_broken_symlink(nocolorcapsys):
     vimrc = os.path.join(dotfiles.HOME, ".vim", "vimrc")
     os.remove(vimrc)  # break link
     install(nocolorcapsys)
+
+
+@unittest.mock.patch("dotfiles.WINDOWS")
+def test_as_windows(mock_windows, nocolorcapsys):
+    mock_windows.return_value = True
+    out = install(nocolorcapsys)
+    assert "[COPYING]" in out
+
+
+@unittest.mock.patch("dotfiles.WINDOWS")
+def test_output_windows(mock_windows, nocolorcapsys):
+    """Test that the actual output informing the user of the process
+    matches the expected output.
+
+    :param nocolorcapsys:   The ``capsys`` fixture altered to remove
+                            ANSI escape codes.
+    :return:                Stdout.
+    """
+    mock_windows.return_value = True
+    out = install(nocolorcapsys)
+    assert out == expected.output(dotfiles.HOME)
+
+
+@unittest.mock.patch("dotfiles.WINDOWS")
+def test_copies_windows(mock_windows, nocolorcapsys):
+    mock_windows.return_value = True
+    install(nocolorcapsys)
+    contents = os.listdir(dotfiles.HOME)
+    for _, val in expected.PAIRS.items():
+        if val in expected.FOLLOW_PATH:
+            path = os.path.join(dotfiles.HOME, val)
+            assert os.path.isfile(path)
+        else:
+            assert val in contents

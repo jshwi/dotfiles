@@ -3,6 +3,7 @@ tests.helpers
 =============
 """
 import os
+import dotfiles
 
 SRC = os.path.join(".dotfiles", "src")
 BASH = ".bash"
@@ -56,9 +57,10 @@ def output(tmpdir):
     :return:        A string that the output should match.
     """
     expected = ""
+    bullet = "[COPYING]" if dotfiles.WINDOWS else "[SYMLINK]"
     for keyvaluepair in PAIRS.items():
         prepend = [os.path.join(tmpdir, i) for i in keyvaluepair]
-        expected += f"[SYMLINK] {prepend[0]} -> {prepend[1]}\n"
+        expected += f"{bullet} {prepend[0]} -> {prepend[1]}\n"
     return expected
 
 
