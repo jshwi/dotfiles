@@ -23,26 +23,18 @@ DOTCONTENTS = {
 class Yaml(dict):
     def __init__(self, path, __m=None, **kwargs):
         super().__init__()
-        self.path = path
-        self.init(__m, **kwargs)
-
-    def _mkdir(self):
-        _dir = pathlib.Path(os.path.dirname(self.path))
-        _dir.mkdir(parents=True, exist_ok=True)
-
-    def write(self):
-        with open(self.path, "w") as fout:
-            yaml.dump(self, fout)
-
-    def init(self, __m, **kwargs):
-        self._mkdir()
-        if os.path.isfile(self.path):
-            self.read()
+        pathlib.Path(os.path.dirname(path)).mkdir(parents=True, exist_ok=True)
+        if os.path.isfile(path):
+            self.read(path)
         elif __m is not None:
             self.update(__m, **kwargs)
-            self.write()
+            self.write(path)
 
-    def read(self):
-        with open(self.path) as fin:
+    def write(self, path):
+        with open(path, "w") as fout:
+            yaml.dump(self, fout)
+
+    def read(self, path):
+        with open(path) as fin:
             # noinspection PyyamlLoad
             self.update(yaml.load(fin, Loader=yaml.FullLoader))
