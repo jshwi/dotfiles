@@ -26,14 +26,16 @@ class Yaml(dict):
         self.path = path
         self.init(__m, **kwargs)
 
+    def _mkdir(self):
+        _dir = pathlib.Path(os.path.dirname(self.path))
+        _dir.mkdir(parents=True, exist_ok=True)
+
     def write(self):
         with open(self.path, "w") as fout:
             yaml.dump(self, fout)
 
     def init(self, __m, **kwargs):
-        pathlib.Path(os.path.dirname(self.path)).mkdir(
-            parents=True, exist_ok=True
-        )
+        self._mkdir()
         if os.path.isfile(self.path):
             self.read()
         elif __m is not None:
@@ -42,4 +44,5 @@ class Yaml(dict):
 
     def read(self):
         with open(self.path) as fin:
-            self.update(yaml.safe_load(fin))
+            # noinspection PyyamlLoad
+            self.update(yaml.load(fin, Loader=yaml.FullLoader))
