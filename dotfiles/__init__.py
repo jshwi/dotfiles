@@ -6,8 +6,13 @@ import argparse
 import datetime
 import os
 import pathlib
+import appdirs
+
+import yaml
 
 HOME = str(pathlib.Path.home())
+CONFIGDIR = appdirs.user_config_dir(__name__)
+CONFIG = os.path.join(CONFIGDIR, __name__ + ".yaml")
 SUFFIX = datetime.datetime.now().strftime("%d%m%YT%H%M%S")
 DOTCONTENTS = {
     "bash": ["bashrc", "bash_profile"],
@@ -55,6 +60,26 @@ class Parser(argparse.ArgumentParser):
             action="store_true",
             help="see what actions would take place",
         )
+
+
+class Yaml(dict):
+    def __init__(self, path, __m=None, **kwargs):
+        super().__init__()
+        pathlib.Path(os.path.dirname(path)).mkdir(parents=True, exist_ok=True)
+        if os.path.isfile(path):
+            self.read(path)
+        elif __m is not None:
+            self.update(__m, **kwargs)
+            self.write(path)
+
+    def write(self, path):
+        with open(path, "w") as fout:
+            yaml.dump(self, fout)
+
+    def read(self, path):
+        with open(path) as fin:
+            # noinspection PyyamlLoad
+            self.update(yaml.load(fin, Loader=yaml.FullLoader))
 
 
 def symbols(bullet, color):
@@ -175,12 +200,13 @@ def link_mains(dry):
     :param dry: Dry-run: On or off.
     """
     source = os.path.join(HOME, ".dotfiles", "src")
-    for dotdir in DOTCONTENTS:
+    contents = Yaml(CONFIG, DOTCONTENTS)
+    for dotdir in contents:
         dotfile_src = os.path.join(source, dotdir)
         dotdir_dst = os.path.join(HOME, f".{dotdir}")
         linkdst(dotfile_src, dotdir_dst, dry)
 
-        for dotfile in DOTCONTENTS[dotdir]:
+        for dotfile in contents[dotdir]:
             dotfile_src = os.path.join(HOME, dotdir_dst, dotfile)
             dotfile_dst = os.path.join(HOME, f".{dotfile}")
             linkdst(dotfile_src, dotfile_dst, dry)

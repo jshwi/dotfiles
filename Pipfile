@@ -24,6 +24,8 @@ vulture = "==2.1"
 prompt-toolkit = "*"
 
 [packages]
+appdirs = "1.4.4"
+pyaml = "20.4.0"
 
 [requires]
 python_version = "3.9"
