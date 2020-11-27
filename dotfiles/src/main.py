@@ -9,6 +9,8 @@ import pathlib
 
 import appdirs
 
+from . import config
+
 HOME = str(pathlib.Path.home())
 
 CONFIGDIR = appdirs.user_config_dir(__name__.partition(".")[0])
@@ -170,12 +172,13 @@ def link_mains(dry):
     :param dry: Dry-run: On or off.
     """
     source = os.path.join(HOME, ".dotfiles", "src")
-    for dotdir in DOTCONTENTS:
+    yaml = config.Yaml(CONFIG, config.DOTCONTENTS)
+    for dotdir in yaml:
         dotfile_src = os.path.join(source, dotdir)
         dotdir_dst = os.path.join(HOME, f".{dotdir}")
         linkdst(dotfile_src, dotdir_dst, dry)
 
-        for dotfile in DOTCONTENTS[dotdir]:
+        for dotfile in yaml[dotdir]:
             dotfile_src = os.path.join(HOME, dotdir_dst, dotfile)
             dotfile_dst = os.path.join(HOME, f".{dotfile}")
             linkdst(dotfile_src, dotfile_dst, dry)
