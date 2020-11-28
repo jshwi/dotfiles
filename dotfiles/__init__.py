@@ -16,23 +16,55 @@ CONFIG = os.path.join(CONFIGDIR, __name__ + ".yaml")
 SUFFIX = datetime.datetime.now().strftime("%d%m%YT%H%M%S")
 
 
-def colors(code, *args):
-    """Return a colored string or a tuple of strings
-
-    :param code:    Ansi escape code
-    :param args:    String or strings
-    :return:        String or tuple of strings
+class Colors:
+    """Return strings in color.
+    :var: black
+    :var: red
+    :var: green
+    :var: yellow
+    :var: blue
+    :var: magenta
+    :var: cyan
+    :var: white
     """
-    result = [f"\u001b[0;3{code};40m{arg}\u001b[0;0m" for arg in args]
-    return result[0] if len(result) == 1 else result
+
+    codes = {
+        "black": 0,
+        "red": 1,
+        "green": 2,
+        "yellow": 3,
+        "blue": 4,
+        "magenta": 5,
+        "cyan": 6,
+        "white": 7,
+    }
+
+    def __init__(self, color="white"):
+        try:
+            self.color = self.codes[color]
+        except KeyError:
+            self.color = self.codes["white"]
+
+    def get(self, string):
+        """Get a list of strings if there are multiple strings or just
+        return the single string if there is only one.
+
+        :param string:  String(s) to color.
+        :return:        Single colored string or a list of colored
+                        strings.
+        """
+        return f"\u001b[0;3{self.color};40m{string}\u001b[0;0m"
+
+    def print(self, string, **kwargs):
+        print(self.get(string), **kwargs)
 
 
 class Parser(argparse.ArgumentParser):
-    """Get help or add ``--dry`` argument to the process"""
+    """Get help or add ``--dry`` argument to the process."""
 
     def __init__(self):
         super().__init__(
-            prog=colors(6, "./install"),
+            prog=Colors("cyan").get("./install"),
             description=(
                 'symlinks "$HOME" dotfiles and '
                 "backs up any files that have the same name"
@@ -68,73 +100,61 @@ class Parser(argparse.ArgumentParser):
         )
 
 
-def symbols(bullet, color):
-    """Return a bullet-point and an arrow in the chosen color.
-
-    :param bullet:  Bullet of chosen argument.
-    :param color:   The selected color.
-    :return:        A tuple containing the stylized bullet-point and the
-                    colored arrow.
-    """
-    return colors(color, bullet, "->")
-
-
 def move(source, dest, dry):
     """Move file if it exists to make way for new symlink without
-    destroying the old file
+    destroying the old file. Append the date and time to the old backup
+    to avoid name collisions.
 
-    Append the date and time to the old backup to avoid name collisions
-
-    :param source: The old, existing, file
-    :param dest: The dotfiles symlink
-    :param dry: Print what would but do not do anything if True
-                Announce that this is happening
+    :param source:  The old, existing, file.
+    :param dest:    The dotfiles symlink.
+    :param dry:     Print what would but do not do anything if True.
+                    Announce that this is happening.
     """
-    bullet, arrow = symbols("[BACKUP ]", 3)
-    notify = f"{bullet} {source} {arrow} {dest}"
+    yellow = Colors("yellow")
+    notify = f"{yellow.get('[BACKUP ]')} {source} {yellow.get('->')} {dest}"
 
     if not dry:
-        os.rename(source, f"{dest}")
-    else:
-        notify = f"[{colors(5, 'DRY-RUN')}]{notify}"
+        os.rename(source, dest)
+        print(notify)
 
-    print(notify)
+    else:
+        print(f"[{Colors('magenta').get('DRY-RUN')}]{notify}")
 
 
 def symlink(source, dest, dry):
     """Symlink dotfile to its usable location and display what is
-    happening
+    happening.
 
-    :param source:         The file in this repository
-    :param dest:         The symlink's path
-    :param dry:         Print what would but do not do anything if True
-                        Announce that this is happening
+    :param source:  The file in this repository.
+    :param dest:    The symlink's path.
+    :param dry:     Print what would but do not do anything if True.
+                    Announce that this is happening.
     """
-    bullet, arrow = symbols("[SYMLINK]", 6)
-    notify = f"{bullet} {source} {arrow} {dest}"
+    cyan = Colors("cyan")
+    notify = f"{cyan.get('[SYMLINK]')} {source} {cyan.get('->')} {dest}"
 
     if not dry:
-        os.symlink(source, dest)
-    else:
-        notify = f"[{colors(5, 'DRY-RUN')}]{notify}"
+        try:
+            os.symlink(source, dest)
+            print(notify)
 
-    print(notify)
+        except FileNotFoundError:
+            pass
+
+    else:
+        print(f"[{Colors('magenta').get('DRY-RUN')}]{notify}")
 
 
 def linkdest(source, dest, dry):
-    """Determine that a path exists to back it up first
+    """Determine that a path exists to back it up first. Attempt to
+    symlink the dotfile. If a FileExistsError occurs move was unable to
+    move the file and it is most likely a dead-link - the file is safe
+    to remove. Again attempt to symlink - which this time should work.
 
-    Attempt to symlink the dotfile
-
-    If a FileExistsError occurs move was unable to move the file and it
-    is most likely a dead-link - the file is safe to remove
-
-    Again attempt to symlink - which this time should work
-
-    :param source:         root-file, child-file and key of main loop
-    :param dest:         root-file and basename of dotfile to link
-    :param dry:         Pass this argument on to the ``move`` process
-                        and the ``symlink`` process
+    :param source:  root-file, child-file and key of main loop.
+    :param dest:    root-file and basename of dotfile to link.
+    :param dry:     Pass this argument on to the ``move`` process and
+                    the ``symlink`` process.
     """
     # this won't work for broken symlinks
     if os.path.exists(dest):
@@ -223,5 +243,5 @@ def main():
         link_all(conf.dict, parser.dry)
 
         if parser.dry:
-            notice = colors(5, "***")
+            notice = Colors("magenta").get("***")
             print(f"\n{notice} No files have been changed {notice}")
