@@ -1,4 +1,4 @@
-main  # unused function (dotfiles/__init__.py:215)
+main  # unused function (dotfiles/__init__.py:218)
 project  # unused variable (docs/conf.py:11)
 author  # unused variable (docs/conf.py:12)
 email  # unused variable (docs/conf.py:13)
