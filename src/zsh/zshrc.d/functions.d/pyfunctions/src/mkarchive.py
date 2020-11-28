@@ -2,14 +2,10 @@
 mkarchive
 """
 import argparse
-import datetime
 import os
 import pathlib
-import tarfile
 
-HOME = str(pathlib.Path.home())
-DATE = datetime.date.today().strftime("%Y/%m/%d")
-TIME = datetime.datetime.now().strftime("%H:%M:%S")
+from . import env, tar
 
 
 class Parser(argparse.ArgumentParser):
@@ -28,19 +24,9 @@ class Parser(argparse.ArgumentParser):
             "-d",
             "--dest",
             action="store",
-            default=os.path.join(HOME, "Documents", "Archive"),
+            default=os.path.join(env.HOME, "Documents", "Archive"),
             help="destination dir for archive",
         )
-
-
-def mk_tarfile(infile, outfile):
-    with tarfile.open(outfile, "w:gz") as tar:
-        if os.path.isdir(infile):
-            dircontents = [os.path.join(infile, i) for i in os.listdir(infile)]
-        else:
-            dircontents = [infile]
-        for content in dircontents:
-            tar.add(content)
 
 
 class DirInfo:
@@ -68,10 +54,10 @@ class DirInfo:
 
 def main():
     parser = Parser()
-    dst_path = os.path.join(parser.dest, DATE)
+    dst_path = os.path.join(parser.dest, env.DATE)
     infile_dir = os.path.dirname(parser.path)
     infile_name = os.path.basename(parser.path)
-    archive_name = f"{TIME}.{infile_name}.tar.gz"
+    archive_name = f"{env.TIME}.{infile_name}.tar.gz"
     archive_path = os.path.join(infile_dir, archive_name)
     full_path = os.path.join(dst_path, archive_name)
     dir_info = DirInfo(dst_path)
@@ -86,12 +72,12 @@ def main():
     pathlib.Path(dst_path).mkdir(parents=True, exist_ok=True)
 
     print("Making archive")
-    mk_tarfile(parser.path, archive_name)
+    tar.mk_tarfile(parser.path, archive_name)
     print(f". created {archive_name}")
 
     print("Storing archive")
     os.rename(archive_path, full_path)
-    print(f". {archive_name} -> {full_path.replace(HOME, '~')}")
+    print(f". {archive_name} -> {full_path.replace(env.HOME, '~')}")
 
     print("Done")
 

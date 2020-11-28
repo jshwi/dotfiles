@@ -115,32 +115,6 @@ cpbak () {
 }
 
 
-# =============================================================================
-# vim
-# Override /usr/bin/vim to add option to run the ide version of vim in
-# .dotfiles/vim/rc or the simplified version (both alternately symlinked to
-# .dotfiles/vim/vimrc)
-#
-# :optional param arg: -i/--ide switch - default: false
-# =============================================================================
-vim () {
-  vim_dir="$HOME/.vim"
-  rc_dir="$vim_dir/rc"
-  base="$rc_dir/vimrc.vim"
-  ide="$rc_dir/vimide.vim"
-  link="$vim_dir/vimrc"
-  if [[ "$1" == "-i" ]] || [[ "$1" == "--ide" ]]; then
-      shift
-      select="$ide"
-  else
-      select="$base"
-  fi
-  rm -f "$link" > /dev/null 2>&1
-  ln -s "$select" "$link"
-  "$_VIM" "$@"
-}
-
-
 no-ci () {
     git commit -m "[no ci]" "$@"
 }
@@ -289,5 +263,12 @@ getfw () {
 
 
 mkarchive () {
-  python3 "$FUNCTION_DIR/mkarchive.py" "$@"
+  "$FUNCTION_DIR/mkarchive" "$@"
+}
+
+
+vim () {
+  "$FUNCTION_DIR/symlink_vim" "$@"
+  if [[ "$1" =~ ^("-i"|"--ide")$ ]]; then shift; fi
+  "$_VIM" "$@"
 }
