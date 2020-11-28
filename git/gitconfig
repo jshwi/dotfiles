@@ -1,0 +1,10 @@
+[user]
+	email = stephen@jshwisolutions.com
+    name = jshwi
+    signingkey = 8F15D24F
+[core]
+	editor = vim
+[credential]
+	helper = store
+# [commit]
+# 	gpgsign = true
