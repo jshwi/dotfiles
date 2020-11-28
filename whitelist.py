@@ -1,4 +1,4 @@
-main  # unused function (dotfiles/__init__.py:215)
+main  # unused function (dotfiles/__init__.py:218)
 fixture_nocolorcapsys  # unused function (tests/conftest.py:68)
 fixture_test_dir  # unused function (tests/conftest.py:78)
 fixture_repo_dir  # unused function (tests/conftest.py:87)
