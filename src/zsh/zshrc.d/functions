@@ -88,21 +88,6 @@ dtname() {
 
 
 # =============================================================================
-# redir
-# Redirect stdout of a command into a file with the `dtname' format. eg...
-# redir speedtest extension
-# > speedtest.date:time.extension
-#
-# :param cmd: The command's stdout and stderr
-# =============================================================================
-redir() {
-    cmd="$1"
-    extension="$2"
-    "$cmd" > "$(dtname "$cmd" "$extension")"
-}
-
-
-# =============================================================================
 # sign-prev
 # Gpg sign and rebase previous commits
 #
@@ -121,31 +106,12 @@ sign-prev() {
 }
 
 
-multiclear() {
-    for _ in 1 2 3 4 5 6 7 8 9 10; do clear; done
-}
-
-
-pkgtest() {
-    multiclear
-    ../.venv/bin/python3.8 -m pytest ../tests
-}
-
-
-lynis-go () {
-    pacman -Syyu
-    sysctl --system
-    lynis audit system
-}
-
-
 cpbak () {
-    src="$1"; dst="$2";
-    srcfile="$(basename "$src")"
+    srcfile="$(basename "$1")"
     dstname="$(date +'%Y.%m.%d:%H.%M.%S').${srcfile}"
-    fulldst="$dst/$dstname"
+    fulldst="$2/$dstname"
     cp "$srcfile" "$fulldst"
-    echo "backed up \`$src' to \`$fulldst'"
+    echo "backed up \`$1' to \`$fulldst'"
 }
 
 
@@ -172,58 +138,6 @@ vim () {
   rm -f "$link" > /dev/null 2>&1
   ln -s "$select" "$link"
   "$_VIM" "$@"
-}
-
-
-# =============================================================================
-# vim
-# Compress a file or directory whilst adding a timestamp and then relocate it
-# to a dated archive directory
-#
-# :param file: File or directory (relative path)
-# =============================================================================
-mkarchive () {
-    file="$1"; shift;
-    if [[ $# -ne 0 ]]; then
-    	exclude="$1"; shift
-    fi
-    _date="$(date +'%Y/%m/%d')"
-    time="$(date +'%H%M%S')"
-    basename="Documents/Archive"
-    archivedir="$HOME/$basename"
-    _path="$archivedir/$_date"
-    archive="${file}${time}.tar.gz"
-    fullpath="$_path/$archive"
-    tmp="/tmp/mkarchive.exclude"
-    # shellcheck disable=SC2088
-    simplified="~/$basename/$_date/$archive"
-    if [[ "$exclude" == "-e" ]] || [[ "$exclude" == "--exclude" ]]; then
-        files=( "${@}" )
-        mkdir "$tmp"
-        for f in "${files[@]}"; do
-            mv "$file/$f" "$tmp/$f"
-        done
-    fi
-    if [[ ! -d "$_path" ]]; then
-        mkdir -p "$_path" || return 1
-        printf "added %s"$'\n' "\`$_path'"
-    fi
-    printf "making archive:"$'\n'
-    tar czf "$archive" "$file" || return 1
-    printf "....created %s"$'\n' "\`$archive'"
-    printf "storing archive:"$'\n'
-    _dirname="$(dirname "$fullpath")"
-    if [[ ! -d "$_dirname" ]]; then
-        mkdir -p "$_dirname" || return 1
-        printf "added %s"$'\n' "\`$_path'"
-    fi
-    mv "$archive" "$fullpath" || return 1
-    printf "....%s -> %s"$'\n' "$archive" "$simplified"
-    if [[ -d ".tmp" ]]; then
-        mv "$tmp/*" "$file"
-        mv "$tmp/.*" "$file"
-    fi
-    printf "done"$'\n'
 }
 
 
@@ -351,6 +265,7 @@ fsearch () {
 
 
 clean_data_dirs () {
+    # shellcheck disable=SC2207
     items=( $(fsearch "$1") )
     for i in "${items[@]}"; do
     rm -rf "$i"
@@ -359,12 +274,20 @@ clean_data_dirs () {
 
 
 getfw () {
+    if ! filewatcher="$(command -v black)"; then
+      filewatcher="could not find black in \$PATH"
+    fi
     echo "Name: Black"
     echo "File type: Python"
     echo "Scope: Project Files"
-    echo "Program: $(which black)"
+    echo "Program: $filewatcher"
     echo "Arguments: \$FilePath\$"
     echo "Output paths to refresh: \$FilePath\$"
     echo "Working directory: \$ProjectFileDir\$"
-    echo "Uncheck \"Auto-save edited files to trigger the watcher\" in Advanced Options"
+    echo 'Uncheck "Auto-save edited files to trigger the watcher" in Advanced Options'
+}
+
+
+mkarchive () {
+  python3 "$FUNCTION_DIR/mkarchive.py" "$@"
 }
