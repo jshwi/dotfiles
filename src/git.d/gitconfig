@@ -7,4 +7,6 @@
 [credential]
 	helper = store
 [commit]
-	template = /home/stephen/.git.d/committemplate
+	template = ~/.git.d/committemplate
+[pull]
+	ff = only
