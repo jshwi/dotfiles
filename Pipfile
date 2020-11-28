@@ -25,6 +25,7 @@ prompt-toolkit = "*"
 
 [packages]
 appdirs = "1.4.4"
+gnupg = "0.4.6"
 pyaml = "20.4.0"
 python-gnupg = "0.4.6"
 
