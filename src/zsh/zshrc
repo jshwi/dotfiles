@@ -15,9 +15,21 @@ export ZSH_BASE_DIR
 export ZSHRC_CONFIG
 
 
+# --- PATH ---
+PATH="$PATH:$HOME/.local/bin"
+PATH="$PATH:/usr/local/bin"
+PATH="$PATH:/home/stephen/.gem/ruby/2.7.0/bin"
+PATH="$PATH:$DOTFILES/bin"
+export PATH
+
+
+# --- PYTHONPATH ---
+PYTHONPATH="$DOTFILES"
+PYTHONPATH="$PYTHONPATH:$DOTFILES/src/zsh/zshrc.d/functions.d"
+export PYTHONPATH
+
+
 # --- GLOBAL ---
-PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
-PATH="/home/stephen/.gem/ruby/2.7.0/bin:$PATH"
 MANPATH="/usr/share/man:$MANPATH"
 _VIM="/usr/bin/vim"
 LANG=en_AU.UTF-8
