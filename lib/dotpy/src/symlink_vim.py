@@ -4,7 +4,7 @@ vim
 import argparse
 import os
 
-from . import env
+from . import HOME
 
 
 class Parser(argparse.ArgumentParser):
@@ -23,9 +23,9 @@ class Parser(argparse.ArgumentParser):
         )
 
 
-def symlink_vim():
+def main():
     parser = Parser()
-    vim_dir = os.path.join(env.HOME, ".vim")
+    vim_dir = os.path.join(HOME, ".vim")
     src = os.path.join("rc", "vimrc.vim")
     dst = os.path.join(vim_dir, "vimrc")
 

@@ -1,23 +1,32 @@
 import os
 
-from . import classy, env, reponame
+from . import (
+    reponame,
+    PACKAGENAME,
+    DOCS,
+    REPOPATH,
+    HashCap,
+    Index,
+    TextIO,
+    announce,
+)
 
 
-def repotoc():
+def main():
     """Make the docs/<PACKAGENAME>.rst file from the package src."""
-    package = reponame.reponame(echo=False)
-    package = package if package else env.PACKAGENAME
+    package = reponame.main(echo=False)
+    package = package if package else PACKAGENAME
     mastertoc = package + ".rst"
-    tocpath = os.path.join(env.DOCS, mastertoc)
-    srcpath = os.path.join(env.REPOPATH, package)
+    tocpath = os.path.join(DOCS, mastertoc)
+    srcpath = os.path.join(REPOPATH, package)
 
     print(f"updating `{mastertoc}'")
     lines = []
-    hashcap = classy.HashCap(tocpath)
+    hashcap = HashCap(tocpath)
     if os.path.isfile(tocpath):
         hashcap.hash_file()
 
-    idx = classy.Index(package)
+    idx = Index(package)
 
     idx.walk_dirs()
 
@@ -43,6 +52,6 @@ def repotoc():
     lines.insert(0, f"{package}\n{len(package) * '='}\n")
     if lines[-1][-1] == "\n":
         lines.append(lines.pop().strip())
-    rstio = classy.TextIO(tocpath)
+    rstio = TextIO(tocpath)
     rstio.write(*lines)
-    classy.announce(hashcap, mastertoc)
+    announce(hashcap, mastertoc)

@@ -3,4 +3,4 @@
 import dotpy
 
 if __name__ == "__main__":
-    dotpy.docs_title()
+    dotpy.docs_title.main()

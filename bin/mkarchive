@@ -3,4 +3,4 @@
 import dotpy
 
 if __name__ == "__main__":
-    dotpy.mkarchive()
+    dotpy.mkarchive.main()

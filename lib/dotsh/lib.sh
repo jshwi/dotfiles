@@ -77,6 +77,7 @@ LIB="$(dirname "$LIBSH")"
 REPOPATH="$(dirname "$LIB")"
 REPONAME="$(basename "$REPOPATH")"
 SCRIPTS="$REPOPATH/bin"
+DOTPY="$LIB/dotpy"
 
 # --- env vars ---
 ENVFILE="$REPOPATH/.env"
@@ -261,6 +262,7 @@ PYITEMS=(
   "$APP_PATH"
   "$TESTS"
   "$DOCSCONF"
+  "$DOTPY"
 )
 
 

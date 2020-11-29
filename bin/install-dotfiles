@@ -2,4 +2,4 @@
 import dotpy
 
 if __name__ == "__main__":
-    dotpy.install()
+    dotpy.install.main()

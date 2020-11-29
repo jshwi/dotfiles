@@ -3,18 +3,11 @@ dotfiles.__init__
 =================
 """
 import argparse
-import datetime
 import os
 import pathlib
 
-import appdirs
 
-from . import config
-
-HOME = str(pathlib.Path.home())
-CONFIGDIR = appdirs.user_config_dir(__name__)
-CONFIG = os.path.join(CONFIGDIR, __name__ + ".yaml")
-SUFFIX = datetime.datetime.now().strftime("%d%m%YT%H%M%S")
+from . import SUFFIX, CONFIG, HOME, CONFIGDIR, DOTCONTENTS, Yaml, comments
 
 
 class Colors:
@@ -175,7 +168,7 @@ def comment_yaml():
         conf = fin.read()
 
     with open(CONFIG, "w") as fout:
-        fout.write(config.COMMENTS + conf)
+        fout.write(comments.COMMENTS + conf)
 
 
 def link_dirs(dirs, source, dirpath, dry):
@@ -212,7 +205,7 @@ def link_all(conf, dry):
                 link_files(obj, source, dirpath, dry)
 
 
-def install():
+def main():
     """Link the main dotfiles to "$HOME": Firstly the dirs and then from
     the symlinked dirs to "$HOME". Linking files from the symlinks make
     the process a lot more scalable for the future if any changes needed
@@ -221,7 +214,7 @@ def install():
     """
     parser = Parser()
     pathlib.Path(CONFIGDIR).mkdir(parents=True, exist_ok=True)
-    conf = config.Yaml(CONFIG)
+    conf = Yaml(CONFIG)
 
     if conf.exists:
 
@@ -232,7 +225,7 @@ def install():
             conf.read()
 
     if not conf.exists:
-        conf.dict.update(config.DOTCONTENTS)
+        conf.dict.update(DOTCONTENTS)
         conf.write()
         comment_yaml()
 

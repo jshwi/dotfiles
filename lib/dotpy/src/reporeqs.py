@@ -2,10 +2,18 @@ import argparse
 import os
 import subprocess
 
-from . import classy, env
+from . import (
+    REQUIREMENTS,
+    LOCKPATH,
+    REQPATH,
+    HashCap,
+    TextIO,
+    announce,
+    pipe_command,
+)
 
 
-def reporeqs():
+def main():
     """Create or update and then format ``requirements.txt`` from
     ``Pipfile.lock``.
     """
@@ -17,22 +25,22 @@ def reporeqs():
         help="path to venv executable",
     )
     args = parser.parse_args()
-    print(f"updating `{env.REQUIREMENTS}'")
-    hashcap = classy.HashCap(env.REQUIREMENTS)
-    if os.path.isfile(env.REQUIREMENTS):
+    print(f"updating `{REQUIREMENTS}'")
+    hashcap = HashCap(REQUIREMENTS)
+    if os.path.isfile(REQUIREMENTS):
         hashcap.hash_file()
 
     # get the stdout for both production and development packages
-    stdout = classy.pipe_command(args.executable, env.LOCKPATH)
-    stdout += classy.pipe_command(args.executable, "--dev", env.LOCKPATH)
+    stdout = pipe_command(args.executable, LOCKPATH)
+    stdout += pipe_command(args.executable, "--dev", LOCKPATH)
 
     # write to file and then use sed to remove the additional
     # information following the semi-colon
-    reqpathio = classy.TextIO(env.REQPATH)
+    reqpathio = TextIO(REQPATH)
     reqpathio.write(*stdout)
     reqpathio.sort()
     reqpathio.deduplicate()
     reqpathio.write()
     # noinspection SubprocessShellMode
-    subprocess.call("sed -i 's/;.*//' " + env.REQPATH, shell=True)
-    classy.announce(hashcap, env.REQUIREMENTS)
+    subprocess.call("sed -i 's/;.*//' " + REQPATH, shell=True)
+    announce(hashcap, REQUIREMENTS)

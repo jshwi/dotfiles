@@ -5,7 +5,7 @@ import argparse
 import os
 import pathlib
 
-from . import env, tar
+from . import HOME, DATE, TIME, Tar
 
 
 class DirInfo:
@@ -31,7 +31,7 @@ class DirInfo:
         return self.old, self.new
 
 
-def mkarchive():
+def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -41,18 +41,18 @@ def mkarchive():
         "-d",
         "--dest",
         action="store",
-        default=os.path.join(env.HOME, "Documents", "Archive"),
+        default=os.path.join(HOME, "Documents", "Archive"),
         help="destination dir for archive",
     )
     args = parser.parse_args()
-    dst_path = os.path.join(args.dest, env.DATE)
+    dst_path = os.path.join(args.dest, DATE)
     infile_dir = os.path.dirname(args.path)
     infile_name = os.path.basename(args.path)
-    archive_name = f"{env.TIME}.{infile_name}.tar.gz"
+    archive_name = f"{TIME}.{infile_name}.tar.gz"
     archive_path = os.path.join(infile_dir, archive_name)
     full_path = os.path.join(dst_path, archive_name)
     dir_info = DirInfo(dst_path)
-    tarobj = tar.Tar(args.path, archive_name)
+    tarobj = Tar(args.path, archive_name)
 
     dir_info.collate_info()
 
@@ -69,6 +69,6 @@ def mkarchive():
 
     print("Storing archive")
     os.rename(archive_path, full_path)
-    print(f". {archive_name} -> {full_path.replace(env.HOME, '~')}")
+    print(f". {archive_name} -> {full_path.replace(HOME, '~')}")
 
     print("Done")

@@ -6,7 +6,7 @@ import os
 import shutil
 import subprocess
 
-from . import tar
+from . import Tar
 
 
 class Parser(argparse.ArgumentParser):
@@ -51,13 +51,13 @@ class GPG:
         subprocess.call(["gpg", "--decrypt", self.enc])
 
 
-def cryptdir():
+def main():
     parser = Parser()
     archive = parser.path + ".tar.gz"
     gpg = GPG(archive)
 
     print("Compressing " + parser.path)
-    tar.Tar(parser.path, archive)
+    Tar(parser.path, archive)
     print(". " + parser.path + " -> " + archive)
 
     print("Removing " + parser.path)

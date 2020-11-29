@@ -1,9 +1,9 @@
 import argparse
 
-from . import classy, env
+from . import READMEPATH, TextIO
 
 
-class EditTitle(classy.TextIO):
+class EditTitle(TextIO):
     """Take the ``path`` and ``replace`` argument from the commandline
     and reformat the README whilst returning the original title to
     the parent process.
@@ -37,7 +37,7 @@ class EditTitle(classy.TextIO):
         self.write()
 
 
-def docs_title():
+def main():
     """Replace the <PACKAGENAME> title in ``README.rst`` with README
     for rendering ``Sphinx`` documentation links.
     """
@@ -46,6 +46,6 @@ def docs_title():
         "-r", "--replace", action="store", help="replacement title"
     )
     args = parser.parse_args()
-    edit = EditTitle(env.READMEPATH, args.replace)
+    edit = EditTitle(READMEPATH, args.replace)
     edit.replace_title()
     print(edit.title)

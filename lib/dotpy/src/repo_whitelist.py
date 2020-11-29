@@ -1,10 +1,10 @@
 import argparse
 import os
 
-from . import env, classy
+from . import WHITELIST, WHITELISTPATH, HashCap, TextIO, announce, pipe_command
 
 
-def repo_whitelist():
+def main():
     """Prepend a line before every lines in a file."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -20,18 +20,18 @@ def repo_whitelist():
         help="path to venv executable",
     )
     args = parser.parse_args()
-    print(f"updating `{env.WHITELIST}'")
+    print(f"updating `{WHITELIST}'")
     stdout = []
-    hashcap = classy.HashCap(env.WHITELISTPATH)
-    pathio = classy.TextIO(env.WHITELISTPATH)
-    if os.path.isfile(env.WHITELISTPATH):
+    hashcap = HashCap(WHITELISTPATH)
+    pathio = TextIO(WHITELISTPATH)
+    if os.path.isfile(WHITELISTPATH):
         hashcap.hash_file()
 
     # append whitelist exceptions for each individual module
     for item in args.files:
         if os.path.exists(item):
             stdout.extend(
-                classy.pipe_command(args.executable, item, "--make-whitelist")
+                pipe_command(args.executable, item, "--make-whitelist")
             )
 
     # merge the prepended PyInspection line to the beginning of every
@@ -41,4 +41,4 @@ def repo_whitelist():
     # clear contents of instantiated `TextIO' object to write a new file
     # and not append
     pathio.write(*lines)
-    classy.announce(hashcap, env.WHITELIST)
+    announce(hashcap, WHITELIST)

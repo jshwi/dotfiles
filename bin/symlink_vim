@@ -3,4 +3,4 @@
 import dotpy
 
 if __name__ == "__main__":
-    dotpy.symlink_vim()
+    dotpy.symlink_vim.main()

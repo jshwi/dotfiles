@@ -1,16 +1,16 @@
 import os
 
-from . import env
+from . import REPOPATH
 
 
-def reponame(echo=True):
+def main(echo=True):
     """Get the name of the directory holding ``__main__.py`` or ``None``
     in which case return an exit-code of `1'
 
     To be used in conjunction which shell scripts so ``echo`` the output
     with print so it can be collected with ``bash``
     """
-    setup = os.path.join(env.REPOPATH, "setup.py")
+    setup = os.path.join(REPOPATH, "setup.py")
     with open(setup) as file:
         fin = file.read()
     lines = fin.splitlines()
