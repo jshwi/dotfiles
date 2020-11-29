@@ -51,7 +51,7 @@ class GPG:
         subprocess.call(["gpg", "--decrypt", self.enc])
 
 
-def main():
+def cryptdir():
     parser = Parser()
     archive = parser.path + ".tar.gz"
     gpg = GPG(archive)

@@ -47,14 +47,14 @@ setup_color() {
 
 setup_color
 TICK="${GREEN}✔${RESET}"
-SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ERR="$SCRIPTS/err.sh"
-TICK="${GREEN}✔${RESET}"
 CROSS="${RED}✘${RESET}"
+SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPOPATH="$(dirname "$SCRIPTS")"
+LIB="$REPOPATH/lib"
+LIBSH="$LIB/libsh"
+ERR="$LIBSH/err.sh"
 
 source "$ERR"
-
-REPOPATH="$(dirname "$SCRIPTS")"
 
 
 # ======================================================================

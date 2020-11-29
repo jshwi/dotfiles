@@ -4,9 +4,9 @@ REPO 	:= $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 NAME	:= $(shell basename $(REPO))
 SETUP 	:= $(REPO)/setup.py
 BIN 	:= $(REPO)/bin
-LIB 	:= $(BIN)/lib.sh
-BUILD	:= $(BIN)/build
-WHICH	:= $(BIN)/which
+_LIB	:= $(REPO)/lib
+LIBSH	:= $(_LIB)/libsh
+LIB 	:= $(LIBSH)/lib.sh
 BASH	:= /bin/bash
 PYTHON	:= /bin/python3
 NAME	:= $(shell $(PYTHON) $(SETUP) --name)
@@ -25,7 +25,7 @@ help:  ## Show this help message and exit
 
 .PHONY: which
 which:  ## Check that pipenv is installed
-	@$(BASH) -c "$(WHICH)"
+	@$(BASH) -c "$(BIN)/which-pipenv"
 
 
 .PHONY: install
@@ -110,4 +110,4 @@ deploy-cov: which  ## Deploy code coverage to Codecov
 
 .PHONY: build
 build: which  ## Run all checks, install and deploy
-	@$(BASH) -c "source $(BUILD); do_build"
+	@$(BASH) -c "source $(BIN/build-repo)"

@@ -1,7 +1,6 @@
 #!/bin/bash -
 # shellcheck source=/dev/null
 
-
 # --- ENV ---
 ZSH="$HOME/.oh-my-zsh"
 ZSH_CUSTOM="$ZSH/custom"
@@ -14,23 +13,7 @@ export DOTFILES
 export ZSH_BASE_DIR
 export ZSHRC_CONFIG
 
-
-# --- PATH ---
-PATH="$PATH:$HOME/.local/bin"
-PATH="$PATH:/usr/local/bin"
-PATH="$PATH:/home/stephen/.gem/ruby/2.7.0/bin"
-PATH="$PATH:$DOTFILES/bin"
-export PATH
-
-
-# --- PYTHONPATH ---
-PYTHONPATH="$DOTFILES"
-PYTHONPATH="$PYTHONPATH:$DOTFILES/src/zsh/zshrc.d/functions.d"
-export PYTHONPATH
-
-
 # --- GLOBAL ---
-MANPATH="/usr/share/man:$MANPATH"
 _VIM="/usr/bin/vim"
 LANG=en_AU.UTF-8
 HISTFILE="$ZSH_BASE_DIR/zsh_history"
@@ -43,7 +26,14 @@ FUNCTIONS="$ZSHRC_CONFIG/functions"
 FUNCTION_DIR="$ZSHRC_CONFIG/functions.d"
 SECRET="$ZSHRC_CONFIG/secret"
 ALIASES="$ZSHRC_CONFIG/aliases"
-TRAVIS="$HOME/.travis"
+LOCALHOME="$HOME/.local"
+LOCALBIN="$LOCALHOME/bin"
+DOTGEM="$HOME/.gem"
+RUBYVERSION="2.7.0"
+DOTRUBY="$DOTGEM/ruby/$RUBYVERSION"
+RUBYBIN="$DOTRUBY/bin"
+DOTFILES_LIB="$DOTFILES/lib"
+DOTFILES_BIN="$DOTFILES/bin"
 export _VIM
 export MANPATH
 export PATH
@@ -55,9 +45,23 @@ export THEMES
 export PLUGINS
 export FUNCTIONS
 export ALIASES
+export FUNCTION_DIR
 export SECRET
-export TRAVIS
 
+# --- PATH ---
+PATH="$PATH:$LOCALBIN"
+PATH="$PATH:$RUBYBIN"
+PATH="$PATH:$DOTFILES_BIN"
+export PATH
+
+# --- PYTHONPATH ---
+PYTHONPATH="$PYTHONPATH:$DOTFILES"
+PYTHONPATH="$PYTHONPATH:$DOTFILES_LIB"
+export PYTHONPATH
+
+# --- MANPATH ---
+MANPATH="$MANPATH:/usr/share/man"
+export MANPATH
 
 # --- OH-MY-ZSH ---
 CASE_SENSITIVE="false"
@@ -85,7 +89,6 @@ export COMPLETION_WAITING_DOTS
 export DISABLE_UNTRACKED_FILES_DIRTY
 export HIST_STAMPS
 
-
 # --- SYNTAX ---
 typeset -A ZSH_HIGHLIGHT_STYLES
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
@@ -100,7 +103,6 @@ ZSH_HIGHLIGHT_STYLES[root]='bg=red'
 export ZSH_HIGHLIGHT_HIGHLIGHTERS
 export ZSH_HIGHLIGHT_STYLES
 
-
 # --- ZSTYLE ---
 zstyle :compinstall filename "$ZSHRC"
 zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
@@ -109,7 +111,6 @@ zstyle ':completion:*:*:killall:*' menu yes select
 zstyle ':completion:*:kill:*'   force-list always
 zstyle ':completion:*:*:kill:*' menu yes select
 zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
-
 
 # --- TERMINAL DEFAULTS ---
 setopt autocd
@@ -120,13 +121,11 @@ eval "$(dircolors "$HOME/.dir_colors")"
 autoload -U promptinit && promptinit  # command prompt
 autoload -Uz compinit && compinit  # advanced tab-completion
 
-
 # -- RUNTIME ---
 source "$THEMES"
 source "$PLUGINS"
 source "$FUNCTIONS"
 source "$ALIASES"
-
 
 # --- ENSURE FUNCTIONS ---
 VISUAL=vim
@@ -134,14 +133,13 @@ EDITOR="$VISUAL"
 export VISUAL
 export EDITOR
 
-
 # --- CONDITIONAL ---
 mkportfile && source "$SECRET"
 [[ -d "$TRAVIS"  ]] && source "$TRAVIS"
-
 
 # --- LOAD SETTINGS ---
 source "$ZSH/oh-my-zsh.sh"
 
 # added by travis gem
-[ ! -s /home/stephen/.travis/travis.sh ] || source /home/stephen/.travis/travis.sh
+DOT_TRAVIS="$HOME/.travis"
+[ ! -s "$DOT_TRAVIS/travis.sh" ] || source "$DOT_TRAVIS/travis.sh"

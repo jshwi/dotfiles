@@ -8,27 +8,6 @@ import pathlib
 from . import env, tar
 
 
-class Parser(argparse.ArgumentParser):
-    def __init__(self):
-        super().__init__(prog="mkarchive")
-        self._add_arguments()
-        self._args = self.parse_args()
-        self.path = self._args.path
-        self.dest = self._args.dest
-
-    def _add_arguments(self):
-        self.add_argument(
-            "path", metavar="PATH", action="store", help="path to archive"
-        )
-        self.add_argument(
-            "-d",
-            "--dest",
-            action="store",
-            default=os.path.join(env.HOME, "Documents", "Archive"),
-            help="destination dir for archive",
-        )
-
-
 class DirInfo:
     def __init__(self, path):
         self.list = path.split(os.sep)[1:]
@@ -52,15 +31,28 @@ class DirInfo:
         return self.old, self.new
 
 
-def main():
-    parser = Parser()
-    dst_path = os.path.join(parser.dest, env.DATE)
-    infile_dir = os.path.dirname(parser.path)
-    infile_name = os.path.basename(parser.path)
+def mkarchive():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "path", metavar="PATH", action="store", help="path to archive"
+    )
+    parser.add_argument(
+        "-d",
+        "--dest",
+        action="store",
+        default=os.path.join(env.HOME, "Documents", "Archive"),
+        help="destination dir for archive",
+    )
+    args = parser.parse_args()
+    dst_path = os.path.join(args.dest, env.DATE)
+    infile_dir = os.path.dirname(args.path)
+    infile_name = os.path.basename(args.path)
     archive_name = f"{env.TIME}.{infile_name}.tar.gz"
     archive_path = os.path.join(infile_dir, archive_name)
     full_path = os.path.join(dst_path, archive_name)
     dir_info = DirInfo(dst_path)
+    tarobj = tar.Tar(args.path, archive_name)
 
     dir_info.collate_info()
 
@@ -72,7 +64,7 @@ def main():
     pathlib.Path(dst_path).mkdir(parents=True, exist_ok=True)
 
     print("Making archive")
-    tar.mk_tarfile(parser.path, archive_name)
+    tarobj.compress()
     print(f". created {archive_name}")
 
     print("Storing archive")
@@ -80,7 +72,3 @@ def main():
     print(f". {archive_name} -> {full_path.replace(env.HOME, '~')}")
 
     print("Done")
-
-
-if __name__ == "__main__":
-    main()

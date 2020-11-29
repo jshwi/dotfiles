@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Entry point for pyfunctions.mkarchive"""
-import pyfunctions
+import dotpy
 
 if __name__ == "__main__":
-    pyfunctions.mkarchive.main()
+    dotpy.mkarchive()

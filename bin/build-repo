@@ -34,7 +34,10 @@
 #=======================================================================
 BIN="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMPLATE_ENV="$BIN/env"
-LIB="$BIN/lib.sh"
+REPOPATH="$(dirname "$BIN")"
+_LIB="$REPOPATH/lib"
+LIBSH="$_LIB/libsh"
+LIB="$LIBSH/lib.sh"
 
 if git symbolic-ref --short HEAD >/dev/null 2>&1; then
   TRAVIS_BRANCH=$(git symbolic-ref --short HEAD)
@@ -123,7 +126,7 @@ announce () {
 # Returns:
 #   `0' if all goes OK
 # ======================================================================
-do_build () {
+main () {
   source_env || return "$?"
   source_symlink
   export TRAVIS_BRANCH
@@ -138,3 +141,6 @@ do_build () {
   ( announce "Uploading coverage to \`codecov'" && deploy_cov ) || return "$?"
   ( announce "Deploying docs" && deploy_docs ) || return "$?"
 }
+
+
+main

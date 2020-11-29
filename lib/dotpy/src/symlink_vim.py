@@ -23,7 +23,7 @@ class Parser(argparse.ArgumentParser):
         )
 
 
-def main():
+def symlink_vim():
     parser = Parser()
     vim_dir = os.path.join(env.HOME, ".vim")
     src = os.path.join("rc", "vimrc.vim")
@@ -36,7 +36,3 @@ def main():
         os.remove(dst)
 
     os.symlink(src, dst)
-
-
-if __name__ == "__main__":
-    main()

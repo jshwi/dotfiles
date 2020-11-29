@@ -68,13 +68,15 @@ export TICK
 export CROSS
 
 # --- navigate environment ---
-SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ERR="$SCRIPTS/err.sh"
+LIBSH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ERR="$LIBSH/err.sh"
 
 source "$ERR"
 
-REPOPATH="$(dirname "$SCRIPTS")"
+LIB="$(dirname "$LIBSH")"
+REPOPATH="$(dirname "$LIB")"
 REPONAME="$(basename "$REPOPATH")"
+SCRIPTS="$REPOPATH/bin"
 
 # --- env vars ---
 ENVFILE="$REPOPATH/.env"
@@ -198,20 +200,38 @@ CODECOV="$VENVBIN/codecov"
 PIPFILE2REQ="$VENVBIN/pipfile2req"
 
 # --- "./bin" ---
-DEVPY="$SCRIPTS/dev"
+MKARCHIVE="$SCRIPTS/mkarchive"
+REPOREQS="$SCRIPTS/reporeqs"
+DOCSTITLE="$SCRIPTS/docs-title"
+BUILDREPO="$SCRIPTS/build-repo"
+REPONAME="$SCRIPTS/reponame"
+CRYPTDIR="$SCRIPTS/cryptdir"
+SYMLINKVIM="$SCRIPTS/symlink_vim"
+WHICHPIPENV="$SCRIPTS/which-pipenv"
+REPOTOC="$SCRIPTS/repotoc"
+REPOWHITELIST="$SCRIPTS/repo_whitelist"
+export MKARCHIVE
+export REPOREQS
+export DOCSTITLE
+export BUILDREPO
+export REPONAME
+export CRYPTDIR
+export SYMLINKVIM
+export WHICHPIPENV
+export REPOTOC
+export REPOWHITELIST
 
 # --- "./$APPNAME" ---
-if [ -e "$PYTHON" ] && APPNAME="$("$PYTHON" "$DEVPY" name)"; then
+if [ -e "$PYTHON" ] && APPNAME="$("$REPONAME" name)"; then
   APP_PATH="$REPOPATH/$APPNAME"
 else
   APP_PATH="$REPOPATH/$REPONAME"
 fi
 MAIN="$APP_PATH/__main__.py"
-SRC="$APP_PATH/src"
 
 # --- PYTHONPATH ---
-PYTHONPATH="$REPOPATH:$APP_PATH:$SRC"
-export PYTHONPATH
+#PYTHONPATH="$PYTHONPATH:$APP_PATH"
+#export PYTHONPATH
 
 # --- "./" ---
 WORKPATH="$REPOPATH/build"
@@ -241,7 +261,6 @@ PYITEMS=(
   "$APP_PATH"
   "$TESTS"
   "$DOCSCONF"
-  "$DEVPY"
 )
 
 
@@ -646,13 +665,12 @@ run_test_cov () {
 # Create <PACKAGENAME>.rst from package directory.
 # Globals:
 #   DOCSCONF
-#   DEVPY
 # Returns:
 #   `0' if all goes ok
 # ======================================================================
 make_toc () {
   if [ -f "$DOCSCONF" ]; then
-    "$DEVPY" toc || return "$?"
+    "$REPOTOC" || return "$?"
   fi
 }
 
@@ -668,7 +686,6 @@ make_toc () {
 # Globals:
 #   SPHINXBUILD
 #   DOCSBUILD
-#   DEVPY
 #   SPHINXBUILD
 #   DOCSOURCE
 #   DOCSCONF
@@ -685,10 +702,10 @@ make_html () {
   _make_html () {
     check_reqs "$SPHINXBUILD" --dev
     rm_force_recurse "$DOCSBUILD"
-    original="$("$DEVPY" title --replace "README")"
+    original="$("$DOCSTITLE" --replace "README")"
     "$SPHINXBUILD" -M html "$DOCSOURCE" "$DOCSBUILD"
     rc=$?
-    "$DEVPY" title --replace "$original" &>/dev/null
+    "$DOCSTITLE" --replace "$original" &>/dev/null
     return $rc
   }
 
@@ -770,7 +787,6 @@ vulture () {
 # ======================================================================
 # Update vulture whitelist for all python files.
 # Globals:
-#   DEVPY
 #   VULTURE
 #   PYITEMS
 # Arguments:
@@ -780,8 +796,7 @@ vulture () {
 # ======================================================================
 whitelist () {
   check_reqs "$VULTURE" --dev
-  "$DEVPY" \
-      whitelist \
+  "$REPOWHITELIST" \
       --executable "$VULTURE" \
       --files "${PYITEMS[@]}"
 }
@@ -794,14 +809,13 @@ whitelist () {
 # all went well.
 # Globals:
 #   PIPFILE2REQ
-#   DEVPY
 #   PYITEMS
 # Returns:
 #   `0' if all goes ok
 # ======================================================================
 pipfile_to_requirements () {
   check_reqs "$PIPFILE2REQ" --dev
-  "$DEVPY" reqs --executable "$PIPFILE2REQ"
+  "$REPOREQS" --executable "$PIPFILE2REQ"
 }
 
 
@@ -960,7 +974,7 @@ install () {
 #   `0' if everything is OK
 # =====================================================================
 make_files () {
-  whitelist || return "$?"
-  make_toc || return "$?"
+  "$REPOWHITELIST" || return "$?"
+  REPOTOC || return "$?"
   pipfile_to_requirements || return "$?"
 }

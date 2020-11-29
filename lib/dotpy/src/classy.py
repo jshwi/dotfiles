@@ -16,19 +16,6 @@ __copyright__ = "2020, Stephen Whitlock"
 __license__ = "MIT"
 __version__ = "1.0.0"
 
-PIPFILELOCK = "Pipfile.lock"
-README = "README.rst"
-REQUIREMENTS = "requirements.txt"
-WHITELIST = "whitelist.py"
-BIN = os.path.dirname(os.path.realpath(__file__))
-REPOPATH = os.path.dirname(BIN)
-DOCS = os.path.join(REPOPATH, "docs")
-LOCKPATH = os.path.join(REPOPATH, PIPFILELOCK)
-PACKAGENAME = os.path.basename(REPOPATH)
-READMEPATH = os.path.join(REPOPATH, README)
-REQPATH = os.path.join(REPOPATH, REQUIREMENTS)
-WHITELISTPATH = os.path.join(REPOPATH, WHITELIST)
-
 
 class Parse(argparse.ArgumentParser):
     """Parse commandline arguments.
@@ -123,40 +110,6 @@ class TextIO:
         self.lines = newlines
 
 
-class EditTitle(TextIO):
-    """Take the ``path`` and ``replace`` argument from the commandline
-    and reformat the README whilst returning the original title to
-    the parent process.
-
-    :param path:    Path to the ``README.rst`` file.
-    :param replace: String to replace the readme title with.
-    """
-
-    def __init__(self, path, replace):
-        super().__init__(path)
-        self.path = path
-        self.replace = replace
-        self.underline = len(replace) * "="
-        self.title = None
-
-    def read_file(self):
-        """Read the ``README.rst`` file. Keep the original title.
-
-        Replace the original title and underline with the new
-        ``replace provided``.
-        """
-        self.title = self.lines[0]
-        self.lines[0] = self.replace
-        self.lines[1] = self.underline
-
-    def replace_title(self):
-        """Read, save the old title as an instance attribute, replace
-        and write.
-        """
-        self.read_file()
-        self.write()
-
-
 class MaxSizeList(list):
     """A ``list`` object that can only hold a maximum of the number
     supplied to ``maxlen``.
@@ -195,6 +148,7 @@ class HashCap:
         hash as a string.
         """
         with open(self.path, "rb") as lines:
+            # noinspection InsecureHash
             md5_hash = hashlib.md5(lines.read())
             self.snapshot.append(md5_hash.hexdigest())
 
@@ -229,26 +183,6 @@ def iter_repo(path):
     return None
 
 
-def get_name(echo=True):
-    """Get the name of the directory holding ``__main__.py`` or ``None``
-    in which case return an exit-code of `1'
-
-    To be used in conjunction which shell scripts so ``echo`` the output
-    with print so it can be collected with ``bash``
-    """
-    setup = os.path.join(REPOPATH, "setup.py")
-    with open(setup) as file:
-        fin = file.read()
-    lines = fin.splitlines()
-    for line in lines:
-        if "__name__" in line:
-            value = line.split("=")[1].strip().replace('"', "")
-            if echo:
-                print(value)
-            return value
-    return None
-
-
 def announce(hashcap, filename):
     """Announce whether whitelist.py needed to be updated or not.
 
@@ -277,41 +211,6 @@ def pipe_command(command, *args):
     process = subprocess.Popen([command, *args], stdout=subprocess.PIPE)
     stdout = process.communicate()[0]
     return stdout.decode().splitlines()
-
-
-def make_requirements(args):
-    """Create or update and then format ``requirements.txt`` from
-    ``Pipfile.lock``.
-    """
-    print(f"updating `{REQUIREMENTS}'")
-    hashcap = HashCap(REQUIREMENTS)
-    if os.path.isfile(REQUIREMENTS):
-        hashcap.hash_file()
-
-    # get the stdout for both production and development packages
-    stdout = pipe_command(args.executable, LOCKPATH)
-    stdout += pipe_command(args.executable, "--dev", LOCKPATH)
-
-    # write to file and then use sed to remove the additional
-    # information following the semi-colon
-    reqpathio = TextIO(REQPATH)
-    reqpathio.write(*stdout)
-    reqpathio.sort()
-    reqpathio.deduplicate()
-    reqpathio.write()
-    subprocess.call("sed -i 's/;.*//' " + REQPATH, shell=True)
-    announce(hashcap, REQUIREMENTS)
-
-
-def make_title(args):
-    """Replace the <PACKAGENAME> title in ``README.rst`` with README
-    for rendering ``Sphinx`` documentation links.
-
-    :param args: ``argparse`` ``Namespace`` object.
-    """
-    edit = EditTitle(READMEPATH, args.replace)
-    edit.replace_title()
-    print(edit.title)
 
 
 class Index:
@@ -352,102 +251,3 @@ class Index:
         if os.path.isdir(self._root):
             for root, _, files in os.walk(self._root):
                 self.walk_files(root, files)
-
-
-def make_toc():
-    """Make the docs/<PACKAGENAME>.rst file from the package src."""
-    package = get_name(echo=False)
-    package = package if package else PACKAGENAME
-    mastertoc = package + ".rst"
-    tocpath = os.path.join(DOCS, mastertoc)
-    srcpath = os.path.join(REPOPATH, package)
-
-    print(f"updating `{mastertoc}'")
-    lines = []
-    hashcap = HashCap(tocpath)
-    if os.path.isfile(tocpath):
-        hashcap.hash_file()
-
-    idx = Index(package)
-
-    idx.walk_dirs()
-
-    # compile a list of modules for Sphinx to document and sort them
-    # e.g. [..automodule:: <PACKAGENAME>.src.<MODULE>, ...]
-    if os.path.isdir(srcpath):
-        files = sorted([f".. automodule:: {i}" for i in idx.file_paths])
-
-        # add the additional toctree properties for each listed module
-        lines.extend(
-            [
-                f
-                + "\n"
-                + "    :members:\n"
-                + "    :undoc-members:\n"
-                + "    :show-inheritance:\n"
-                for f in files
-            ]
-        )
-
-    # insert the title and underline and then write to file
-    # announce the outcome
-    lines.insert(0, f"{package}\n{len(package) * '='}\n")
-    if lines[-1][-1] == "\n":
-        lines.append(lines.pop().strip())
-    rstio = TextIO(tocpath)
-    rstio.write(*lines)
-    announce(hashcap, mastertoc)
-
-
-def make_whitelist(args):
-    """Prepend a line before every lines in a file.
-
-    :param args: ``argparse`` ``Namespace`` object.
-    """
-    print(f"updating `{WHITELIST}'")
-    stdout = []
-    hashcap = HashCap(WHITELISTPATH)
-    pathio = TextIO(WHITELISTPATH)
-    if os.path.isfile(WHITELISTPATH):
-        hashcap.hash_file()
-
-    # append whitelist exceptions for each individual module
-    for item in args.files:
-        if os.path.exists(item):
-            stdout.extend(
-                pipe_command(args.executable, item, "--make-whitelist")
-            )
-
-    # merge the prepended PyInspection line to the beginning of every
-    # entry
-    lines = [line.strip() for line in stdout if line != ""]
-
-    # clear contents of instantiated `TextIO' object to write a new file
-    # and not append
-    pathio.write(*lines)
-    announce(hashcap, WHITELIST)
-
-
-def main():
-    """Module entry point. Parse commandline arguments and run the
-    selected choice from the dictionary of functions which matches the
-    key. If no args can be passed to the function ignore the
-    ``TypeError`` and run without.
-    """
-
-    choices = {
-        "name": get_name,
-        "reqs": make_requirements,
-        "whitelist": make_whitelist,
-        "toc": make_toc,
-        "title": make_title,
-    }
-    parse = Parse(choices.keys())
-    try:
-        choices[parse.choice](parse.args)
-    except TypeError:
-        choices[parse.choice]()
-
-
-if __name__ == "__main__":
-    main()

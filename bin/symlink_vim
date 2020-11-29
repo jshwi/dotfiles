@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Entry point for pyfunctions.symlink_vim"""
-import pyfunctions
+import dotpy
 
 if __name__ == "__main__":
-    pyfunctions.symlink_vim.main()
+    dotpy.symlink_vim()
