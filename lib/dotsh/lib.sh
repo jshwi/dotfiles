@@ -974,7 +974,7 @@ install () {
 #   `0' if everything is OK
 # =====================================================================
 make_files () {
-  "$REPOWHITELIST" || return "$?"
-  REPOTOC || return "$?"
+  whitelist || return "$?"
+  "$REPOTOC" || return "$?"
   pipfile_to_requirements || return "$?"
 }

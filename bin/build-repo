@@ -35,9 +35,9 @@
 BIN="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMPLATE_ENV="$BIN/env"
 REPOPATH="$(dirname "$BIN")"
-_LIB="$REPOPATH/lib"
-LIBSH="$_LIB/libsh"
-LIB="$LIBSH/lib.sh"
+LIBSH="$REPOPATH/lib"
+DOTSH="$LIBSH/dotsh"
+LIBSH="$DOTSH/lib.sh"
 
 if git symbolic-ref --short HEAD >/dev/null 2>&1; then
   TRAVIS_BRANCH=$(git symbolic-ref --short HEAD)
@@ -45,7 +45,7 @@ else
   TRAVIS_BRANCH=
 fi
 
-source "$LIB"
+source "$LIBSH"
 
 
 # ======================================================================

@@ -51,8 +51,8 @@ CROSS="${RED}✘${RESET}"
 SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPOPATH="$(dirname "$SCRIPTS")"
 LIB="$REPOPATH/lib"
-LIBSH="$LIB/libsh"
-ERR="$LIBSH/err.sh"
+DOTSH="$LIB/dotsh"
+ERR="$DOTSH/err.sh"
 
 source "$ERR"
 

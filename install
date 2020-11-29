@@ -1,5 +1,1 @@
-#!/usr/bin/env python3
-import dotfiles
-
-if __name__ == "__main__":
-    dotfiles.main()
+bin/install-dotfiles

@@ -8,7 +8,8 @@ import os
 import pathlib
 
 import appdirs
-from .src import config
+
+from . import config
 
 HOME = str(pathlib.Path.home())
 CONFIGDIR = appdirs.user_config_dir(__name__)
@@ -211,7 +212,7 @@ def link_all(conf, dry):
                 link_files(obj, source, dirpath, dry)
 
 
-def main():
+def install():
     """Link the main dotfiles to "$HOME": Firstly the dirs and then from
     the symlinked dirs to "$HOME". Linking files from the symlinks make
     the process a lot more scalable for the future if any changes needed

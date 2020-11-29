@@ -5,60 +5,9 @@ dev
 
 Tools to help manage Python repos
 """
-import argparse
 import hashlib
 import os
 import subprocess
-
-__author__ = "Stephen Whitlock"
-__email__ = "stephen@jshwisolutions.com"
-__copyright__ = "2020, Stephen Whitlock"
-__license__ = "MIT"
-__version__ = "1.0.0"
-
-
-class Parse(argparse.ArgumentParser):
-    """Parse commandline arguments.
-
-    :param choices: List of function choices.
-    """
-
-    def __init__(self, choices):
-        # noinspection PyTypeChecker
-        super().__init__(
-            formatter_class=lambda prog: argparse.HelpFormatter(
-                prog, max_help_position=55
-            ),
-        )
-
-        self.choices = choices
-        self._add_arguments()
-        self.args = self.parse_args()
-        self.choice = self.args.choice[0]
-
-    def _add_arguments(self):
-        """Arguments needed for this module."""
-        self.add_argument(
-            "choice",
-            nargs="+",
-            choices=self.choices,
-            help="choice of function",
-        )
-        self.add_argument(
-            "-r", "--replace", action="store", help="replacement title"
-        )
-        self.add_argument(
-            "-f",
-            "--files",
-            nargs="+",
-            help="files to scan for vulture's whitelist.py",
-        )
-        self.add_argument(
-            "-e",
-            "--executable",
-            action="store",
-            help="path to venv executable",
-        )
 
 
 class TextIO:

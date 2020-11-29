@@ -5,7 +5,7 @@ from . import classy, env, reponame
 
 def repotoc():
     """Make the docs/<PACKAGENAME>.rst file from the package src."""
-    package = reponame(echo=False)
+    package = reponame.reponame(echo=False)
     package = package if package else env.PACKAGENAME
     mastertoc = package + ".rst"
     tocpath = os.path.join(env.DOCS, mastertoc)
