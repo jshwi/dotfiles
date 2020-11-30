@@ -17,7 +17,6 @@ docutils==0.16
 flaky==3.7.0
 flask-shell-ipython==0.4.1
 flask==1.1.2
-gnupg==2.3.1
 idna==2.10
 imagesize==1.2.0
 iniconfig==1.1.1
@@ -41,7 +40,6 @@ pickleshare==0.7.5
 pipfile-requirements==0.3.0
 pluggy==0.13.1
 prompt-toolkit==3.0.8
-psutil==5.7.3
 ptyprocess==0.6.0
 py==1.9.0
 pyaml==20.4.0

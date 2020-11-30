@@ -5,30 +5,7 @@ import argparse
 import os
 import pathlib
 
-from . import HOME, DATE, TIME, Tar
-
-
-class DirInfo:
-    def __init__(self, path):
-        self.list = path.split(os.sep)[1:]
-        self.old = f"/{self.list.pop(0)}"
-        self.new = None
-
-    def _build_new_path(self, _dir):
-        if self.new is not None:
-            return os.path.join(self.new, _dir)
-        return _dir
-
-    def collate_info(self):
-        for _dir in self.list:
-            test_dir = os.path.join(self.old, _dir)
-            if os.path.isdir(test_dir):
-                self.old = test_dir
-            else:
-                self.new = self._build_new_path(_dir)
-
-    def get_info(self):
-        return self.old, self.new
+from . import HOME, DATE, TIME, Tar, DirInfo
 
 
 def main():

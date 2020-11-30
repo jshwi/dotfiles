@@ -7,16 +7,27 @@ ZSH_CUSTOM="$ZSH/custom"
 DOTFILES="$HOME/.dotfiles"
 ZSH_BASE_DIR="$HOME/.zsh"
 ZSHRC_CONFIG="$ZSH_BASE_DIR/zshrc.d"
+ZSH_CACHE="$ZSH_BASE_DIR/.cache"
 export ZSH
 export ZSH_CUSTOM
 export DOTFILES
 export ZSH_BASE_DIR
 export ZSHRC_CONFIG
 
+# Create a cache folder if it isn't exists
+if [ ! -d "$ZSH_CACHE" ]; then
+    mkdir -p "$ZSH_CACHE"
+fi
+
+# Define a custom file for compdump
+ZSH_COMPDUMP="$ZSH_CACHE/zcompdump-$HOST-$ZSH_VERSION"
+HISTFILE="$ZSH_CACHE/zsh_history"
+
 # --- GLOBAL ---
 _VIM="/usr/bin/vim"
 LANG=en_AU.UTF-8
-HISTFILE="$ZSH_BASE_DIR/zsh_history"
+
+
 HISTSIZE='10000'
 SAVEHIST="$HISTSIZE"
 TERM="xterm-256color"
@@ -24,7 +35,6 @@ THEMES="$ZSHRC_CONFIG/themes"
 PLUGINS="$ZSHRC_CONFIG/plugins"
 FUNCTIONS="$ZSHRC_CONFIG/functions"
 FUNCTION_DIR="$ZSHRC_CONFIG/functions.d"
-SECRET="$ZSHRC_CONFIG/secret"
 ALIASES="$ZSHRC_CONFIG/aliases"
 LOCALHOME="$HOME/.local"
 LOCALBIN="$LOCALHOME/bin"
@@ -45,7 +55,6 @@ export PLUGINS
 export FUNCTIONS
 export ALIASES
 export FUNCTION_DIR
-export SECRET
 
 # --- PATH ---
 PATH="$PATH:$LOCALBIN"
@@ -133,7 +142,6 @@ export VISUAL
 export EDITOR
 
 # --- CONDITIONAL ---
-mkportfile && source "$SECRET"
 [[ -d "$TRAVIS"  ]] && source "$TRAVIS"
 
 # --- LOAD SETTINGS ---

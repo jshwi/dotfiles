@@ -1,11 +1,12 @@
 """
-tests._test.py
+tests.install_test.py
 ==============
 """
 import os
 import sys
 
 import dotpy
+import pytest
 
 from . import expected
 
@@ -23,10 +24,11 @@ def install(nocolorcapsys):
     return nocolorcapsys.stdout()
 
 
-def test_clone_self(clone_self, dotclone):
+def test_clone_self(dotclone):
     # testing above fixture
     vimrc_link = os.path.join(dotclone, "src", "vim", "vimrc")
     assert os.path.isdir(dotclone)
+    dotpy.install.main()
     assert os.path.islink(vimrc_link)
 
 
@@ -68,7 +70,8 @@ def test_symlinks(nocolorcapsys):
             assert val in contents
 
 
-def test_backups(nocolorcapsys, suffix):
+@pytest.mark.usefixtures("dotclone")
+def test_backups(tmpdir, dotclone, nocolorcapsys, suffix):
     """Test that the actual output informing the user of the process,
     including the backing up of files, matches the expected output.
 
@@ -80,7 +83,7 @@ def test_backups(nocolorcapsys, suffix):
     """
     test_output(nocolorcapsys)
     out = install(nocolorcapsys)
-    assert out == expected.backups(dotpy.install.HOME, suffix)
+    assert out == expected.backups(tmpdir, suffix)
 
 
 def test_dry_run(nocolorcapsys):
@@ -100,6 +103,7 @@ def test_dry_run(nocolorcapsys):
     assert updated_dir == freeze_dir
 
 
+@pytest.mark.usefixtures("dotclone")
 def test_dry_run_backups(nocolorcapsys, suffix):
     """Test that the actual output informing the user of the process,
     including the notice that this is a dry-run of a run including
@@ -119,6 +123,7 @@ def test_dry_run_backups(nocolorcapsys, suffix):
     assert updated_dir == freeze_dir
 
 
+@pytest.mark.usefixtures("dotclone")
 def test_broken_symlink(nocolorcapsys):
     """Test that the process can detect a broken symlink and then remove
     it and create a working link.

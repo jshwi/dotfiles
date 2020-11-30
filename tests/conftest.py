@@ -12,6 +12,8 @@ import pytest
 
 import dotpy
 
+DOTFILES = ".dotfiles"
+
 
 class NoColorCapsys:
     """Capsys but with a regex to remove ANSI escape codes
@@ -114,8 +116,8 @@ def fixture_init_py(package_dir):
     return os.path.join(package_dir, "__init__.py")
 
 
-@pytest.fixture(name="dot_constants", autouse=True)
-def dot_constants(nocolorcapsys, monkeypatch, tmpdir, entry_point):
+@pytest.fixture(name="mock_constants", autouse=True)
+def fixture_mock_constants(nocolorcapsys, monkeypatch, tmpdir, entry_point):
     """Run the install process and return it's output stripped of any
     ANSI escaped color codes. The returned output can be used or ignored
     to control the stream of stdout/ stderr.
@@ -140,16 +142,8 @@ def dot_constants(nocolorcapsys, monkeypatch, tmpdir, entry_point):
     dotpy.install.CONFIG = os.path.join(
         dotpy.install.CONFIGDIR, __name__ + ".yaml"
     )
-
-
-@pytest.fixture(name="dotclone")
-def fixture_dotclone(tmpdir):
-    """Get the path to the mock .dotpy repository clone.
-
-    :param tmpdir:  The temporary directory ``pytest`` fixture.
-    :return:        The mock .dotpy repository clone.
-    """
-    return os.path.join(tmpdir, ".dotfiles")
+    dotpy.install.DOTFILES = os.path.join(tmpdir, DOTFILES)
+    dotpy.install.SOURCE = os.path.join(tmpdir, DOTFILES, "src")
 
 
 @pytest.fixture(name="suffix")
@@ -162,21 +156,23 @@ def fixture_suffix():
     return dotpy.SUFFIX
 
 
-@pytest.fixture(name="clone_self", autouse=True)
-def fixture_clone_self(repo_dir, dotclone):
+@pytest.fixture(name="dotclone", autouse=True)
+def fixture_dotclone(tmpdir, repo_dir):
     """Clone this repository to the temporary dir returned from
     ``tmpdir`` so that tests can be run without effecting this
     repository.
 
+    :param tmpdir:
     :param repo_dir:    The absolute path to this repository.
-    :param dotclone:    The absolute path to this repository's temporary
-                        clone.
     """
+    dotclone = os.path.join(tmpdir, DOTFILES)
+    command = ["git", "clone", repo_dir, dotclone]
     subprocess.call(
-        ["git", "clone", repo_dir, dotclone],
+        command,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
+    return dotclone
 
 
 @pytest.fixture(name="mock_vscode_config_dir", autouse=True)
@@ -191,3 +187,60 @@ def fixture_mock_vscode_config_dir(tmpdir):
     dir_object = pathlib.Path(config_dir)
     dir_object.mkdir(parents=True, exist_ok=True)
     return config_dir
+
+
+@pytest.fixture(name="dir_to_encrypt")
+def fixture_dir_to_encrypt(tmpdir):
+    dir_to_encrypt = pathlib.Path(tmpdir) / "dir_to_encrypt"
+    dir_to_encrypt.mkdir(parents=True, exist_ok=True)
+    for num in list(range(10)):
+        test_file = dir_to_encrypt / f"{num}.txt"
+        test_file.touch()
+    return str(dir_to_encrypt.resolve())
+
+
+@pytest.fixture(name="recipient")
+def fixture_recipient(tmpdir, nocolorcapsys):
+    """Create a .gnupg directory along with a temporary encryption and
+    decryption key etc. to use during testing
+
+    :param : The altered test Parser() Namespace
+    """
+    recipient = "joe@foo.bar"
+
+    dummy_key = (
+        "%no-protection\n"
+        "Key-Type: RSA\n"
+        "Key-Length: 1024\n"
+        "Subkey-Type: RSA\n"
+        "Subkey-Length: 1024\n"
+        "Name-Real: Joe Foo\n"
+        "Name-Comment: stupid passphrase\n"
+        "Name-Email: " + recipient + "\n"
+        "Expire-Date: 1\n"
+        "%commit\n"
+    )
+
+    homedir = pathlib.Path(tmpdir) / ".gnupg"
+    keyfile = homedir / "keyfile.asc"
+
+    homedir.mkdir(parents=True, exist_ok=True)
+
+    with keyfile.open("w") as fout:
+        fout.write(dummy_key)
+
+    homedir.chmod(0o700)
+    keyfile.chmod(0o600)
+
+    os.environ["GNUPGHOME"] = os.path.dirname(keyfile)
+    exit_code = dotpy.GPG.add_batch_key(keyfile)
+    assert exit_code == 0
+
+    return recipient
+
+
+@pytest.fixture(name="crypt_test_files")
+def fixture_crypt_test_files(dir_to_encrypt):
+    tarfile = dir_to_encrypt + ".tar.gz"
+    gpgfile = tarfile + ".gpg"
+    return dir_to_encrypt, tarfile, gpgfile

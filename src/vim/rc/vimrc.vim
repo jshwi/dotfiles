@@ -16,7 +16,6 @@
 source $HOME/.vim/plugins/plugins.vim
 source $HOME/.vim/plugins/themes.vim
 
-
 " =============================================================================
 " FILETYPES
 " =============================================================================
@@ -75,6 +74,7 @@ set noerrorbells
 set visualbell
 set vb
 set t_vb=".
+set viminfo+=n~/.vim/.cache/viminfo
 
 " =============================================================================
 " NERDTREE

@@ -1,6 +1,0 @@
-#!/usr/bin/env python3
-"""Entry point for dotpy.reporeqs"""
-import dotpy
-
-if __name__ == "__main__":
-    dotpy.reporeqs.main()

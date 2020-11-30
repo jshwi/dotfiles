@@ -143,7 +143,7 @@ alias gta='git tag -a -m'
 alias gf='git reflog'
 alias gfa='git fetch --all'
 # --- leverage an alias from ~/.gitconfig ---
-alias gh='git hist'
+# alias gh='git hist'
 alias glg1='git lg1'
 alias glg2='git lg2'
 alias glg='git lg'

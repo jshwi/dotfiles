@@ -1,1 +1,5 @@
-bin/install-dotfiles
+#!/usr/bin/env python3
+import dotpy
+
+if __name__ == "__main__":
+    dotpy.install.main()

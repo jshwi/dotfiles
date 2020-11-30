@@ -6,51 +6,17 @@ import argparse
 import os
 import pathlib
 
-
-from . import SUFFIX, CONFIG, HOME, CONFIGDIR, DOTCONTENTS, Yaml, comments
-
-
-class Colors:
-    """Return strings in color.
-    :var: black
-    :var: red
-    :var: green
-    :var: yellow
-    :var: blue
-    :var: magenta
-    :var: cyan
-    :var: white
-    """
-
-    codes = {
-        "black": 0,
-        "red": 1,
-        "green": 2,
-        "yellow": 3,
-        "blue": 4,
-        "magenta": 5,
-        "cyan": 6,
-        "white": 7,
-    }
-
-    def __init__(self, color="white"):
-        try:
-            self.color = self.codes[color]
-        except KeyError:
-            self.color = self.codes["white"]
-
-    def get(self, string):
-        """Get a list of strings if there are multiple strings or just
-        return the single string if there is only one.
-
-        :param string:  String(s) to color.
-        :return:        Single colored string or a list of colored
-                        strings.
-        """
-        return f"\u001b[0;3{self.color};40m{string}\u001b[0;0m"
-
-    def print(self, string, **kwargs):
-        print(self.get(string), **kwargs)
+from . import (
+    SUFFIX,
+    CONFIG,
+    HOME,
+    CONFIGDIR,
+    DOTCONTENTS,
+    SOURCE,
+    Colors,
+    Yaml,
+    comments,
+)
 
 
 class Parser(argparse.ArgumentParser):
@@ -171,9 +137,9 @@ def comment_yaml():
         fout.write(comments.COMMENTS + conf)
 
 
-def link_dirs(dirs, source, dirpath, dry):
+def link_dirs(dirs, dirpath, dry):
     for dotdir, dotfiles in dirs.items():
-        dotfile_source = os.path.join(source, dotdir)
+        dotfile_source = os.path.join(SOURCE, dotdir)
         dotdir_dest = os.path.expanduser(dirpath) + dotdir
         linkdest(dotfile_source, dotdir_dest, dry)
 
@@ -183,26 +149,35 @@ def link_dirs(dirs, source, dirpath, dry):
             linkdest(dotfile_source, dotfile_dest, dry)
 
 
-def link_files(files, source, dirpath, dry):
+def link_files(files, dirpath, dry):
     for file in files:
-        dotfile_source = os.path.join(source, file)
+        dotfile_source = os.path.join(SOURCE, file)
         filename = os.path.basename(file)
         dotfile_dest = os.path.expanduser(dirpath) + filename
         linkdest(dotfile_source, dotfile_dest, dry)
 
 
 def link_all(conf, dry):
-    source = os.path.join(HOME, ".dotfiles", "src")
 
     for dot_type in conf:
 
         for dirpath, obj in conf[dot_type].items():
 
             if dot_type == "dirs":
-                link_dirs(obj, source, dirpath, dry)
+                link_dirs(obj, dirpath, dry)
 
             elif dot_type == "files":
-                link_files(obj, source, dirpath, dry)
+                link_files(obj, dirpath, dry)
+
+
+def link_vimrc_version():
+    src = os.path.join("rc", "vimrc.vim")
+    dst = os.path.join(SOURCE, "vim", "vimrc")
+    try:
+        os.symlink(src, dst)
+    except FileExistsError:
+        os.remove(dst)
+        os.symlink(src, dst)
 
 
 def main():
@@ -234,6 +209,7 @@ def main():
             print(CONFIG)
 
     if not parser.init:
+        link_vimrc_version()
         link_all(conf.dict, parser.dry)
 
         if parser.dry:
