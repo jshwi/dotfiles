@@ -1,0 +1,19 @@
+Dotfiles Docs
+=============
+
+|
+
+The source code is available `here <https://github.com/jshwi/dotfiles>`_
+
+|
+
+.. toctree::
+   :maxdepth: 1
+   :name: mastertoc
+
+   dotfiles
+   readme
+
+* :ref:`genindex`
+
+This documentation was last updated on |today|
