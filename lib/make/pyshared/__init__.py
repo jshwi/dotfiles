@@ -17,8 +17,6 @@ __copyright__ = "2020, Stephen Whitlock"
 __license__ = "MIT"
 __version__ = "1.0.0"
 
-import sys
-
 LIBMAKE = os.path.dirname(os.path.realpath(__file__))
 LIB = os.path.dirname(LIBMAKE)
 REPOPATH = os.path.dirname(LIB)
@@ -292,7 +290,7 @@ def pipe_command(command, *args):
     return stdout.decode().splitlines()
 
 
-def make_requirements(args):
+def make_requirements():
     """Create or update and then format ``requirements.txt`` from
     ``Pipfile.lock``.
     """
@@ -302,8 +300,8 @@ def make_requirements(args):
         hashcap.hash_file()
 
     # get the stdout for both production and development packages
-    stdout = pipe_command(args.executable, LOCKPATH)
-    stdout += pipe_command(args.executable, "--dev", LOCKPATH)
+    stdout = pipe_command("pipfile2req", LOCKPATH)
+    stdout += pipe_command("pipfile2req", "--dev", LOCKPATH)
 
     # write to file and then use sed to remove the additional
     # information following the semi-colon
@@ -317,12 +315,15 @@ def make_requirements(args):
     announce(hashcap, REQUIREMENTS)
 
 
-def make_title(args):
+def make_title():
     """Replace the <PACKAGENAME> title in ``README.rst`` with README
     for rendering ``Sphinx`` documentation links.
-
-    :param args: ``argparse`` ``Namespace`` object.
     """
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-r", "--replace", action="store", help="replacement title"
+    )
+    args = parser.parse_args()
     edit = EditTitle(READMEPATH, args.replace)
     edit.replace_title()
     print(edit.title)
@@ -413,11 +414,19 @@ def make_toc():
     announce(hashcap, mastertoc)
 
 
-def make_whitelist(args):
+def make_whitelist():
     """Prepend a line before every lines in a file.
 
     :param args: ``argparse`` ``Namespace`` object.
     """
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-f",
+        "--files",
+        nargs="+",
+        help="files to scan for vulture's whitelist.py",
+    )
+    args = parser.parse_args()
     print(f"updating `{WHITELIST}'")
     stdout = []
     hashcap = HashCap(WHITELISTPATH)
@@ -428,9 +437,7 @@ def make_whitelist(args):
     # append whitelist exceptions for each individual module
     for item in args.files:
         if os.path.exists(item):
-            stdout.extend(
-                pipe_command(args.executable, item, "--make-whitelist")
-            )
+            stdout.extend(pipe_command("vulture", item, "--make-whitelist"))
 
     # merge the prepended PyInspection line to the beginning of every
     # entry

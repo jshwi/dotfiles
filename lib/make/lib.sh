@@ -29,6 +29,7 @@
 
 # --- paths ---
 LIBMAKE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # /lib/make/
+PYSHARED="${LIBMAKE}/pyshared"
 LIB="$(dirname "$LIBMAKE")"  # /lib/
 REPOPATH="$(dirname "$LIB")"  # /
 REPONAME="$(basename "$REPOPATH")"  # /<REPONAME>
@@ -75,34 +76,33 @@ PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV_LIB}"
 PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV_BIN}"
 PYTHONPATH="${PYTHONPATH}:${LIBMAKE}"
 PYTHONPATH="${PYTHONPATH}:${SITE_PACKAGES}"
+PYTHONPATH="${PYTHONPATH}:${PYSHARED}"
 
 # --- PATH ---
 PATH="${PATH}:${VIRTUAL_ENV_BIN}"
 
 # --- "./$APPNAME" ---
-if ! APP_PATH="$(python3 "$LIBMAKE" path)"; then
+if ! APP_PATH="$(python3 "${LIBMAKE}/path.py")"; then
   APP_PATH="${REPOPATH}/${REPONAME}"
 fi
-
-# --- /<APP_NAME>/__main__.py ---
 MAIN="${APP_PATH}/__main__.py"
 
 # --- "./" ---
-WORKPATH="$REPOPATH/build"
+WORKPATH="${REPOPATH}/build"
 SPECPATH="${APP_PATH}.spec"
-TESTS="$DOTFILES/tests"
-WHITELIST="$REPOPATH/whitelist.py"
-PYLINTRC="$REPOPATH/.pylintrc"
-COVERAGEXML="$REPOPATH/coverage.xml"
+TESTS="${DOTFILES}/tests"
+WHITELIST="${REPOPATH}/whitelist.py"
+PYLINTRC="${REPOPATH}/.pylintrc"
+COVERAGEXML="${REPOPATH}/coverage.xml"
 
 # --- "./dist" ---
-DISTPATH="$REPOPATH/dist"
-COMPILED="$DISTPATH/$REPONAME"
+DISTPATH="${REPOPATH}/dist"
+COMPILED="${DISTPATH}/${REPONAME}"
 
 # --- "./docs" ---
-DOCSOURCE="$REPOPATH/docs"
-DOCSCONF="$DOCSOURCE/conf.py"
-DOCSBUILD="$DOCSOURCE/_build"
+DOCSOURCE="${REPOPATH}/docs"
+DOCSCONF="${DOCSOURCE}/conf.py"
+DOCSBUILD="${DOCSOURCE}/_build"
 
 # --- array of python files and directories ---
 PYITEMS=(
@@ -512,7 +512,7 @@ make_coverage () {
 # ======================================================================
 make_toc () {
   if [ -f "$DOCSCONF" ]; then
-    python3 "$LIBMAKE" toc || return "$?"
+    python3 "${LIBMAKE}/toc.py" || return "$?"
   fi
 }
 
@@ -545,10 +545,10 @@ make_docs () {
   _make_docs () {
     check_reqs sphinx-build --dev
     rm_force_recurse "$DOCSBUILD"
-    original="$("$LIBMAKE" title --replace "README")"
+    original="$("python3" "${LIBMAKE}/title.py" --replace "README")"
     sphinx-build -M html "$DOCSOURCE" "$DOCSBUILD"
     rc=$?
-    "$LIBMAKE" title --replace "$original" &>/dev/null
+    python3 "${LIBMAKE}/title.py" --replace "$original" &>/dev/null
     return $rc
   }
 
@@ -640,8 +640,7 @@ make_unused () {
 # ======================================================================
 whitelist () {
   check_reqs vulture --dev
-  python3 "$LIBMAKE" \
-      whitelist \
+  python3 "${LIBMAKE}/whitelist.py" \
       --executable vulture \
       --files "${PYITEMS[@]}"
 }
@@ -661,7 +660,7 @@ whitelist () {
 # ======================================================================
 pipfile_to_requirements () {
   check_reqs pipfile2req --dev
-  python3 "$LIBMAKE" reqs --executable pipfile2req
+  python3 "${LIBMAKE}/requirements.py" --executable pipfile2req
 }
 
 
