@@ -195,6 +195,7 @@ class HashCap:
         hash as a string.
         """
         with open(self.path, "rb") as lines:
+            # noinspection InsecureHash
             md5_hash = hashlib.md5(lines.read())
             self.snapshot.append(md5_hash.hexdigest())
 
@@ -299,6 +300,7 @@ def make_requirements(args):
     reqpathio.sort()
     reqpathio.deduplicate()
     reqpathio.write()
+    # noinspection SubprocessShellMode
     subprocess.call("sed -i 's/;.*//' " + REQPATH, shell=True)
     announce(hashcap, REQUIREMENTS)
 
