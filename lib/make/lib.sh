@@ -24,41 +24,35 @@
 #
 # shellcheck disable=SC1090,SC2153
 # ======================================================================
+# ---source this script only once ---
 [ -n "$LIBMAKE_ENV" ] && return; LIBMAKE_ENV=0; # pragma once
 
-LIBMAKE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# --- paths ---
+LIBMAKE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # /lib/make/
+LIB="$(dirname "$LIBMAKE")"  # /lib/
+REPOPATH="$(dirname "$LIB")"  # /
+REPONAME="$(basename "$REPOPATH")"  # /<REPONAME>
+ENVFILE="$REPOPATH/.env"  # /.env
 
-# --- source lib/make ---
+# --- source /lib/make/ ---
 source "$LIBMAKE/colors.sh"
 source "$LIBMAKE/err.sh"
 source "$LIBMAKE/icons.sh"
 
-LIB="$(dirname "$LIBMAKE")"
-
-REPOPATH="$(dirname "$LIB")"
-
-ENVFILE="$REPOPATH/.env"
-
-# --- source .env ---
+# --- source /.env ---
 [ -f "$ENVFILE" ] && source "$ENVFILE"
 
-REPONAME="$(basename "$REPOPATH")"
-
-# --- env vars ---
-PIPENV_IGNORE_VIRTUALENVS=1
-export PIPENV_IGNORE_VIRTUALENVS
-source  "$ENVFILE"
-
-# --- */**"/bin/" ---
+# --- */**/bin/ ---
 if [[ "$EUID" -eq 0 ]]; then
   BIN="/usr/local/bin"
 else
   BIN="$HOME/.local/bin"
 fi
 
+# --- install location ---
 INSTALLED="$BIN/$REPONAME"
 
-# --- */**"/virtalenvs/$REPONAME-*/" ---
+# --- */**/virtalenvs/<REPONAME>-*/ ---
 if [ "$1" == "--no-install" ]; then
   VIRTUAL_ENV=
 else
@@ -69,38 +63,28 @@ else
   VIRTUAL_ENV="$(pipenv --venv)"
 fi
 
-PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV}/bin"
-PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV}/lib/python*/site-packages"
-
-# --- "./bin" ---
-DEVPY="$LIBMAKE/dev"
-
 # --- "./$APPNAME" ---
 if [ -e "$PYTHON" ] && APPNAME="$("$PYTHON" "$DEVPY" name)"; then
   APP_PATH="$REPOPATH/$APPNAME"
 else
   APP_PATH="$REPOPATH/$REPONAME"
 fi
-MAIN="$APP_PATH/__main__.py"
-SRC="$APP_PATH/src"
 
 # --- PYTHONPATH ---
-PYTHONPATH="$REPOPATH:$APP_PATH:$SRC"
-export PYTHONPATH
+PYTHONPATH="${PYTHONPATH}${REPOPATH}"
+PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV}/bin"
+PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV}/lib/python*/site-packages"
+
+# --- /<APP_NAME>/__main__.py ---
+MAIN="$APP_PATH/__main__.py"
 
 # --- "./" ---
 WORKPATH="$REPOPATH/build"
 SPECPATH="${APP_PATH}.spec"
-README="$REPOPATH/README.rst"
 TESTS="$REPOPATH/tests"
 WHITELIST="$REPOPATH/whitelist.py"
 PYLINTRC="$REPOPATH/.pylintrc"
 COVERAGEXML="$REPOPATH/coverage.xml"
-PIPFILELOCK="$REPOPATH/Pipfile.lock"
-REQUIREMENTS="$REPOPATH/requirements.txt"
-export README
-export PIPFILELOCK
-export REQUIREMENTS
 
 # --- "./dist" ---
 DISTPATH="$REPOPATH/dist"
@@ -119,6 +103,8 @@ PYITEMS=(
   "$DEVPY"
 )
 
+export PIPENV_IGNORE_VIRTUALENVS=1
+export PYTHONPATH
 
 # ======================================================================
 # Pass the path to expected executable for this function. If the file
@@ -139,6 +125,7 @@ check_reqs () {
   items="$1";
   installed=1
   for item in "${items[@]}"; do
+
     if [ ! -f "$item" ]; then
       installed=0
       break
@@ -441,10 +428,10 @@ deploy_cov () {
 #   of the python files
 # ======================================================================
 format_py () {
-  check_reqs "$BLACK" --dev
+  check_reqs black --dev
   for item in "${PYITEMS[@]}"; do
     if [ -e "$item" ]; then
-      "$BLACK" "$item"
+      black "$item"
     fi
   done
   unset items
