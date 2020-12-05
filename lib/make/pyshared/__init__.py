@@ -17,19 +17,15 @@ __copyright__ = "2020, Stephen Whitlock"
 __license__ = "MIT"
 __version__ = "1.0.0"
 
-LIBMAKE = os.path.dirname(os.path.realpath(__file__))
-LIB = os.path.dirname(LIBMAKE)
-REPOPATH = os.path.dirname(LIB)
-PIPFILELOCK = os.path.join(REPOPATH, "Pipfile.lock")
-README = os.path.join(REPOPATH, "README.rst")
-REQUIREMENTS = os.path.join(REPOPATH, "requirements.txt")
-WHITELIST = os.path.join(REPOPATH, "whitelist.py")
-DOCS = os.path.join(REPOPATH, "docs")
-LOCKPATH = os.path.join(REPOPATH, PIPFILELOCK)
+LIBMAKE = os.environ["LIBMAKE"]
+REPOPATH = os.environ["REPOPATH"]
+REQUIREMENTS = os.environ["REQUIREMENTS"]
+LOCKPATH = os.environ["LOCKPATH"]
+READMEPATH = os.environ["READMEPATH"]
+DOCS = os.environ["DOCS"]
+WHITELIST = os.environ["WHITELIST"]
+SETUP = os.environ["SETUP"]
 PACKAGENAME = os.path.basename(REPOPATH)
-READMEPATH = os.path.join(REPOPATH, README)
-REQPATH = os.path.join(REPOPATH, REQUIREMENTS)
-WHITELISTPATH = os.path.join(REPOPATH, WHITELIST)
 
 
 class Parse(argparse.ArgumentParser):
@@ -239,8 +235,7 @@ def get_name(echo=True):
     To be used in conjunction which shell scripts so ``echo`` the output
     with print so it can be collected with ``bash``
     """
-    setup = os.path.join(REPOPATH, "setup.py")
-    with open(setup) as file:
+    with open(SETUP) as file:
         fin = file.read()
     lines = fin.splitlines()
     for line in lines:
@@ -305,13 +300,13 @@ def make_requirements():
 
     # write to file and then use sed to remove the additional
     # information following the semi-colon
-    reqpathio = TextIO(REQPATH)
+    reqpathio = TextIO(REQUIREMENTS)
     reqpathio.write(*stdout)
     reqpathio.sort()
     reqpathio.deduplicate()
     reqpathio.write()
     # noinspection SubprocessShellMode
-    subprocess.call("sed -i 's/;.*//' " + REQPATH, shell=True)
+    subprocess.call("sed -i 's/;.*//' " + REQUIREMENTS, shell=True)
     announce(hashcap, REQUIREMENTS)
 
 
@@ -415,10 +410,7 @@ def make_toc():
 
 
 def make_whitelist():
-    """Prepend a line before every lines in a file.
-
-    :param args: ``argparse`` ``Namespace`` object.
-    """
+    """Prepend a line before every lines in a file."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-f",
@@ -429,9 +421,9 @@ def make_whitelist():
     args = parser.parse_args()
     print(f"updating `{WHITELIST}'")
     stdout = []
-    hashcap = HashCap(WHITELISTPATH)
-    pathio = TextIO(WHITELISTPATH)
-    if os.path.isfile(WHITELISTPATH):
+    hashcap = HashCap(WHITELIST)
+    pathio = TextIO(WHITELIST)
+    if os.path.isfile(WHITELIST):
         hashcap.hash_file()
 
     # append whitelist exceptions for each individual module
@@ -447,29 +439,3 @@ def make_whitelist():
     # and not append
     pathio.write(*lines)
     announce(hashcap, WHITELIST)
-
-
-def main():
-    """Module entry point. Parse commandline arguments and run the
-    selected choice from the dictionary of functions which matches the
-    key. If no args can be passed to the function ignore the
-    ``TypeError`` and run without.
-    """
-
-    choices = {
-        "name": get_name,
-        "path": get_path,
-        "reqs": make_requirements,
-        "whitelist": make_whitelist,
-        "toc": make_toc,
-        "title": make_title,
-    }
-    parse = Parse(choices.keys())
-    try:
-        choices[parse.choice](parse.args)
-    except TypeError:
-        choices[parse.choice]()
-
-
-if __name__ == "__main__":
-    main()

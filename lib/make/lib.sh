@@ -26,6 +26,7 @@
 # ======================================================================
 # ---source this script only once ---
 [ -n "$LIBMAKE_ENV" ] && return; LIBMAKE_ENV=0; # pragma once
+PIPENV_IGNORE_VIRTUALENVS=1
 
 # --- paths ---
 LIBMAKE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # /lib/make/
@@ -35,9 +36,29 @@ REPOPATH="$(dirname "$LIB")"  # /
 REPONAME="$(basename "$REPOPATH")"  # /<REPONAME>
 ENVFILE="$REPOPATH/.env"  # /.env
 
+# --- / ---
+WORKPATH="${REPOPATH}/build"
+TESTS="${REPOPATH}/tests"
+WHITELIST="${REPOPATH}/whitelist.py"
+PYLINTRC="${REPOPATH}/.pylintrc"
+COVERAGEXML="${REPOPATH}/coverage.xml"
+COVERAGEXML="${REPOPATH}/setup.py"
+LOCKPATH="${REPOPATH}/Pipfile.lock"
+READMEPATH="${REPOPATH}/README.rst"
+SETUP="${REPOPATH}/setup.py"
+DISTPATH="${REPOPATH}/dist"
+DOCS="${REPOPATH}/docs"
+REQUIREMENTS="${REPOPATH}/requirements.txt"
+export PIPENV_IGNORE_VIRTUALENVS
 export LIBMAKE
 export LIB
 export REPOPATH
+export REQUIREMENTS
+export LOCKPATH
+export READMEPATH
+export DOCS
+export WHITELIST
+export SETUP
 
 # --- source /lib/make/ ---
 source "${LIBMAKE}/colors.sh"
@@ -77,9 +98,11 @@ PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV_BIN}"
 PYTHONPATH="${PYTHONPATH}:${LIBMAKE}"
 PYTHONPATH="${PYTHONPATH}:${SITE_PACKAGES}"
 PYTHONPATH="${PYTHONPATH}:${PYSHARED}"
+export PYTHONPATH
 
 # --- PATH ---
 PATH="${PATH}:${VIRTUAL_ENV_BIN}"
+export PATH
 
 # --- "./$APPNAME" ---
 if ! APP_PATH="$(python3 "${LIBMAKE}/path.py")"; then
@@ -88,21 +111,14 @@ fi
 MAIN="${APP_PATH}/__main__.py"
 
 # --- "./" ---
-WORKPATH="${REPOPATH}/build"
 SPECPATH="${APP_PATH}.spec"
-TESTS="${DOTFILES}/tests"
-WHITELIST="${REPOPATH}/whitelist.py"
-PYLINTRC="${REPOPATH}/.pylintrc"
-COVERAGEXML="${REPOPATH}/coverage.xml"
 
 # --- "./dist" ---
-DISTPATH="${REPOPATH}/dist"
 COMPILED="${DISTPATH}/${REPONAME}"
 
 # --- "./docs" ---
-DOCSOURCE="${REPOPATH}/docs"
-DOCSCONF="${DOCSOURCE}/conf.py"
-DOCSBUILD="${DOCSOURCE}/_build"
+DOCSCONF="${DOCS}/conf.py"
+DOCSBUILD="${DOCS}/_build"
 
 # --- array of python files and directories ---
 PYITEMS=(
@@ -111,10 +127,6 @@ PYITEMS=(
   "$DOCSCONF"
   "$LIBMAKE"
 )
-
-export PIPENV_IGNORE_VIRTUALENVS=1
-export PYTHONPATH
-export PATH
 
 
 # ======================================================================
@@ -132,6 +144,7 @@ export PATH
 #   `0' if all goes OK
 # ======================================================================
 make_announce () {
+  echo
   echo "${BOLD}${CYAN}+ --- make $1 ---${RESET}"
 }
 
@@ -530,7 +543,7 @@ make_toc () {
 #   DOCSBUILD
 #   LIBMAKE
 #   SPHINXBUILD
-#   DOCSOURCE
+#   DOCS
 #   DOCSCONF
 # Arguments:
 #   None
@@ -546,7 +559,7 @@ make_docs () {
     check_reqs sphinx-build --dev
     rm_force_recurse "$DOCSBUILD"
     original="$("python3" "${LIBMAKE}/title.py" --replace "README")"
-    sphinx-build -M html "$DOCSOURCE" "$DOCSBUILD"
+    sphinx-build -M html "$DOCS" "$DOCSBUILD"
     rc=$?
     python3 "${LIBMAKE}/title.py" --replace "$original" &>/dev/null
     return $rc
@@ -915,7 +928,7 @@ build () {
 #   repository cannot be entered
 # ======================================================================
 which-pipenv () {
-  cd "$DOTFILES" || return 1
+  cd "$REPOPATH" || return 1
   if ! command -v pipenv >/dev/null 2>&1; then
     err "${CROSS} \`pipenv' not found"
   else
