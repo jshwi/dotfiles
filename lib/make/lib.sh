@@ -34,10 +34,15 @@ REPOPATH="$(dirname "$LIB")"  # /
 REPONAME="$(basename "$REPOPATH")"  # /<REPONAME>
 ENVFILE="$REPOPATH/.env"  # /.env
 
+export LIBMAKE
+export LIB
+export REPOPATH
+
 # --- source /lib/make/ ---
 source "${LIBMAKE}/colors.sh"
 source "${LIBMAKE}/err.sh"
 source "${LIBMAKE}/icons.sh"
+source "${LIBMAKE}/clean.sh"
 
 # --- source /.env ---
 [ -f "$ENVFILE" ] && source "$ENVFILE"
@@ -53,15 +58,11 @@ fi
 INSTALLED="${BIN}/${REPONAME}"
 
 # --- */**/virtalenvs/<REPONAME>-*/ ---
-if [ "$1" == "--no-install" ]; then
-  VIRTUAL_ENV=
-else
-  cd "$REPOPATH" || return 1
-  if ! pipenv --venv >/dev/null 2>&1; then
-    pipenv install || return 1
-  fi
-  VIRTUAL_ENV="$(pipenv --venv)"
+cd "$REPOPATH" || return 1
+if ! pipenv --venv >/dev/null 2>&1; then
+  pipenv install || return 1
 fi
+VIRTUAL_ENV="$(pipenv --venv)"
 VIRTUAL_ENV_BIN="${VIRTUAL_ENV}/bin"
 VIRTUAL_ENV_LIB="${VIRTUAL_ENV}/lib"
 PYTHONVERSION="$(ls -t -U "$VIRTUAL_ENV_LIB")"
@@ -114,6 +115,25 @@ PYITEMS=(
 export PIPENV_IGNORE_VIRTUALENVS=1
 export PYTHONPATH
 export PATH
+
+
+# ======================================================================
+# Stylize and announce process in cyan
+#
+# Globals:
+#   BOLD
+#   CYAN
+#   RESET
+# Arguments:
+#   Announcement as a string
+# Outputs:
+#   Stylized announcement
+# Returns:
+#   `0' if all goes OK
+# ======================================================================
+make_announce () {
+  echo "${BOLD}${CYAN}+ --- make $1 ---${RESET}"
+}
 
 # ======================================================================
 # Pass the path to expected executable for this function. If the file
@@ -233,72 +253,6 @@ rm_exe () {
 
 
 # ======================================================================
-# Remove every build element from repository and remove installed binary
-# from site or user bin directory.
-# Instruct `pipenv' to destroy the repository's virtual environment.
-# Create an array of the command outputs to find out if there was a
-# result whilst still displaying output by directing the stream to
-# /dev/tty
-# If there was no output then the package was not installed so notify
-# the user
-# Globals:
-#   VIRTUAL_ENV
-#   YELLOW
-#   REPONAME
-#   RESET
-# Arguments:
-#   None
-# Outputs:
-#   Announces to the user that files and directories are being removed
-#   or announces that nothing took place
-# ======================================================================
-uninstall () {
-  if pipenv --venv >/dev/null 2>&1; then
-    VIRTUAL_ENV="$(pipenv --venv)"
-  fi
-  items=(
-    "$(clean_repo 2>&1 | tee /dev/tty)"
-    "$([[ "$VIRTUAL_ENV" == "" ]] || pipenv --rm 2>&1 | tee /dev/tty)"
-    "$(rm_exe 2>&1 | tee /dev/tty)"
-  )
-  for item in "${items[@]}"; do
-    if [ "$item" != "" ]; then
-      echo
-      echo "${YELLOW}${REPONAME} uninstalled successfully${RESET}"
-      return 0
-    fi
-  done
-  echo "${REPONAME} is not installed"
-}
-
-
-# ======================================================================
-# Remove all unversioned directories and files with `git'.
-# Globals:
-#   REPOPATH
-# Arguments:
-#   None
-# Outputs:
-#   Files and directories removed by git
-# Returns:
-#   None-zero exit code if function fails to entry repository otherwise
-#   zero
-# ======================================================================
-clean_repo () {
-  cd "$DOTFILES" || return 1
-  git clean \
-      -fdx \
-      --exclude=".env" \
-      --exclude="instance" \
-      --exclude="bundle" \
-      --exclude="zsh_history" \
-      --exclude="bash_history" \
-      --exclude="vimrc" \
-      --exclude=".cache"
-}
-
-
-# ======================================================================
 # Add and commit the documentation for `gh-pages' deployment. Ensure the
 # commit message containing `[ci skip]' - this is all occurring
 # automatically during a `Travis CI' build and we do not want to run
@@ -383,7 +337,7 @@ master_docs () {
 #   `0' if the build succeeds or documentation is skipped, `1' if the
 #   build fails
 # ======================================================================
-deploy_docs () {
+make_deploy_docs () {
   branch="${1:-"master"}"
   if [[ "$TRAVIS_BRANCH" =~ ^"$branch"$|^[0-9]+\.[0-9]+\.X$ ]]; then
       if [[ -n "$GH_NAME" && -n "$GH_EMAIL" ]]; then
@@ -408,7 +362,7 @@ deploy_docs () {
 # Arguments:
 #   API token
 # ======================================================================
-deploy_cov () {
+make_deploy_cov () {
   if [ -f "$COVERAGEXML" ]; then
     check_reqs codecov
     codecov --file "$COVERAGEXML" --token "$CODECOV_TOKEN" || return "$?"
@@ -434,7 +388,7 @@ deploy_cov () {
 #   exit code (determined by `Black') if there is a parse error in any
 #   of the python files
 # ======================================================================
-format_py () {
+make_format () {
   check_reqs black --dev
   for item in "${PYITEMS[@]}"; do
     if [ -e "$item" ]; then
@@ -462,7 +416,7 @@ format_py () {
 #   (determined by `pylint') if `pylint' is unable to parse `.pylintrc'
 #   file or is unable to find the sources root
 # ======================================================================
-lint_files () {
+make_lint () {
 
   _pylint () {
     pylint "$1" --output-format=colorized || return "$?"
@@ -504,7 +458,7 @@ lint_files () {
 #   `0' if the tests pass, non-zero if they fail (determined by
 #   `pytest')
 # ======================================================================
-run_tests () {
+make_tests () {
   if ls "$TESTS/"*_test.py >/dev/null 2>&1 \
       || ls "$TESTS"/test_*.py >/dev/null 2>&1 ; then
     check_reqs pytest --dev
@@ -532,7 +486,7 @@ run_tests () {
 #   `0' if the tests pass, non-zero if they fail (determined by
 #   `pytest')
 # ======================================================================
-run_test_cov () {
+make_coverage () {
   if ls "$TESTS/"*_test.py >/dev/null 2>&1 \
       || ls "$TESTS"/test_*.py >/dev/null 2>&1 ; then
     items=( pytest coverage )
@@ -586,9 +540,9 @@ make_toc () {
 #   `0' if the build is successful, non-zero exit code (determined by
 #   `Sphinx') if the build fails
 # ======================================================================
-make_html () {
+make_docs () {
 
-  _make_html () {
+  _make_docs () {
     check_reqs sphinx-build --dev
     rm_force_recurse "$DOCSBUILD"
     original="$("$LIBMAKE" title --replace "README")"
@@ -602,7 +556,7 @@ make_html () {
 
   # allow for cleanup before exit in the case that there is an error
   if [ -f "$DOCSCONF" ]; then
-    _make_html || return "$?"
+    _make_docs || return "$?"
   else
     echo "no docs found"
   fi
@@ -623,7 +577,7 @@ make_html () {
 #   `0' if everything checks out - possible non-zero exit code if there
 #   are errors in the stub-files (determined by `mypy'
 # ======================================================================
-inspect_types () {
+make_typecheck () {
   check_reqs mypy --dev
   for item in "${PYITEMS[@]}"; do
     if [ -e "$item" ]; then
@@ -842,7 +796,7 @@ install_binary () {
 #   `0' if build succeeds, otherwise non-zero exit code (determined
 #   by `Pyinstaller') or `1'
 # ======================================================================
-install () {
+make_install () {
   if [ -n "$INSTALL_SCRIPT" ]; then
     script_path="$REPOPATH/$INSTALL_SCRIPT"
     if [ -e "$script_path" ]; then
@@ -922,26 +876,6 @@ source_symlink () {
 
 
 # ======================================================================
-# Stylize and announce process in cyan
-#
-# Globals:
-#   BOLD
-#   CYAN
-#   RESET
-# Arguments:
-#   Announcement as a string
-# Outputs:
-#   Stylized announcement
-# Returns:
-#   `0' if all goes OK
-# ======================================================================
-announce () {
-  echo
-  echo "${BOLD}${CYAN}+ --- make $1 ---${RESET}"
-}
-
-
-# ======================================================================
 # Run the main functions in this package to confirm quality of repo and
 # build
 #
@@ -953,17 +887,16 @@ announce () {
 build () {
   source_env || return "$?"
   source_symlink
-  export TRAVIS_BRANCH
-  ( announce "clean" && clean_repo ) || return "$?"
-  ( announce "format" && format_py ) || return "$?"
-  ( announce "typecheck" && inspect_types ) || return "$?"
-  ( announce "unused" && make_unused ) || return "$?"
-  ( announce "coverage" && run_test_cov ) || return "$?"
-  ( announce "docs" && make_html ) || return "$?"
-  ( announce "lint" && lint_files ) || return "$?"
-  ( announce "install" && install_binary ) || return "$?"
-  ( announce "deploy-cov'" && deploy_cov "$@" ) || return "$?"
-  ( announce "deploy-docs" && deploy_docs "$@" ) || return "$?"
+  ( make_announce "clean" && make_clean ) || return "$?"
+  ( make_announce "format" && make_format ) || return "$?"
+  ( make_announce "typecheck" && make_typecheck ) || return "$?"
+  ( make_announce "unused" && make_unused ) || return "$?"
+  ( make_announce "coverage" && make_coverage ) || return "$?"
+  ( make_announce "docs" && make_docs ) || return "$?"
+  ( make_announce "lint" && make_lint ) || return "$?"
+  ( make_announce "install" && make_install ) || return "$?"
+  ( make_announce "deploy-cov'" && make_deploy_cov "$@" ) || return "$?"
+  ( make_announce "deploy-docs" && make_deploy_docs "$@" ) || return "$?"
 }
 
 

@@ -6,6 +6,7 @@ SETUP 	:= $(REPO)/setup.py
 LIBMAKE	:= $(REPO)/lib/make
 WHICH	:= $(LIBMAKE)/which
 LIB		:= $(LIBMAKE)/lib.sh
+CLEAN	:= $(LIBMAKE)/clean.sh
 BASH	:= /bin/bash
 PYTHON	:= /bin/python3
 NAME	:= $(shell $(PYTHON) $(SETUP) --name)
@@ -29,7 +30,7 @@ which:  ## Check that pipenv is installed
 
 .PHONY: install
 install: which  ## Install bin executable
-	@$(BASH) -c "source $(LIB); install"
+	@$(BASH) -c "source $(LIB); make_install"
 
 
 .PHONY: docs
@@ -39,22 +40,22 @@ docs: which  ## Compile documentation
 
 .PHONY: tests
 tests: which  ## Run unittests
-	@$(BASH) -c "source $(LIB); run_tests"
+	@$(BASH) -c "source $(LIB); make_tests"
 
 
 .PHONY: clean
 clean:  ## Remove all untracked dirs and files
-	@$(BASH) -c "source $(LIB) --no-install; clean_repo"
+	@$(BASH) -c "source $(LIB); make_clean"
 
 
 .PHONY: uninstall
 uninstall: which  ## Uninstall binary
-	@$(BASH) -c "source $(LIB) --no-install; uninstall"
+	@$(BASH) -c "source $(CLEAN) make_uninstall"
 
 
 .PHONY: format
 format: which  ## Format all .py project files
-	@$(BASH) -c "source $(LIB); format_py"
+	@$(BASH) -c "source $(LIB); make_format"
 
 
 .PHONY: lint
@@ -74,7 +75,7 @@ typecheck: which  ## Inspect files for type errors
 
 .PHONY: unused
 unused: which  ## Inspect files for unused attributes
-	@$(BASH) -c "source $(LIB); vulture"
+	@$(BASH) -c "source $(LIB); make_unused"
 
 
 .PHONY: whitelist

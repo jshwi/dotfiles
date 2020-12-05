@@ -19,8 +19,8 @@ __version__ = "1.0.0"
 
 import sys
 
-MAKELIB = os.path.dirname(os.path.realpath(__file__))
-LIB = os.path.dirname(MAKELIB)
+LIBMAKE = os.path.dirname(os.path.realpath(__file__))
+LIB = os.path.dirname(LIBMAKE)
 REPOPATH = os.path.dirname(LIB)
 PIPFILELOCK = os.path.join(REPOPATH, "Pipfile.lock")
 README = os.path.join(REPOPATH, "README.rst")
