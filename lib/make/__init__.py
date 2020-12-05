@@ -16,12 +16,14 @@ __copyright__ = "2020, Stephen Whitlock"
 __license__ = "MIT"
 __version__ = "1.0.0"
 
-PIPFILELOCK = "Pipfile.lock"
-README = "README.rst"
-REQUIREMENTS = "requirements.txt"
-WHITELIST = "whitelist.py"
-BIN = os.path.dirname(os.path.realpath(__file__))
-REPOPATH = os.path.dirname(BIN)
+MAKELIB = os.path.dirname(os.path.realpath(__file__))
+LIB = os.path.dirname(MAKELIB)
+REPOPATH = os.path.dirname(LIB)
+
+PIPFILELOCK = os.path.join(REPOPATH, "Pipfile.lock")
+README = os.path.join(REPOPATH, "README.rst")
+REQUIREMENTS = os.path.join(REPOPATH, "requirements.txt")
+WHITELIST = os.path.join(REPOPATH, "whitelist.py")
 DOCS = os.path.join(REPOPATH, "docs")
 LOCKPATH = os.path.join(REPOPATH, PIPFILELOCK)
 PACKAGENAME = os.path.basename(REPOPATH)
