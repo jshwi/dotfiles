@@ -37,26 +37,11 @@ DOTCONTENTS = dict(
         ],
     },
 )
-PACKAGE = os.path.dirname(os.path.realpath(__file__))
-PYLIB = os.path.dirname(PACKAGE)
-LIB = os.path.dirname(PYLIB)
-REPOPATH = os.path.dirname(LIB)
-DOCS = os.path.join(REPOPATH, "docs")
 GNUPG_PASSPHRASE = os.environ.get("GNUPG_PASSPHRASE", "")
 HOME = str(pathlib.Path.home())
-DOTFILES = str(pathlib.Path.home() / ".dotfiles")
 SOURCE = str(pathlib.Path.home() / ".dotfiles" / "src")
-PIPFILELOCK = "Pipfile.lock"
-LOCKPATH = os.path.join(REPOPATH, PIPFILELOCK)
-PACKAGENAME = os.path.basename(REPOPATH)
-README = "README.rst"
-READMEPATH = os.path.join(REPOPATH, README)
-REQUIREMENTS = "requirements.txt"
-REQPATH = os.path.join(REPOPATH, REQUIREMENTS)
 SUFFIX = datetime.datetime.now().strftime("%d%m%YT%H%M%S")
 TIME = datetime.datetime.now().strftime("%H:%M:%S")
-WHITELIST = "whitelist.py"
-WHITELISTPATH = os.path.join(REPOPATH, WHITELIST)
 
 
 class Colors:
@@ -118,19 +103,6 @@ class EnterDir:
 
     def __exit__(self, _, value, __):
         os.chdir(self.saved_path)
-
-
-def pipe_command(command, *args):
-    """Run a command and return the piped output.
-
-    :param command: Command, as ``str``, to execute - find path with
-                    ``shutil.which``.
-    :param args:    Args to be run by the command.
-    :return:        Output piped from the command as a ``str`` object.
-    """
-    process = subprocess.Popen([command, *args], stdout=subprocess.PIPE)
-    stdout = process.communicate()[0]
-    return stdout.decode().splitlines()
 
 
 class Yaml:

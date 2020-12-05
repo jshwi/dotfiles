@@ -26,15 +26,17 @@
 # ======================================================================
 # ---source this script only once ---
 [ -n "$LIBMAKE_ENV" ] && return; LIBMAKE_ENV=0; # pragma once
+
+# --- pipenv env vars ---
 PIPENV_IGNORE_VIRTUALENVS=1
 
-# --- paths ---
+# --- repo env ---
 LIBMAKE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # /lib/make/
 PYSHARED="${LIBMAKE}/pyshared"
 LIB="$(dirname "$LIBMAKE")"  # /lib/
 REPOPATH="$(dirname "$LIB")"  # /
 REPONAME="$(basename "$REPOPATH")"  # /<REPONAME>
-ENVFILE="$REPOPATH/.env"  # /.env
+ENVFILE="${REPOPATH}/.env"  # /.env
 
 # --- / ---
 WORKPATH="${REPOPATH}/build"
@@ -84,7 +86,10 @@ cd "$REPOPATH" || return 1
 if ! pipenv --venv >/dev/null 2>&1; then
   pipenv install || return 1
 fi
+cd - >/dev/null 2>&1 || return 1
 VIRTUAL_ENV="$(pipenv --venv)"
+
+# --- */**/virtalenvs/<REPONAME>-*/* ---
 VIRTUAL_ENV_BIN="${VIRTUAL_ENV}/bin"
 VIRTUAL_ENV_LIB="${VIRTUAL_ENV}/lib"
 PYTHONVERSION="$(ls -t -U "$VIRTUAL_ENV_LIB")"
@@ -104,19 +109,21 @@ export PYTHONPATH
 PATH="${PATH}:${VIRTUAL_ENV_BIN}"
 export PATH
 
-# --- "./$APPNAME" ---
+# --- */**/<APPNAME>/ ---
 if ! APP_PATH="$(python3 "${LIBMAKE}/path.py")"; then
   APP_PATH="${REPOPATH}/${REPONAME}"
 fi
+
+# --- */**/<APPNAME>/* ---
 MAIN="${APP_PATH}/__main__.py"
 
-# --- "./" ---
+# --- / ---
 SPECPATH="${APP_PATH}.spec"
 
-# --- "./dist" ---
+# --- /dist ---
 COMPILED="${DISTPATH}/${REPONAME}"
 
-# --- "./docs" ---
+# --- /docs ---
 DOCSCONF="${DOCS}/conf.py"
 DOCSBUILD="${DOCS}/_build"
 
@@ -506,7 +513,7 @@ make_coverage () {
     for item in "${items[@]}"; do
       check_reqs "$item" --dev
     done
-    pyetst --color=yes "$TESTS" --cov="$APP_PATH" -vv || return "$?"
+    pytest --color=yes "$TESTS" --cov="$APP_PATH" -vv || return "$?"
     coverage xml
     unset items
   else
@@ -654,7 +661,6 @@ make_unused () {
 whitelist () {
   check_reqs vulture --dev
   python3 "${LIBMAKE}/whitelist.py" \
-      --executable vulture \
       --files "${PYITEMS[@]}"
 }
 

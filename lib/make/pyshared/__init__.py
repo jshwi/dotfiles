@@ -11,65 +11,13 @@ import os
 import pathlib
 import subprocess
 
-__author__ = "Stephen Whitlock"
-__email__ = "stephen@jshwisolutions.com"
-__copyright__ = "2020, Stephen Whitlock"
-__license__ = "MIT"
-__version__ = "1.0.0"
-
-LIBMAKE = os.environ["LIBMAKE"]
-REPOPATH = os.environ["REPOPATH"]
-REQUIREMENTS = os.environ["REQUIREMENTS"]
-LOCKPATH = os.environ["LOCKPATH"]
-READMEPATH = os.environ["READMEPATH"]
-DOCS = os.environ["DOCS"]
-WHITELIST = os.environ["WHITELIST"]
-SETUP = os.environ["SETUP"]
-PACKAGENAME = os.path.basename(REPOPATH)
-
-
-class Parse(argparse.ArgumentParser):
-    """Parse commandline arguments.
-
-    :param choices: List of function choices.
-    """
-
-    def __init__(self, choices):
-        # noinspection PyTypeChecker
-        super().__init__(
-            formatter_class=lambda prog: argparse.HelpFormatter(
-                prog, max_help_position=55
-            ),
-        )
-
-        self.choices = choices
-        self._add_arguments()
-        self.args = self.parse_args()
-        self.choice = self.args.choice[0]
-
-    def _add_arguments(self):
-        """Arguments needed for this module."""
-        self.add_argument(
-            "choice",
-            nargs="+",
-            choices=self.choices,
-            help="choice of function",
-        )
-        self.add_argument(
-            "-r", "--replace", action="store", help="replacement title"
-        )
-        self.add_argument(
-            "-f",
-            "--files",
-            nargs="+",
-            help="files to scan for vulture's whitelist.py",
-        )
-        self.add_argument(
-            "-e",
-            "--executable",
-            action="store",
-            help="path to venv executable",
-        )
+REPOPATH = os.environ.get("REPOPATH", None)
+REQUIREMENTS = os.environ.get("REQUIREMENTS", None)
+LOCKPATH = os.environ.get("LOCKPATH", None)
+READMEPATH = os.environ.get("READMEPATH", None)
+DOCS = os.environ.get("DOCS", None)
+WHITELIST = os.environ.get("WHITELIST", None)
+SETUP = os.environ.get("SETUP", None)
 
 
 class TextIO:
@@ -248,11 +196,19 @@ def get_name(echo=True):
 
 
 def get_path():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-e",
+        "--exclude",
+        nargs="+",
+        default=[],
+        help="exclude from search for path",
+    )
+    args = parser.parse_args()
     name = get_name(echo=False)
     path = pathlib.Path(REPOPATH)
-    p = path.rglob("*/**/" + name)
-    for i in p:
-        print(i)
+    pathlist = [p for p in path.rglob(name) if path.stem not in args.exclude]
+    print(pathlist[0])
 
 
 def announce(hashcap, filename):
@@ -262,13 +218,14 @@ def announce(hashcap, filename):
                         the ``snapshot`` list of file hashes.
     :param filename:    Name of the file without the preceding paths.
     """
-    output = f"created `{filename}'"
+    file = os.path.basename(filename)
+    output = f"created `{file}'"
     if hashcap.snapshot:
-        output = f"updated `{filename}'"
+        output = f"updated `{file}'"
         hashcap.hash_file()
         match = hashcap.compare()
         if match:
-            output = f"`{filename}' is already up to date"
+            output = f"`{file}' is already up to date"
     print(output)
 
 
@@ -366,13 +323,14 @@ class Index:
 
 def make_toc():
     """Make the docs/<PACKAGENAME>.rst file from the package src."""
+    packagename = os.path.basename(REPOPATH)
     package = get_name(echo=False)
-    package = package if package else PACKAGENAME
+    package = package if package else packagename
     mastertoc = package + ".rst"
     tocpath = os.path.join(DOCS, mastertoc)
     srcpath = os.path.join(REPOPATH, package)
 
-    print(f"updating `{mastertoc}'")
+    print(f"updating `{os.path.join(DOCS, mastertoc)}'")
     lines = []
     hashcap = HashCap(tocpath)
     if os.path.isfile(tocpath):
