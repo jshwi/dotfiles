@@ -10,7 +10,7 @@ import sys
 
 import pytest
 
-import dotpy
+import dotfiles
 
 DOTFILES = ".dotfiles"
 
@@ -98,20 +98,20 @@ def fixture_repo_dir(test_dir):
 
 @pytest.fixture(name="package_dir")
 def fixture_package_dir(repo_dir):
-    """The absolute path to the ``dotpy`` package.
+    """The absolute path to the ``dotfiles`` package.
 
     :param repo_dir:    The absolute path to this repository.
-    :return:            The absolute path to the ``dotpy`` package.
+    :return:            The absolute path to the ``dotfiles`` package.
     """
-    return os.path.join(repo_dir, "dotpy")
+    return os.path.join(repo_dir, "dotfiles")
 
 
 @pytest.fixture(name="entry_point")
 def fixture_init_py(package_dir):
-    """The absolute path to the __init__.py file in the ``dotpy``
+    """The absolute path to the __init__.py file in the ``dotfiles``
     package.
 
-    :param package_dir: The absolute path to the ``dotpy`` package.
+    :param package_dir: The absolute path to the ``dotfiles`` package.
     """
     return os.path.join(package_dir, "__init__.py")
 
@@ -134,26 +134,26 @@ def fixture_mock_constants(nocolorcapsys, monkeypatch, tmpdir, entry_point):
         return path.replace("~/.", f"{tmpdir}/.")
 
     sys.argv = [entry_point]
-    monkeypatch.setattr(dotpy.install.os.path, "expanduser", expanduser)
-    dotpy.install.HOME = tmpdir
-    dotpy.install.CONFIGDIR = os.path.join(
-        dotpy.install.HOME, ".config", __name__
+    monkeypatch.setattr(dotfiles.install.os.path, "expanduser", expanduser)
+    dotfiles.install.HOME = tmpdir
+    dotfiles.install.CONFIGDIR = os.path.join(
+        dotfiles.install.HOME, ".config", __name__
     )
-    dotpy.install.CONFIG = os.path.join(
-        dotpy.install.CONFIGDIR, __name__ + ".yaml"
+    dotfiles.install.CONFIG = os.path.join(
+        dotfiles.install.CONFIGDIR, __name__ + ".yaml"
     )
-    dotpy.install.DOTFILES = os.path.join(tmpdir, DOTFILES)
-    dotpy.install.SOURCE = os.path.join(tmpdir, DOTFILES, "src")
+    dotfiles.install.DOTFILES = os.path.join(tmpdir, DOTFILES)
+    dotfiles.install.SOURCE = os.path.join(tmpdir, DOTFILES, "src")
 
 
 @pytest.fixture(name="suffix")
 def fixture_suffix():
-    """Get the accurate timestamp from ``dotpy.SUFFIX`` so that there
+    """Get the accurate timestamp from ``dotfiles.SUFFIX`` so that there
     is no discrepancy between the test time and the module's time.
 
     :return: Timestamp to be appended to backed up files.
     """
-    return dotpy.SUFFIX
+    return dotfiles.SUFFIX
 
 
 @pytest.fixture(name="dotclone", autouse=True)
@@ -233,7 +233,7 @@ def fixture_recipient(tmpdir, nocolorcapsys):
     keyfile.chmod(0o600)
 
     os.environ["GNUPGHOME"] = os.path.dirname(keyfile)
-    exit_code = dotpy.GPG.add_batch_key(keyfile)
+    exit_code = dotfiles.GPG.add_batch_key(keyfile)
     assert exit_code == 0
 
     return recipient

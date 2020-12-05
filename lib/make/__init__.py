@@ -8,6 +8,7 @@ Tools to help manage Python repos
 import argparse
 import hashlib
 import os
+import pathlib
 import subprocess
 
 __author__ = "Stephen Whitlock"
@@ -16,10 +17,11 @@ __copyright__ = "2020, Stephen Whitlock"
 __license__ = "MIT"
 __version__ = "1.0.0"
 
+import sys
+
 MAKELIB = os.path.dirname(os.path.realpath(__file__))
 LIB = os.path.dirname(MAKELIB)
 REPOPATH = os.path.dirname(LIB)
-
 PIPFILELOCK = os.path.join(REPOPATH, "Pipfile.lock")
 README = os.path.join(REPOPATH, "README.rst")
 REQUIREMENTS = os.path.join(REPOPATH, "requirements.txt")
@@ -252,6 +254,14 @@ def get_name(echo=True):
     return None
 
 
+def get_path():
+    name = get_name(echo=False)
+    path = pathlib.Path(REPOPATH)
+    p = path.rglob("*/**/" + name)
+    for i in p:
+        print(i)
+
+
 def announce(hashcap, filename):
     """Announce whether whitelist.py needed to be updated or not.
 
@@ -441,6 +451,7 @@ def main():
 
     choices = {
         "name": get_name,
+        "path": get_path,
         "reqs": make_requirements,
         "whitelist": make_whitelist,
         "toc": make_toc,

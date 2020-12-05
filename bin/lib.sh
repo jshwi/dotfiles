@@ -24,96 +24,104 @@
 #
 # shellcheck disable=SC1090,SC2153
 # ======================================================================
-# ---source this script only once ---
-[ -n "$LIBMAKE_ENV" ] && return; LIBMAKE_ENV=0; # pragma once
+[ -n "$SCRIPTS_ENV" ] && return; SCRIPTS_ENV=0; # pragma once
 
-# --- paths ---
-LIBMAKE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # /lib/make/
-LIB="$(dirname "$LIBMAKE")"  # /lib/
-REPOPATH="$(dirname "$LIB")"  # /
-REPONAME="$(basename "$REPOPATH")"  # /<REPONAME>
-ENVFILE="$REPOPATH/.env"  # /.env
 
-# --- source /lib/make/ ---
-source "${LIBMAKE}/colors.sh"
-source "${LIBMAKE}/err.sh"
-source "${LIBMAKE}/icons.sh"
+# ======================================================================
+# Only use colors if connected to a terminal
+# Borrowed from ~/.oh-my-zsh/tools/install.sh
+# Globals:
+#   RED
+#   GREEN
+#   YELLOW
+#   BOLD
+#   RESET
+# Arguments:
+#   None
+# ======================================================================
+setup_color() {
+	if [ -t 1 ]; then
+		RED=$(printf '\033[31m')
+		GREEN=$(printf '\033[32m')
+		YELLOW=$(printf '\033[33m')
+		CYAN=$(printf '\033[36m')
+		BOLD=$(printf '\033[1m')
+		RESET=$(printf '\033[m')
+	else
+		RED=
+		GREEN=
+		YELLOW=
+		CYAN=
+		BOLD=
+		RESET=
+	fi
+}
 
-# --- source /.env ---
-[ -f "$ENVFILE" ] && source "$ENVFILE"
 
-# --- */**/bin/ ---
-if [[ "$EUID" -eq 0 ]]; then
-  BIN="/usr/local/bin"
-else
-  BIN="${HOME}/.local/bin"
-fi
+# --- terminal colors and effects ---
+setup_color
+TICK="${GREEN}✔${RESET}"
+CROSS="${RED}✘${RESET}"
+export CYAN
+export BOLD
+export TICK
+export CROSS
 
-# --- install location ---
-INSTALLED="${BIN}/${REPONAME}"
+# --- navigate environment ---
+SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ERR="$SCRIPTS/err.sh"
 
-# --- */**/virtalenvs/<REPONAME>-*/ ---
-if [ "$1" == "--no-install" ]; then
-  VIRTUAL_ENV=
-else
-  cd "$REPOPATH" || return 1
+source "$ERR"
+
+REPOPATH="$(dirname "$SCRIPTS")"
+REPONAME="$(basename "$REPOPATH")"
+
+# --- env vars ---
+ENVFILE="$REPOPATH/.env"
+PIPENV_IGNORE_VIRTUALENVS=1
+export PIPENV_IGNORE_VIRTUALENVS
+source  "$ENVFILE"
+
+
+# ======================================================================
+# If no virtual env is available install one and download dependencies
+# using `Pipfile.lock'.
+# Arguments:
+#   None
+# Outputs:
+#   Installation information
+# Returns:
+#   `0' if the process succeeds, non-zero (as determined by `pipenv' if
+#   it fails)
+# ======================================================================
+ensure_venv () {
   if ! pipenv --venv >/dev/null 2>&1; then
     pipenv install || return 1
   fi
-  VIRTUAL_ENV="$(pipenv --venv)"
-fi
-VIRTUAL_ENV_BIN="${VIRTUAL_ENV}/bin"
-VIRTUAL_ENV_LIB="${VIRTUAL_ENV}/lib"
-PYTHONVERSION="$(ls -t -U "$VIRTUAL_ENV_LIB")"
-PYTHONDIR="${VIRTUAL_ENV_LIB}/${PYTHONVERSION}"
-SITE_PACKAGES="${PYTHONDIR}/site-packages"
+}
 
-# --- PYTHONPATH ---
-PYTHONPATH="${PYTHONPATH}:${REPOPATH}"
-PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV_LIB}"
-PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV_BIN}"
-PYTHONPATH="${PYTHONPATH}:${LIBMAKE}"
-PYTHONPATH="${PYTHONPATH}:${SITE_PACKAGES}"
 
-# --- PATH ---
-PATH="${PATH}:${VIRTUAL_ENV_BIN}"
+# ======================================================================
+# Find out if any items from an array are not on the system and echo
+# `0' for `False' and `1' for `True'.
+# Arguments:
+#   Array of program path(s)
+# Outputs:
+# `1' (True) or `0' (False)
+# ======================================================================
+find_any () {
+  items="$1";
+  installed=1
+  for item in "${items[@]}"; do
+    if [ ! -f "$item" ]; then
+      installed=0
+      break
+    fi
+  done
+  unset items
+  echo "$installed"
+}
 
-# --- "./$APPNAME" ---
-if ! APP_PATH="$(python3 "$LIBMAKE" path)"; then
-  APP_PATH="${REPOPATH}/${REPONAME}"
-fi
-
-# --- /<APP_NAME>/__main__.py ---
-MAIN="${APP_PATH}/__main__.py"
-
-# --- "./" ---
-WORKPATH="$REPOPATH/build"
-SPECPATH="${APP_PATH}.spec"
-TESTS="$DOTFILES/tests"
-WHITELIST="$REPOPATH/whitelist.py"
-PYLINTRC="$REPOPATH/.pylintrc"
-COVERAGEXML="$REPOPATH/coverage.xml"
-
-# --- "./dist" ---
-DISTPATH="$REPOPATH/dist"
-COMPILED="$DISTPATH/$REPONAME"
-
-# --- "./docs" ---
-DOCSOURCE="$REPOPATH/docs"
-DOCSCONF="$DOCSOURCE/conf.py"
-DOCSBUILD="$DOCSOURCE/_build"
-
-# --- array of python files and directories ---
-PYITEMS=(
-  "$APP_PATH"
-  "$TESTS"
-  "$DOCSCONF"
-  "$LIBMAKE"
-)
-
-export PIPENV_IGNORE_VIRTUALENVS=1
-export PYTHONPATH
-export PATH
 
 # ======================================================================
 # Pass the path to expected executable for this function. If the file
@@ -131,15 +139,7 @@ export PATH
 #   repository cannot be entered
 # ======================================================================
 check_reqs () {
-  items="$1"
-  installed=1
-  for item in "${items[@]}"; do
-    if ! command -v "$item" >/dev/null 2>&1; then
-      installed=0
-      break
-    fi
-  done
-  unset items
+  installed="$(find_any "$1")"
   if [ "$installed" -eq 0 ]; then
     cd "$REPOPATH" || return 1
     if [ "$2" == "--dev" ]; then
@@ -149,6 +149,100 @@ check_reqs () {
     fi
   fi
 }
+
+
+# ======================================================================
+# Get the appropriate `bin' directory depending on whether running as
+# user or root.
+# Globals:
+#   EUID
+#   HOME
+# Arguments:
+#   None
+# Outputs:
+#   Site bin directory or user's local bin directory
+# ======================================================================
+get_bin () {
+  if [[ "$EUID" -eq 0 ]]; then
+    echo "/usr/local/bin"
+  else
+    echo "$HOME/.local/bin"
+  fi
+}
+
+
+# --- */**"/bin/" ---
+BIN="$(get_bin)"
+INSTALLED="$BIN/$REPONAME"
+
+# --- */**"/virtalenvs/$REPONAME-*/" ---
+if [ "$1" == "--no-install" ]; then
+  VENV=
+else
+  cd "$REPOPATH" || return 1
+  ensure_venv
+  VENV="$(pipenv --venv)"
+fi
+
+VENVBIN="$VENV/bin"
+PYTHON="$VENVBIN/python"
+PYTEST="$VENVBIN/pytest"
+BLACK="$VENVBIN/black"
+PYLINT="$VENVBIN/pylint"
+COVERAGE="$VENVBIN/coverage"
+PYINSTALLER="$VENVBIN/pyinstaller"
+SPHINXBUILD="$VENVBIN/sphinx-build"
+MYPY="$VENVBIN/mypy"
+VULTURE="$VENVBIN/vulture"
+CODECOV="$VENVBIN/codecov"
+PIPFILE2REQ="$VENVBIN/pipfile2req"
+
+# --- "./bin" ---
+DEVPY="$SCRIPTS/dev"
+
+# --- "./$APPNAME" ---
+if [ -e "$PYTHON" ] && APPNAME="$("$PYTHON" "$DEVPY" name)"; then
+  APP_PATH="$REPOPATH/$APPNAME"
+else
+  APP_PATH="$REPOPATH/$REPONAME"
+fi
+MAIN="$APP_PATH/__main__.py"
+SRC="$APP_PATH/src"
+
+# --- PYTHONPATH ---
+PYTHONPATH="$REPOPATH:$APP_PATH:$SRC"
+export PYTHONPATH
+
+# --- "./" ---
+WORKPATH="$REPOPATH/build"
+SPECPATH="${APP_PATH}.spec"
+README="$REPOPATH/README.rst"
+TESTS="$REPOPATH/tests"
+WHITELIST="$REPOPATH/whitelist.py"
+PYLINTRC="$REPOPATH/.pylintrc"
+COVERAGEXML="$REPOPATH/coverage.xml"
+PIPFILELOCK="$REPOPATH/Pipfile.lock"
+REQUIREMENTS="$REPOPATH/requirements.txt"
+export README
+export PIPFILELOCK
+export REQUIREMENTS
+
+# --- "./dist" ---
+DISTPATH="$REPOPATH/dist"
+COMPILED="$DISTPATH/$REPONAME"
+
+# --- "./docs" ---
+DOCSOURCE="$REPOPATH/docs"
+DOCSCONF="$DOCSOURCE/conf.py"
+DOCSBUILD="$DOCSOURCE/_build"
+
+# --- array of python files and directories ---
+PYITEMS=(
+  "$APP_PATH"
+  "$TESTS"
+  "$DOCSCONF"
+  "$DEVPY"
+)
 
 
 # ======================================================================
@@ -242,7 +336,7 @@ rm_exe () {
 # If there was no output then the package was not installed so notify
 # the user
 # Globals:
-#   VIRTUAL_ENV
+#   VENV
 #   YELLOW
 #   REPONAME
 #   RESET
@@ -254,11 +348,11 @@ rm_exe () {
 # ======================================================================
 uninstall () {
   if pipenv --venv >/dev/null 2>&1; then
-    VIRTUAL_ENV="$(pipenv --venv)"
+    VENV="$(pipenv --venv)"
   fi
   items=(
     "$(clean_repo 2>&1 | tee /dev/tty)"
-    "$([[ "$VIRTUAL_ENV" == "" ]] || pipenv --rm 2>&1 | tee /dev/tty)"
+    "$([[ "$VENV" == "" ]] || pipenv --rm 2>&1 | tee /dev/tty)"
     "$(rm_exe 2>&1 | tee /dev/tty)"
   )
   for item in "${items[@]}"; do
@@ -285,16 +379,16 @@ uninstall () {
 #   zero
 # ======================================================================
 clean_repo () {
-  cd "$DOTFILES" || return 1
+  cd "$REPOPATH" || return 1
   git clean \
       -fdx \
       --exclude=".env" \
       --exclude="instance" \
-      --exclude="bundle" \
-      --exclude="zsh_history" \
-      --exclude="bash_history" \
-      --exclude="vimrc" \
-      --exclude=".cache"
+      --exclude "bundle" \
+      --exclude "zsh_history" \
+      --exclude "secret" \
+      --exclude "bash_history" \
+      --exclude "vimrc"
 }
 
 
@@ -410,8 +504,8 @@ deploy_docs () {
 # ======================================================================
 deploy_cov () {
   if [ -f "$COVERAGEXML" ]; then
-    check_reqs codecov
-    codecov --file "$COVERAGEXML" --token "$CODECOV_TOKEN" || return "$?"
+    check_reqs "$CODECOV"
+    "$CODECOV" --file "$COVERAGEXML" --token "$CODECOV_TOKEN" || return "$?"
   else
     echo "no coverage report found"
   fi
@@ -435,10 +529,10 @@ deploy_cov () {
 #   of the python files
 # ======================================================================
 format_py () {
-  check_reqs black --dev
+  check_reqs "$BLACK" --dev
   for item in "${PYITEMS[@]}"; do
     if [ -e "$item" ]; then
-      black "$item"
+      "$BLACK" "$item"
     fi
   done
   unset items
@@ -465,18 +559,18 @@ format_py () {
 lint_files () {
 
   _pylint () {
-    pylint "$1" --output-format=colorized || return "$?"
+    "$PYLINT" "$1" --output-format=colorized || return "$?"
   }
 
   _pylint_rcfile () {
-    pylint \
+    "$PYLINT" \
         "$1" \
         --output-format=colorized \
         --rcfile="$PYLINTRC" \
         || return "$?"
   }
 
-  check_reqs pylint --dev
+  check_reqs "$PYLINT" --dev
   for item in "${PYITEMS[@]}"; do
     if [ -e "$item" ]; then
       if [ -f "$PYLINTRC" ]; then
@@ -507,8 +601,8 @@ lint_files () {
 run_tests () {
   if ls "$TESTS/"*_test.py >/dev/null 2>&1 \
       || ls "$TESTS"/test_*.py >/dev/null 2>&1 ; then
-    check_reqs pytest --dev
-    pytest --color=yes "$TESTS" -vv || return "$?"
+    check_reqs "$PYTEST" --dev
+    "$PYTEST" --color=yes "$TESTS" -vv || return "$?"
   else
     echo "no tests found"
   fi
@@ -535,12 +629,12 @@ run_tests () {
 run_test_cov () {
   if ls "$TESTS/"*_test.py >/dev/null 2>&1 \
       || ls "$TESTS"/test_*.py >/dev/null 2>&1 ; then
-    items=( pytest coverage )
+    items=( "$PYTEST" "$COVERAGE" )
     for item in "${items[@]}"; do
       check_reqs "$item" --dev
     done
-    pyetst --color=yes "$TESTS" --cov="$APP_PATH" -vv || return "$?"
-    coverage xml
+    "$PYTEST" --color=yes "$TESTS" --cov="$APP_PATH" -vv || return "$?"
+    "$COVERAGE" xml
     unset items
   else
     echo "no tests found"
@@ -552,13 +646,13 @@ run_test_cov () {
 # Create <PACKAGENAME>.rst from package directory.
 # Globals:
 #   DOCSCONF
-#   LIBMAKE
+#   DEVPY
 # Returns:
 #   `0' if all goes ok
 # ======================================================================
 make_toc () {
   if [ -f "$DOCSCONF" ]; then
-    python3 "$LIBMAKE" toc || return "$?"
+    "$DEVPY" toc || return "$?"
   fi
 }
 
@@ -574,7 +668,7 @@ make_toc () {
 # Globals:
 #   SPHINXBUILD
 #   DOCSBUILD
-#   LIBMAKE
+#   DEVPY
 #   SPHINXBUILD
 #   DOCSOURCE
 #   DOCSCONF
@@ -589,12 +683,12 @@ make_toc () {
 make_html () {
 
   _make_html () {
-    check_reqs sphinx-build --dev
+    check_reqs "$SPHINXBUILD" --dev
     rm_force_recurse "$DOCSBUILD"
-    original="$("$LIBMAKE" title --replace "README")"
-    sphinx-build -M html "$DOCSOURCE" "$DOCSBUILD"
+    original="$("$DEVPY" title --replace "README")"
+    "$SPHINXBUILD" -M html "$DOCSOURCE" "$DOCSBUILD"
     rc=$?
-    "$LIBMAKE" title --replace "$original" &>/dev/null
+    "$DEVPY" title --replace "$original" &>/dev/null
     return $rc
   }
 
@@ -624,10 +718,10 @@ make_html () {
 #   are errors in the stub-files (determined by `mypy'
 # ======================================================================
 inspect_types () {
-  check_reqs mypy --dev
+  check_reqs "$MYPY" --dev
   for item in "${PYITEMS[@]}"; do
     if [ -e "$item" ]; then
-      mypy --ignore-missing-imports "$item" || return "$?"
+      "$MYPY" --ignore-missing-imports "$item" || return "$?"
     fi
   done
   unset items
@@ -652,14 +746,14 @@ inspect_types () {
 #   `0' if all non-whitelisted code is used, possibly non-zero
 #   (determined by `vulture') for code that isn't
 # ======================================================================
-make_unused () {
+vulture () {
 
   _vulture () {
-    check_reqs vulture --dev
+    check_reqs "$VULTURE" --dev
     [ -f "$WHITELIST" ] || touch "$WHITELIST"
     for item in "${PYITEMS[@]}"; do
       if [ -e "$item" ]; then
-        vulture "$item" "$WHITELIST" || return "$?"
+        "$VULTURE" "$item" "$WHITELIST" || return "$?"
       fi
     done
     unset items
@@ -676,7 +770,7 @@ make_unused () {
 # ======================================================================
 # Update vulture whitelist for all python files.
 # Globals:
-#   LIBMAKE
+#   DEVPY
 #   VULTURE
 #   PYITEMS
 # Arguments:
@@ -685,10 +779,10 @@ make_unused () {
 #   `0' if all goes ok
 # ======================================================================
 whitelist () {
-  check_reqs vulture --dev
-  python3 "$LIBMAKE" \
+  check_reqs "$VULTURE" --dev
+  "$DEVPY" \
       whitelist \
-      --executable vulture \
+      --executable "$VULTURE" \
       --files "${PYITEMS[@]}"
 }
 
@@ -700,14 +794,14 @@ whitelist () {
 # all went well.
 # Globals:
 #   PIPFILE2REQ
-#   LIBMAKE
+#   DEVPY
 #   PYITEMS
 # Returns:
 #   `0' if all goes ok
 # ======================================================================
 pipfile_to_requirements () {
-  check_reqs pipfile2req --dev
-  python3 "$LIBMAKE" reqs --executable pipfile2req
+  check_reqs "$PIPFILE2REQ" --dev
+  "$DEVPY" reqs --executable "$PIPFILE2REQ"
 }
 
 
@@ -759,7 +853,7 @@ check_exe () {
 # ======================================================================
 run_pyinstaller () {
   echo "${YELLOW}compiling package...${RESET}"
-  pyinstaller \
+  "$PYINSTALLER" \
       --onefile \
       --distpath "$DISTPATH" \
       --workpath "$WORKPATH" \
@@ -814,7 +908,7 @@ add_to_path () {
 install_binary () {
   if [ -f "$MAIN" ]; then
     echo "${GREEN}Installing ${REPONAME}${RESET}"
-    check_reqs pyinstaller --dev
+    check_reqs "$PYINSTALLER" --dev
     clean_pyinstaller_build
     check_exe
     run_pyinstaller || return 1
@@ -870,126 +964,3 @@ make_files () {
   make_toc || return "$?"
   pipfile_to_requirements || return "$?"
 }
-
-
-# ======================================================================
-# List environment variables that are needed for this script
-#
-# Globals:
-#   TEMPLATE_ENV
-# Outputs:
-#   environment variables needed to run the build
-# Returns:
-#   `0' if all goes OK
-# ======================================================================
-list_env_vars () {
-  mapfile -t vars < "$TEMPLATE_ENV"
-  for var in "${vars[@]}"; do
-    echo "- $var"
-  done
-}
-
-
-# ======================================================================
-# Source the .env file if it exists, otherwise explain error and exit
-#
-# Globals:
-#   ENVFILE
-# Outputs:
-#   environment variables needed to run the build
-# Returns:
-#   `0' if all goes OK
-# ======================================================================
-source_env () {
-  if [ -f "$ENVFILE" ]; then
-    source "$ENVFILE"
-  else
-    err \
-        "\.env file cannot be found" \
-        "cannot continue running with these values:"$'\n'"$(list_env_vars)"
-  fi
-}
-
-
-source_symlink () {
-  if [ -L "$ENVFILE" ]; then
-    echo "${BOLD}${YELLOW}Warning: .env is symlinked to it's template bin/env${RESET}"
-    echo "${YELLOW}. do not make any changes to this file as it may be added to version control${RESET}"
-    echo "${YELLOW}. remove symlink and copy bin/env to .env${RESET}"
-    echo "${YELLOW}. uncomment /.env in .gitignore${RESET}"
-  fi
-}
-
-
-# ======================================================================
-# Stylize and announce process in cyan
-#
-# Globals:
-#   BOLD
-#   CYAN
-#   RESET
-# Arguments:
-#   Announcement as a string
-# Outputs:
-#   Stylized announcement
-# Returns:
-#   `0' if all goes OK
-# ======================================================================
-announce () {
-  echo
-  echo "${BOLD}${CYAN}+ --- make $1 ---${RESET}"
-}
-
-
-# ======================================================================
-# Run the main functions in this package to confirm quality of repo and
-# build
-#
-# Outputs:
-#   Various process announcements called from lib functions
-# Returns:
-#   `0' if all goes OK
-# ======================================================================
-build () {
-  source_env || return "$?"
-  source_symlink
-  export TRAVIS_BRANCH
-  ( announce "clean" && clean_repo ) || return "$?"
-  ( announce "format" && format_py ) || return "$?"
-  ( announce "typecheck" && inspect_types ) || return "$?"
-  ( announce "unused" && make_unused ) || return "$?"
-  ( announce "coverage" && run_test_cov ) || return "$?"
-  ( announce "docs" && make_html ) || return "$?"
-  ( announce "lint" && lint_files ) || return "$?"
-  ( announce "install" && install_binary ) || return "$?"
-  ( announce "deploy-cov'" && deploy_cov "$@" ) || return "$?"
-  ( announce "deploy-docs" && deploy_docs "$@" ) || return "$?"
-}
-
-
-# ======================================================================
-# Determine if `pipenv' installed or exit with a non-zero exit code
-# Globals:
-#   REPO
-#   CROSS
-#   TICK
-# Arguments:
-#   None
-# Outputs:
-#   Whether `pipenv' installed or not
-# Returns:
-#   Return `1' if pipenv installation not found
-#   `0' if everything works as should, `1' if for some reason the
-#   repository cannot be entered
-# ======================================================================
-which-pipenv () {
-  cd "$DOTFILES" || return 1
-  if ! command -v pipenv >/dev/null 2>&1; then
-    err "${CROSS} \`pipenv' not found"
-  else
-    echo "${TICK} $(command -v pipenv)"
-  fi
-}
-
-OLDPWD="$PWD"
-export OLDPWD
