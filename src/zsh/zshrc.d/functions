@@ -18,12 +18,6 @@
 #
 # shellcheck source=/dev/null
 #==============================================================================
-DOTFILES="$HOME/.dotfiles"
-LIB="$DOTFILES/lib"
-DOTSH="$LIB/dotsh"
-source "$DOTSH/lib.sh"
-
-# =============================================================================
 # venv
 # Activate virtualenv
 #
