@@ -18,10 +18,13 @@
 #
 # shellcheck source=/dev/null
 #==============================================================================
+<<<<<<< HEAD
 source "${HOME}/.dotfiles/lib/makefile/src/virtualenv.sh"
 
 
 # =============================================================================
+=======
+>>>>>>> 6092ddc... [feat] Adds ``tcommit`` module
 # venv
 # Activate virtualenv
 #
