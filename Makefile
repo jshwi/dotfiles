@@ -60,17 +60,17 @@ format: which  ## Format all .py project files
 
 .PHONY: lint
 lint: which  ## Show possible .py file corrections
-	@$(BASH) -c "source $(LIB); lint_files"
+	@$(BASH) -c "source $(LIB); make_lint"
 
 
 .PHONY: coverage
 coverage: which  ## Run unittests with coverage
-	@$(BASH) -c "source $(LIB); run_test_cov"
+	@$(BASH) -c "source $(LIB); make_coverage"
 
 
 .PHONY: typecheck
 typecheck: which  ## Inspect files for type errors
-	@$(BASH) -c "source $(LIB); inspect_types"
+	@$(BASH) -c "source $(LIB); make_typecheck"
 
 
 .PHONY: unused
@@ -100,14 +100,14 @@ files: which  ## Requirements, toc and whitelist
 
 .PHONY: deploy-docs
 deploy-docs: which  ## Deploy Sphinx docs to gh-pages
-	@$(BASH) -c "source $(LIB); deploy_cov"
+	@$(BASH) -c "source $(LIB); make_deploy_cov"
 
 
 .PHONY: deploy-cov
 deploy-cov: which  ## Deploy code coverage to Codecov
-	@$(BASH) -c "source $(LIB); deploy_cov"
+	@$(BASH) -c "source $(LIB); make_deploy_cov"
 
 
 .PHONY: build
 build: which  ## Run all checks, install and deploy
-	@$(BASH) -c "source $(LIB); build"
+	@$(BASH) -c "source $(LIB); make_build"

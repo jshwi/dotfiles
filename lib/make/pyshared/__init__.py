@@ -10,6 +10,7 @@ import hashlib
 import os
 import pathlib
 import subprocess
+import sys
 
 REPOPATH = os.environ.get("REPOPATH", None)
 REQUIREMENTS = os.environ.get("REQUIREMENTS", None)
@@ -18,6 +19,7 @@ READMEPATH = os.environ.get("READMEPATH", None)
 DOCS = os.environ.get("DOCS", None)
 WHITELIST = os.environ.get("WHITELIST", None)
 SETUP = os.environ.get("SETUP", None)
+TESTS = os.environ.get("TESTS", None)
 
 
 class TextIO:
@@ -397,3 +399,12 @@ def make_whitelist():
     # and not append
     pathio.write(*lines)
     announce(hashcap, WHITELIST)
+
+
+def check_tests():
+    files = []
+    for pattern in ("test_*.py", "*_test.py"):
+        path = pathlib.Path(TESTS)
+        files.extend([p for p in path.rglob(pattern)])
+    if not files:
+        sys.exit(1)

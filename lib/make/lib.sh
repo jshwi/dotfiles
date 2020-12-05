@@ -61,6 +61,7 @@ export READMEPATH
 export DOCS
 export WHITELIST
 export SETUP
+export TESTS
 
 # --- source /lib/make/ ---
 source "${LIBMAKE}/colors.sh"
@@ -507,13 +508,12 @@ make_tests () {
 #   `pytest')
 # ======================================================================
 make_coverage () {
-  if ls "$TESTS/"*_test.py >/dev/null 2>&1 \
-      || ls "$TESTS"/test_*.py >/dev/null 2>&1 ; then
+  if python "$LIBMAKE/check_tests.py"; then
     items=( pytest coverage )
     for item in "${items[@]}"; do
       check_reqs "$item" --dev
     done
-    pytest --color=yes "$TESTS" --cov="$APP_PATH" -vv || return "$?"
+    pytest --color=yes "$TESTS" --cov="${PYITEMS[*]}" -vv || return "$?"
     coverage xml
     unset items
   else
@@ -902,7 +902,7 @@ source_symlink () {
 # Returns:
 #   `0' if all goes OK
 # ======================================================================
-build () {
+make_build () {
   source_env || return "$?"
   source_symlink
   ( make_announce "clean" && make_clean ) || return "$?"
