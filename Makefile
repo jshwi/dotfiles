@@ -1,15 +1,15 @@
-CYAN		:= $(shell printf '\033[36m')
-RESET		:= $(shell printf '\033[m')
-REPO 		:= $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-NAME		:= $(shell basename $(REPO))
-SETUP 		:= $(REPO)/setup.py
-LIBMAKEFILE	:= $(REPO)/lib/makefile
-WHICH		:= $(LIBSH)/which
-LIB			:= $(LIBSH)/lib.sh
-BASH		:= /bin/bash
-PYTHON		:= /bin/python3
-NAME		:= $(shell $(PYTHON) $(SETUP) --name)
-VERSION 	:= $(shell $(PYTHON) $(SETUP) --version)
+CYAN	:= $(shell printf '\033[36m')
+RESET	:= $(shell printf '\033[m')
+REPO 	:= $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+NAME	:= $(shell basename $(REPO))
+SETUP 	:= $(REPO)/setup.py
+LIBMAKE	:= $(REPO)/lib/make
+WHICH	:= $(LIBMAKEFILE)/which
+LIB		:= $(LIBMAKEFILE)/lib.sh
+BASH	:= /bin/bash
+PYTHON	:= /bin/python3
+NAME	:= $(shell $(PYTHON) $(SETUP) --name)
+VERSION := $(shell $(PYTHON) $(SETUP) --version)
 
 
 .PHONY: help

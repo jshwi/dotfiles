@@ -21,6 +21,6 @@
 #
 # shellcheck disable=SC1090
 #=======================================================================
-source "$HOME/.dotfiles/lib/dotsh/lib.sh"
+source "$HOME/.dotfiles/lib/make/lib.sh"
 
 which-pipenv "$@" || exit 1
