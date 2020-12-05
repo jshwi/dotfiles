@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+"""Entry point for dotpy.tcommit"""
+import dotfiles
+
+if __name__ == "__main__":
+    dotfiles.tcommit.main()

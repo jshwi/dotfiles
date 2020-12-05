@@ -48,6 +48,7 @@ from .src import (
     reporeqs,
     repotoc,
     symlink_vim,
+    tcommit,
 )
 
 __all__ = [
@@ -96,4 +97,5 @@ __all__ = [
     "reporeqs",
     "repotoc",
     "symlink_vim",
+    "tcommit",
 ]

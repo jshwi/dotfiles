@@ -217,3 +217,9 @@ cryptdir () {
 decryptdir () {
   dotcryptdir "$1" -d
 }
+
+
+dcode () {
+  date +'%Y%m%dT%S%M%H'
+}
+
