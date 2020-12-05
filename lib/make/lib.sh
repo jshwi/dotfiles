@@ -24,181 +24,56 @@
 #
 # shellcheck disable=SC1090,SC2153
 # ======================================================================
-[ -n "$SCRIPTS_ENV" ] && return; SCRIPTS_ENV=0; # pragma once
+[ -n "$LIBMAKE_ENV" ] && return; LIBMAKE_ENV=0; # pragma once
 
+LIBMAKE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# ======================================================================
-# Only use colors if connected to a terminal
-# Borrowed from ~/.oh-my-zsh/tools/install.sh
-# Globals:
-#   RED
-#   GREEN
-#   YELLOW
-#   BOLD
-#   RESET
-# Arguments:
-#   None
-# ======================================================================
-setup_color() {
-	if [ -t 1 ]; then
-		RED=$(printf '\033[31m')
-		GREEN=$(printf '\033[32m')
-		YELLOW=$(printf '\033[33m')
-		CYAN=$(printf '\033[36m')
-		BOLD=$(printf '\033[1m')
-		RESET=$(printf '\033[m')
-	else
-		RED=
-		GREEN=
-		YELLOW=
-		CYAN=
-		BOLD=
-		RESET=
-	fi
-}
+# --- source lib/make ---
+source "$LIBMAKE/colors.sh"
+source "$LIBMAKE/err.sh"
+source "$LIBMAKE/icons.sh"
 
+LIB="$(dirname "$LIBMAKE")"
 
-# --- terminal colors and effects ---
-setup_color
-TICK="${GREEN}✔${RESET}"
-CROSS="${RED}✘${RESET}"
-export CYAN
-export BOLD
-export TICK
-export CROSS
+REPOPATH="$(dirname "$LIB")"
 
-# --- navigate environment ---
-SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ERR="$SCRIPTS/err.sh"
+ENVFILE="$REPOPATH/.env"
 
-source "$ERR"
+# --- source .env ---
+[ -f "$ENVFILE" ] && source "$ENVFILE"
 
-REPOPATH="$(dirname "$SCRIPTS")"
 REPONAME="$(basename "$REPOPATH")"
 
 # --- env vars ---
-ENVFILE="$REPOPATH/.env"
 PIPENV_IGNORE_VIRTUALENVS=1
 export PIPENV_IGNORE_VIRTUALENVS
 source  "$ENVFILE"
 
-
-# ======================================================================
-# If no virtual env is available install one and download dependencies
-# using `Pipfile.lock'.
-# Arguments:
-#   None
-# Outputs:
-#   Installation information
-# Returns:
-#   `0' if the process succeeds, non-zero (as determined by `pipenv' if
-#   it fails)
-# ======================================================================
-ensure_venv () {
-  if ! pipenv --venv >/dev/null 2>&1; then
-    pipenv install || return 1
-  fi
-}
-
-
-# ======================================================================
-# Find out if any items from an array are not on the system and echo
-# `0' for `False' and `1' for `True'.
-# Arguments:
-#   Array of program path(s)
-# Outputs:
-# `1' (True) or `0' (False)
-# ======================================================================
-find_any () {
-  items="$1";
-  installed=1
-  for item in "${items[@]}"; do
-    if [ ! -f "$item" ]; then
-      installed=0
-      break
-    fi
-  done
-  unset items
-  echo "$installed"
-}
-
-
-# ======================================================================
-# Pass the path to expected executable for this function. If the file
-# does not exist then install the project development dependencies from
-# `Pipfile.lock'.
-# Globals:
-#   REPOPATH
-# Arguments:
-#   Expected path to executable
-#   Optional --dev flag for development installations
-# Outputs:
-#   Installation information from `pipenv'
-# Returns:
-#   `0' if everything works as should, `1' if for some reason the
-#   repository cannot be entered
-# ======================================================================
-check_reqs () {
-  installed="$(find_any "$1")"
-  if [ "$installed" -eq 0 ]; then
-    cd "$REPOPATH" || return 1
-    if [ "$2" == "--dev" ]; then
-      pipenv install --dev
-    else
-      pipenv install
-    fi
-  fi
-}
-
-
-# ======================================================================
-# Get the appropriate `bin' directory depending on whether running as
-# user or root.
-# Globals:
-#   EUID
-#   HOME
-# Arguments:
-#   None
-# Outputs:
-#   Site bin directory or user's local bin directory
-# ======================================================================
-get_bin () {
-  if [[ "$EUID" -eq 0 ]]; then
-    echo "/usr/local/bin"
-  else
-    echo "$HOME/.local/bin"
-  fi
-}
-
-
 # --- */**"/bin/" ---
-BIN="$(get_bin)"
+if [[ "$EUID" -eq 0 ]]; then
+  BIN="/usr/local/bin"
+else
+  BIN="$HOME/.local/bin"
+fi
+
 INSTALLED="$BIN/$REPONAME"
 
 # --- */**"/virtalenvs/$REPONAME-*/" ---
 if [ "$1" == "--no-install" ]; then
-  VENV=
+  VIRTUAL_ENV=
 else
   cd "$REPOPATH" || return 1
-  ensure_venv
-  VENV="$(pipenv --venv)"
+  if ! pipenv --venv >/dev/null 2>&1; then
+    pipenv install || return 1
+  fi
+  VIRTUAL_ENV="$(pipenv --venv)"
 fi
 
-VENVBIN="$VENV/bin"
-PYTHON="$VENVBIN/python"
-PYTEST="$VENVBIN/pytest"
-BLACK="$VENVBIN/black"
-PYLINT="$VENVBIN/pylint"
-COVERAGE="$VENVBIN/coverage"
-PYINSTALLER="$VENVBIN/pyinstaller"
-SPHINXBUILD="$VENVBIN/sphinx-build"
-MYPY="$VENVBIN/mypy"
-VULTURE="$VENVBIN/vulture"
-CODECOV="$VENVBIN/codecov"
-PIPFILE2REQ="$VENVBIN/pipfile2req"
+PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV}/bin"
+PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV}/lib/python*/site-packages"
 
 # --- "./bin" ---
-DEVPY="$SCRIPTS/dev"
+DEVPY="$LIBMAKE/dev"
 
 # --- "./$APPNAME" ---
 if [ -e "$PYTHON" ] && APPNAME="$("$PYTHON" "$DEVPY" name)"; then
@@ -243,6 +118,42 @@ PYITEMS=(
   "$DOCSCONF"
   "$DEVPY"
 )
+
+
+# ======================================================================
+# Pass the path to expected executable for this function. If the file
+# does not exist then install the project development dependencies from
+# `Pipfile.lock'.
+# Globals:
+#   REPOPATH
+# Arguments:
+#   Expected path to executable
+#   Optional --dev flag for development installations
+# Outputs:
+#   Installation information from `pipenv'
+# Returns:
+#   `0' if everything works as should, `1' if for some reason the
+#   repository cannot be entered
+# ======================================================================
+check_reqs () {
+  items="$1";
+  installed=1
+  for item in "${items[@]}"; do
+    if [ ! -f "$item" ]; then
+      installed=0
+      break
+    fi
+  done
+  unset items
+  if [ "$installed" -eq 0 ]; then
+    cd "$REPOPATH" || return 1
+    if [ "$2" == "--dev" ]; then
+      pipenv install --dev
+    else
+      pipenv install
+    fi
+  fi
+}
 
 
 # ======================================================================
@@ -336,7 +247,7 @@ rm_exe () {
 # If there was no output then the package was not installed so notify
 # the user
 # Globals:
-#   VENV
+#   VIRTUAL_ENV
 #   YELLOW
 #   REPONAME
 #   RESET
@@ -348,11 +259,11 @@ rm_exe () {
 # ======================================================================
 uninstall () {
   if pipenv --venv >/dev/null 2>&1; then
-    VENV="$(pipenv --venv)"
+    VIRTUAL_ENV="$(pipenv --venv)"
   fi
   items=(
     "$(clean_repo 2>&1 | tee /dev/tty)"
-    "$([[ "$VENV" == "" ]] || pipenv --rm 2>&1 | tee /dev/tty)"
+    "$([[ "$VIRTUAL_ENV" == "" ]] || pipenv --rm 2>&1 | tee /dev/tty)"
     "$(rm_exe 2>&1 | tee /dev/tty)"
   )
   for item in "${items[@]}"; do
@@ -388,7 +299,8 @@ clean_repo () {
       --exclude "zsh_history" \
       --exclude "secret" \
       --exclude "bash_history" \
-      --exclude "vimrc"
+      --exclude "vimrc" \
+      --exclude ".cache"
 }
 
 
@@ -964,3 +876,126 @@ make_files () {
   make_toc || return "$?"
   pipfile_to_requirements || return "$?"
 }
+
+
+# ======================================================================
+# List environment variables that are needed for this script
+#
+# Globals:
+#   TEMPLATE_ENV
+# Outputs:
+#   environment variables needed to run the build
+# Returns:
+#   `0' if all goes OK
+# ======================================================================
+list_env_vars () {
+  mapfile -t vars < "$TEMPLATE_ENV"
+  for var in "${vars[@]}"; do
+    echo "- $var"
+  done
+}
+
+
+# ======================================================================
+# Source the .env file if it exists, otherwise explain error and exit
+#
+# Globals:
+#   ENVFILE
+# Outputs:
+#   environment variables needed to run the build
+# Returns:
+#   `0' if all goes OK
+# ======================================================================
+source_env () {
+  if [ -f "$ENVFILE" ]; then
+    source "$ENVFILE"
+  else
+    err \
+        "\.env file cannot be found" \
+        "cannot continue running with these values:"$'\n'"$(list_env_vars)"
+  fi
+}
+
+
+source_symlink () {
+  if [ -L "$ENVFILE" ]; then
+    echo "${BOLD}${YELLOW}Warning: .env is symlinked to it's template bin/env${RESET}"
+    echo "${YELLOW}. do not make any changes to this file as it may be added to version control${RESET}"
+    echo "${YELLOW}. remove symlink and copy bin/env to .env${RESET}"
+    echo "${YELLOW}. uncomment /.env in .gitignore${RESET}"
+  fi
+}
+
+
+# ======================================================================
+# Stylize and announce process in cyan
+#
+# Globals:
+#   BOLD
+#   CYAN
+#   RESET
+# Arguments:
+#   Announcement as a string
+# Outputs:
+#   Stylized announcement
+# Returns:
+#   `0' if all goes OK
+# ======================================================================
+announce () {
+  echo
+  echo "${BOLD}${CYAN}+ --- make $1 ---${RESET}"
+}
+
+
+# ======================================================================
+# Run the main functions in this package to confirm quality of repo and
+# build
+#
+# Outputs:
+#   Various process announcements called from lib functions
+# Returns:
+#   `0' if all goes OK
+# ======================================================================
+build () {
+  source_env || return "$?"
+  source_symlink
+  export TRAVIS_BRANCH
+  ( announce "clean" && clean_repo ) || return "$?"
+  ( announce "format" && format_py ) || return "$?"
+  ( announce "typecheck" && inspect_types ) || return "$?"
+  ( announce "unused" && vulture ) || return "$?"
+  ( announce "coverage" && run_test_cov ) || return "$?"
+  ( announce "docs" && make_html ) || return "$?"
+  ( announce "lint" && lint_files ) || return "$?"
+  ( announce "install" && install_binary ) || return "$?"
+  ( announce "deploy-cov'" && deploy_cov "$@" ) || return "$?"
+  ( announce "deploy-docs" && deploy_docs "$@" ) || return "$?"
+}
+
+
+# ======================================================================
+# Determine if `pipenv' installed or exit with a non-zero exit code
+# Globals:
+#   REPO
+#   CROSS
+#   TICK
+# Arguments:
+#   None
+# Outputs:
+#   Whether `pipenv' installed or not
+# Returns:
+#   Return `1' if pipenv installation not found
+#   `0' if everything works as should, `1' if for some reason the
+#   repository cannot be entered
+# ======================================================================
+which-pipenv () {
+  cd "$DOTFILES" || return 1
+  if ! command -v pipenv >/dev/null 2>&1; then
+    err "${CROSS} \`pipenv' not found"
+  else
+    echo "${TICK} $(command -v pipenv)"
+  fi
+}
+
+OLDPWD="$PWD"
+export OLDPWD
