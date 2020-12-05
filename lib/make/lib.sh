@@ -35,9 +35,9 @@ REPONAME="$(basename "$REPOPATH")"  # /<REPONAME>
 ENVFILE="$REPOPATH/.env"  # /.env
 
 # --- source /lib/make/ ---
-source "$LIBMAKE/colors.sh"
-source "$LIBMAKE/err.sh"
-source "$LIBMAKE/icons.sh"
+source "${LIBMAKE}/colors.sh"
+source "${LIBMAKE}/err.sh"
+source "${LIBMAKE}/icons.sh"
 
 # --- source /.env ---
 [ -f "$ENVFILE" ] && source "$ENVFILE"
@@ -46,11 +46,11 @@ source "$LIBMAKE/icons.sh"
 if [[ "$EUID" -eq 0 ]]; then
   BIN="/usr/local/bin"
 else
-  BIN="$HOME/.local/bin"
+  BIN="${HOME}/.local/bin"
 fi
 
 # --- install location ---
-INSTALLED="$BIN/$REPONAME"
+INSTALLED="${BIN}/${REPONAME}"
 
 # --- */**/virtalenvs/<REPONAME>-*/ ---
 if [ "$1" == "--no-install" ]; then
@@ -63,20 +63,24 @@ else
   VIRTUAL_ENV="$(pipenv --venv)"
 fi
 
+# --- PYTHONPATH ---
+VIRTUAL_ENV_BIN="${VIRTUAL_ENV}/bin"
+VIRTUAL_ENV_LIB="${VIRTUAL_ENV}/lib"
+PYTHONVERSION="$(ls -t -U "$VIRTUAL_ENV_LIB")"
+SITE_PACKAGES="${VIRTUAL_ENV_LIB}/${PYTHONVERSION}/site-packages}"
+PYTHONPATH="${PYTHONPATH}:${REPOPATH}"
+PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV_BIN}"
+PYTHONPATH="${PYTHONPATH}${SITE_PACKAGES}"
+
 # --- "./$APPNAME" ---
-if [ -e "$PYTHON" ] && APPNAME="$("$PYTHON" "$DEVPY" name)"; then
-  APP_PATH="$REPOPATH/$APPNAME"
+if APPNAME="$("$PYTHONVERSION" "$DEVPY" name)"; then
+  APP_PATH="${REPOPATH}/${APPNAME}"
 else
-  APP_PATH="$REPOPATH/$REPONAME"
+  APP_PATH="${REPOPATH}/${REPONAME}"
 fi
 
-# --- PYTHONPATH ---
-PYTHONPATH="${PYTHONPATH}${REPOPATH}"
-PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV}/bin"
-PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV}/lib/python*/site-packages"
-
 # --- /<APP_NAME>/__main__.py ---
-MAIN="$APP_PATH/__main__.py"
+MAIN="${APP_PATH}/__main__.py"
 
 # --- "./" ---
 WORKPATH="$REPOPATH/build"
@@ -122,11 +126,11 @@ export PYTHONPATH
 #   repository cannot be entered
 # ======================================================================
 check_reqs () {
-  items="$1";
+  echo "$PYTHONPATH"
+  items="$1"
   installed=1
   for item in "${items[@]}"; do
-
-    if [ ! -f "$item" ]; then
+    if ! command -v "${VIRTUAL_ENV}/bin/${item}" >/dev/null 2>&1; then
       installed=0
       break
     fi
@@ -617,10 +621,10 @@ make_html () {
 #   are errors in the stub-files (determined by `mypy'
 # ======================================================================
 inspect_types () {
-  check_reqs "$MYPY" --dev
+  check_reqs mypy --dev
   for item in "${PYITEMS[@]}"; do
     if [ -e "$item" ]; then
-      "$MYPY" --ignore-missing-imports "$item" || return "$?"
+      mypy --ignore-missing-imports "$item" || return "$?"
     fi
   done
   unset items
