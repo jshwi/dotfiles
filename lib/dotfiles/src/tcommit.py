@@ -13,7 +13,7 @@ def main():
     )
     args = parser.parse_args()
     message = " " + args.message if args.message else ""
-    now = datetime.datetime.now().strftime("%Y/%m/%dT%H:%M:%S")
+    now = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
     subprocess.call(["git", "add", "."])
     subprocess.call(["git", "commit", "-m", f"[{now}]{message}"])
     if args.push:
