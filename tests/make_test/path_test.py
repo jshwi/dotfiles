@@ -1,8 +1,8 @@
 import pathlib
+import sys
+import unittest.mock
 
 import pyshared
-import unittest.mock
-import sys
 
 
 def test_name(project_name):

@@ -1,7 +1,7 @@
 import os
 
-import pytest
 import pyshared
+import pytest
 
 
 @pytest.fixture(name="pyshared_constants", autouse=True)

@@ -7,8 +7,8 @@ import pathlib
 import re
 import subprocess
 
-import pytest
 import pyshared
+import pytest
 
 
 class NoColorCapsys:

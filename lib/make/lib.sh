@@ -454,8 +454,7 @@ make_lint () {
 #   `pytest')
 # ======================================================================
 make_tests () {
-  if ls "$TESTS/"*_test.py >/dev/null 2>&1 \
-      || ls "$TESTS"/test_*.py >/dev/null 2>&1 ; then
+  if python "$LIBMAKE/check_tests.py"; then
     check_reqs pytest --dev
     pytest --color=yes "$TESTS" -vv || return "$?"
   else
