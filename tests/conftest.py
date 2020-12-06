@@ -7,6 +7,7 @@ import pathlib
 import re
 import subprocess
 
+# noinspection PyPackageRequirements
 import pytest
 
 TESTS = os.path.abspath(os.path.dirname(__file__))
@@ -23,7 +24,7 @@ class NoColorCapsys:
     capsys immediately thus losing control of what stdout and stderr
     we are to capture
 
-    :param capsys: ``pytest's`` builtin fixture to capture system output
+    :param capsys: ``pytest`` builtin fixture to capture system output
     """
 
     def __init__(self, capsys):
@@ -126,7 +127,7 @@ def fixture_dotclone(tmpdir, repo_dir):
     ``tmpdir`` so that tests can be run without effecting this
     repository.
 
-    :param tmpdir:
+    :param tmpdir:      The temporary directory ``pytest`` fixture.
     :param repo_dir:    The absolute path to this repository.
     """
     dotclone = os.path.join(tmpdir, os.path.basename(REPOPATH))
@@ -155,6 +156,11 @@ def fixture_mock_vscode_config_dir(tmpdir):
 
 @pytest.fixture(name="dir_to_encrypt")
 def fixture_dir_to_encrypt(tmpdir):
+    """Create and return a temporary directory to be encrypted.
+
+    :param tmpdir:  The temporary directory ``pytest`` fixture.
+    :return:        Directory to be encrypted
+    """
     dir_to_encrypt = pathlib.Path(tmpdir) / "dir_to_encrypt"
     dir_to_encrypt.mkdir(parents=True, exist_ok=True)
     for num in list(range(10)):
@@ -165,6 +171,12 @@ def fixture_dir_to_encrypt(tmpdir):
 
 @pytest.fixture(name="crypt_test_files")
 def fixture_crypt_test_files(dir_to_encrypt):
+    """Paths to the regular file, tarred file and encrypted file.
+
+    :param dir_to_encrypt:      Directory to be encrypted
+    :return:                    Directory to encrypt, name of tarred
+                                dir and name of encrypted dir.
+    """
     tarfile = dir_to_encrypt + ".tar.gz"
     gpgfile = tarfile + ".gpg"
     return dir_to_encrypt, tarfile, gpgfile

@@ -1,11 +1,13 @@
 """
-tests.install_test.py
-==============
+tests.dotfiles_test.install_test.py
+===================================
 """
 import os
 import sys
 
 import dotfiles
+
+# noinspection PyPackageRequirements
 import pytest
 
 from . import expected
@@ -20,24 +22,17 @@ def install(nocolorcapsys):
                             ANSI escape codes.
     :return:                Stdout.
     """
-    _ = dotfiles
     dotfiles.install.main()
     return nocolorcapsys.stdout()
 
 
-def test_clone_self(dotclone):
-    # testing above fixture
-    vimrc_link = os.path.join(dotclone, "src", "vim", "vimrc")
-    assert os.path.isdir(dotclone)
-    dotfiles.install.main()
-    assert os.path.islink(vimrc_link)
-
-
-def test_locations(nocolorcapsys):
-    install(nocolorcapsys)
-
-
 def test_config_loaded_correctly(nocolorcapsys):
+    """Test the config is loaded and running on second invocation of
+    this script.
+
+    :param nocolorcapsys:   The ``capsys`` fixture altered to remove
+                            ANSI escape codes.
+    """
     install(nocolorcapsys)
     install(nocolorcapsys)
 
@@ -72,7 +67,7 @@ def test_symlinks(nocolorcapsys):
 
 
 @pytest.mark.usefixtures("dotclone")
-def test_backups(tmpdir, dotclone, nocolorcapsys, suffix):
+def test_backups(tmpdir, nocolorcapsys, suffix):
     """Test that the actual output informing the user of the process,
     including the backing up of files, matches the expected output.
 

@@ -1,8 +1,14 @@
+"""
+tests.dotfiles_test.conftest
+============================
+"""
 import os
 import pathlib
 import sys
 
 import dotfiles
+
+# noinspection PyPackageRequirements
 import pytest
 
 DOTFILES = ".dotfiles"
@@ -18,28 +24,28 @@ def fixture_monkeypatch_default(tmpdir, monkeypatch, entry_point):
     sys.argv = [entry_point]
 
 
-@pytest.fixture(name="mock_install_constants", autouse=True)
-def fixture_mock_install_constants(tmpdir):
+@pytest.fixture(name="mock_constants", autouse=True)
+def fixture_mock_constants(tmpdir):
     """Run the install process and return it's output stripped of any
     ANSI escaped color codes. The returned output can be used or ignored
     to control the stream of stdout/ stderr.
 
-    :param tmpdir:
+    :param tmpdir: The temporary directory ``pytest`` fixture.
     """
-    dotfiles.install.HOME = tmpdir
-    dotfiles.install.CONFIGDIR = os.path.join(
-        dotfiles.install.HOME, CONFIG, __name__
-    )
-    dotfiles.install.CONFIG = os.path.join(
-        dotfiles.install.CONFIGDIR, __name__ + ".yaml"
-    )
-    dotfiles.install.DOTFILES = os.path.join(tmpdir, DOTFILES)
-    dotfiles.install.SOURCE = os.path.join(tmpdir, DOTFILES, "src")
-
-
-@pytest.fixture(name="mock_mkarchive_constants", autouse=True)
-def fixture_mock_mkarchive_constants(tmpdir):
-    dotfiles.mkarchive.HOME = str(tmpdir)
+    _dotfiles = {
+        dotfiles.install: {
+            "HOME": str(tmpdir),
+            "CONFIGDIR": os.path.join(str(tmpdir), CONFIG, __name__),
+            "CONFIG": os.path.join(
+                str(tmpdir), CONFIG, __name__, __name__ + ".yaml"
+            ),
+            "SOURCE": os.path.join(str(tmpdir), DOTFILES, "src"),
+        },
+        dotfiles.mkarchive: {"HOME": str(tmpdir)},
+    }
+    for module, obj in _dotfiles.items():
+        for key, value in obj.items():
+            setattr(module, key, value)
 
 
 @pytest.fixture(name="suffix")

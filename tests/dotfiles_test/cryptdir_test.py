@@ -3,6 +3,8 @@ import sys
 import unittest.mock
 
 import dotfiles
+
+# noinspection PyPackageRequirements
 import pytest
 
 
@@ -62,7 +64,7 @@ def test_decrypt_dir(crypt_test_files, recipient):
 
 def test_encrypt_with_no_recipient(nocolorcapsys, crypt_test_files):
     assert_unencrypted_files(*crypt_test_files)
-    test_dir, tarfile, gpgfile = crypt_test_files
+    test_dir = crypt_test_files[0]
     argv = [__name__, test_dir]
 
     with unittest.mock.patch.object(sys, "argv", argv):
