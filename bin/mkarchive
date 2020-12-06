@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+"""Entry point for libpy.mkarchive"""
+import dotpy
+
+if __name__ == "__main__":
+    dotpy.mkarchive.main()

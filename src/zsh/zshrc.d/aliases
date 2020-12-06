@@ -1,0 +1,208 @@
+#!/bin/bash -
+#-----------------------------------------------------------------------------#
+#                                 ZSH ALIASES                                 #
+#-----------------------------------------------------------------------------#
+# =============================================================================
+#    MISC
+# =============================================================================
+alias edit='vim'
+alias rsync-mv='rsync -az --progress --remove-source-files'  # move
+alias rsync-cp='rsync -az --progress'  # copy
+# --- terminal config files ---
+alias zrc='edit "$HOME/.zshrc"'
+alias srcrc='source "$HOME/.zshrc"'
+alias excz="exec zsh"  # refresh shell
+alias zthm='edit "$ZSHRC_CONFIG/themes"'
+alias zplug='edit "$ZSHRC_CONFIG/plugins"'
+alias vrc='edit "$HOME/.vimrc"'
+alias vthm='edit "$HOME/.vim/themes.vim"'
+alias zalias='edit "$ZSHRC_CONFIG/aliases"'
+alias zfunc='edit "$ZSHRC_CONFIG/functions"'
+alias vundles='edit "$HOME/.vim/plugins.vim"'
+alias edship='edit "$HOME/.zsh/conf/spaceship/spaceshiprc"'
+
+
+# =============================================================================
+#    GNUPG
+# =============================================================================
+alias gpge='gpg -e -r $USER'
+alias gpgd='${HOME}.local/bin/gpgargs.sh'
+
+
+# =============================================================================
+#    TAR
+# =============================================================================
+alias tgzc='${HOME}.local/bin/tgzcargs.sh'
+alias tgzx="tar -zxvf"
+alias mktar='tar -cvf'
+alias mkbz2='tar -cvjf'
+alias mkgz='tar -cvzf'
+alias untar='tar -xvf'
+alias unbz2='tar -xvjf'
+alias ungz='tar -xvzf'
+
+
+# =============================================================================
+#    MODIFIED COMMANDS
+# =============================================================================
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -iv'
+alias mkdir='mkdir -p'
+alias ps='ps auxf'
+alias ping='ping -c 3'
+
+
+# =============================================================================
+#    CHMOD
+# =============================================================================
+alias 000='chmod -R 000'
+alias 644='chmod -R 644'
+alias 666='chmod -R 666'
+alias 755='chmod -R 755'
+alias 777='chmod -R 777'
+
+
+# =============================================================================
+#    HIST
+# =============================================================================
+alias get_hist="history | grep "
+
+
+# =============================================================================
+#    PROC
+# =============================================================================
+alias p="ps aux | grep "
+alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
+
+
+# =============================================================================
+#    CURRENT DIR
+# =============================================================================
+# --- search files in the current folder ---
+alias f="find . | grep "
+
+
+# =============================================================================
+#    DISK SPACE
+# =============================================================================
+# --- alias's to show disk space and space used in a folder ---
+alias diskspace="du -S | sort -n -r |more"
+alias folders='du -h --max-depth=1'
+alias folderssort='find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn'
+alias tree='tree -CAhF --dirsfirst'
+alias treed='tree -CAFd'
+alias mountedinfo='df -hT'
+# --- date/time ---
+alias dt=date +"%Y-%m-%d %T"
+
+
+# =============================================================================
+#    LS
+# =============================================================================
+alias ls='ls --color=always -Isnap'  # add colors and file type extensions
+alias la='ls -Alh'  # show hidden files
+alias lx='ls -lXBh'  # sort by extension
+alias lk='ls -lSrh'  # sort by size
+alias lc='ls -lcrh'  # sort by change time
+alias lu='ls -lurh'  # sort by access time
+alias lr='ls -lRh'  # recursive ls
+alias lt='ls -ltrh'  # sort by date
+alias lm='ls -alh |more'  # pipe through 'more'
+alias lw='ls -xAh'  # wide listing format
+alias ll='ls -Fls'  # long listing format
+alias labc='ls -lap'  #alphabetical sort
+alias lf="ls -l | egrep -v '^d'"  # files only
+alias ldir="ls -l | egrep '^d'"  # directories only
+alias checkcommand="type -t"  # check if: [aliased, file, built-in]
+# --- show current network connections to the server ---
+alias openports='netstat -nape --inet'  # Show open ports
+# --- alias's for safe and forced reboots ---
+alias rebootsafe='sudo shutdown -r now'
+alias rebootforce='sudo shutdown -r -n now'
+alias sha1='openssl sha1'
+
+
+# =============================================================================
+# Git aliases
+# =============================================================================
+alias gaa='git add -A'
+alias gp='git push'
+alias gl='git log'
+alias gs='git status'
+alias gd='git diff'
+alias gmsg='git commit -m'
+alias gmsga='git commit -am'
+alias gb='git branch'
+alias gc='git checkout'
+alias gra='git remote add'
+alias grr='git remote rm'
+alias git_down='git pull'
+alias gcl='git clone'
+alias gta='git tag -a -m'
+alias gf='git reflog'
+alias gfa='git fetch --all'
+# --- leverage an alias from ~/.gitconfig ---
+alias gh='git hist'
+alias glg1='git lg1'
+alias glg2='git lg2'
+alias glg='git lg'
+# --- exa file list ---
+alias la="exa --git --color=automatic -x"
+alias git-unused="git ls-files | xargs ctags"
+alias rcommit="git add . && gitstamp"
+alias rcomd="rcommit && git push -u deploy"
+alias rcomp="rcommit && git push"
+
+
+# =============================================================================
+# MISC
+# =============================================================================
+# --- `cat` with beautiful colors. requires: pip install -U Pygments
+alias c='pygmentize -O style=monokai -f console256 -g'
+alias myip='curl ip.appspot.com'
+# --- memHogsTop, memHogsPs:  Find memory hogs ---
+# --- alias memHogsTop='top -l 1 -o rsize | head -20' ---
+alias memHogsPs='ps wwaxm -o pid,stat,vsize,rss,time,command | head -10'
+# --- cpuHogs:  Find CPU hogs ---
+alias cpu_hogs='ps wwaxr -o pid,stat,%cpu,time,command | head -10'
+alias flushDNS='dscacheutil -flushcache'
+# --- Reload dns ---
+alias reloaddns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
+alias windir='cd /mnt/c/Users/swhit'
+alias winhome='cd /mnt/c/Users/swhit'
+alias dos2nixdir='find . -type f -print0 | xargs -0 dos2unix'
+alias python="python3.9"
+alias pip-update-all="pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U"
+alias git-ctags="git ls-files | xargs ctags"
+alias yay="yay --aur"
+alias purge-untracked="git clean -fdx"
+alias file-proc='ls -l /proc/$(pidof dropbox)/fd | egrep -v "pipe:|socket:|/dev"'
+alias screenfetch="CONFIG+=qml_debug && clear && screenfetch"
+alias rm-thumbs='rm -rf "$HOME/.cache/thumbnails/*" && nautilus -q'
+alias tagunused="git-ctags && unused"
+alias pip="pip3"
+alias purge-untracked="git clean -fdx"
+alias file-proc='ls -l /proc/$(pidof dropbox)/fd | egrep -v "pipe:|socket:|/dev"'
+alias screenfetch="CONFIG+=qml_debug && clear && screenfetch"
+alias mail="neomutt"
+alias savedmail="neomutt -f /root/.Mail/root"
+alias keyid="echo 8F15D24F"
+alias lsusers="cut -d: -f1 /etc/passwd"
+alias sshr='ssh -p $SSH_PORT root@ddwrt'
+alias sshu='ssh -p $SSH_PORT ubuntu'
+alias sshp='ssh -p $SSH_PORT proxy'
+alias sshl='ssh -p $SSH_PORT legacy'
+alias ssha='ssh -p $SSH_PORT archlinux'
+# alias fullapt="sudo /usr/local/bin/fullapt --level 4"
+alias reset-gnome="killall -SIGQUIT gnome-shell"
+alias keyid="echo 8F15D24F"
+alias blobsha="~/.zsh/zshrc.d/blobsha.sh"
+alias echoxproc='c "$(pwd)/.pytest_cache/d/.xprocess/mailserver/xprocess.log"'
+alias lsblk='lsblk -o name,mountpoint,label,size,fstype,uuid | egrep -v "^loop"'
+alias sudo="sudo "
+alias ctags="ctags-exuberant"
+alias dcode="date +'%Y%m%dT%S%M%H'"
+alias tcommit="git add .; git commit -m \$(dcode)"
+alias tcommitp="tcommit; git push"
+alias dotfiles="make"

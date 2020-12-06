@@ -1,0 +1,1 @@
+. "C:\Users\swhitlock\.dotfiles\config\windows\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
