@@ -9,7 +9,9 @@ DOTFILES = ".dotfiles"
 
 
 @pytest.fixture(name="mock_constants", autouse=True)
-def fixture_mock_constants(nocolorcapsys, monkeypatch, tmpdir, entry_point):
+def fixture_mock_install_constants(
+    nocolorcapsys, monkeypatch, tmpdir, entry_point
+):
     """Run the install process and return it's output stripped of any
     ANSI escaped color codes. The returned output can be used or ignored
     to control the stream of stdout/ stderr.
