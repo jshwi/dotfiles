@@ -1,3 +1,10 @@
+"""
+tests.make_test.path_test
+=========================
+
+Test ``get_path`` which should point to the package contained within
+this repository.
+"""
 import pathlib
 import sys
 import unittest.mock
@@ -6,6 +13,12 @@ import pyshared
 
 
 def test_path(nocolorcapsys, dotclone):
+    """Test that the correct path is produced.
+
+    :param nocolorcapsys:   ``capsys`` with the ANSI codes removed.
+    :param dotclone:        Clone this repository and return the path
+                            (pointed to the tmpdir).
+    """
     name = pyshared.get_name(echo=False)
     argv = [__name__]
     with unittest.mock.patch.object(sys, "argv", argv):
