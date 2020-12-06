@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
 """
-dev
+lib.make.pyshared
+=================
 ===
 
-Tools to help manage Python repos
+Classes and functions shared amongst the Python make tool entry points.
 """
 import argparse
 import hashlib
@@ -198,6 +198,12 @@ def get_name(echo=True):
 
 
 def get_path(echo=True):
+    """Get the path to the current repository package.
+
+    :param echo:    This is True when being run by a shell script to
+                    treat as a return.
+    :return:        The path to the package or sys.exit if it fails.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-e",
@@ -217,7 +223,7 @@ def get_path(echo=True):
         if echo:
             print(item)
         return item
-    return None
+    sys.exit(1)
 
 
 def announce(hashcap, filename):
@@ -409,9 +415,12 @@ def make_whitelist():
 
 
 def check_tests():
+    """Check that tests exist in the test dir or otherwise exit with a
+    non-zero exit code.
+    """
     files = []
     for pattern in ("test_*.py", "*_test.py"):
         path = pathlib.Path(TESTS)
-        files.extend([p for p in path.rglob(pattern)])
+        files.extend(path.rglob(pattern))
     if not files:
         sys.exit(1)
