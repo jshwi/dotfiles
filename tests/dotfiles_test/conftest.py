@@ -17,6 +17,14 @@ CONFIG = ".config"
 
 @pytest.fixture(name="monkeypatch_home", autouse=True)
 def fixture_monkeypatch_default(tmpdir, monkeypatch, entry_point):
+    """Patch ``os.path.expanduser`` to treat the ``HOME`` shorthand of
+    ``~/`` as ``tmpdir``.
+
+    :param tmpdir:      The temporary directory ``pytest`` fixture.
+    :param monkeypatch: The monkeypatch ``pytest`` fixture.
+    :param entry_point: The "entry point" set for testing.
+    """
+
     def expanduser(path):
         return path.replace("~/.", f"{tmpdir}/.")
 

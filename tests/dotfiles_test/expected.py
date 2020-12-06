@@ -120,6 +120,14 @@ def dry_run_backups(tmpdir, suffix):
 
 
 def mkarchive(tmpdir, target, date, time):
+    """Expected output for the ``mkarchive`` module.
+
+    :param tmpdir:  The temporary directory ``pytest`` fixture.
+    :param target:  The file or directory being archived.
+    :param date:    Today's date separated by ``os.path.sep``.
+    :param time:    The time.
+    :return:        Expected output when running ``mkarchive``.
+    """
     archive = f"{time}.{os.path.basename(target)}.tar.gz"
     return [
         f"Adding Documents/Archive/{date}/ to {tmpdir}",
