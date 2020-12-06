@@ -1,6 +1,6 @@
 import os
 
-from . import Colors
+from . import color
 
 
 def get_matches():
@@ -21,7 +21,7 @@ def get_matches():
 def main():
     matches = get_matches()
     for count, (value, obj) in enumerate(matches.items()):
-        color = Colors("yellow" if count % 2 == 0 else "cyan")
+        _color = color.yellow if count % 2 == 0 else color.cyan
         print(value + ":")
         for subkey, subval in obj.items():
-            print("    " + color.get(subkey) + "=" + color.get(subval))
+            print("    " + _color.get(subkey) + "=" + _color.get(subval))

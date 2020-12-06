@@ -12,6 +12,7 @@ import sys
 import tarfile
 
 import appdirs
+import object_colors
 import yaml
 
 CONFIGDIR = appdirs.user_config_dir(__name__)
@@ -43,48 +44,9 @@ SOURCE = str(pathlib.Path.home() / ".dotfiles" / "src")
 SUFFIX = datetime.datetime.now().strftime("%d%m%YT%H%M%S")
 TIME = datetime.datetime.now().strftime("%H:%M:%S")
 
+color = object_colors.Color()
 
-class Colors:
-    """Return strings in color.
-    :var: black
-    :var: red
-    :var: green
-    :var: yellow
-    :var: blue
-    :var: magenta
-    :var: cyan
-    :var: white
-    """
-
-    codes = {
-        "black": 0,
-        "red": 1,
-        "green": 2,
-        "yellow": 3,
-        "blue": 4,
-        "magenta": 5,
-        "cyan": 6,
-        "white": 7,
-    }
-
-    def __init__(self, color="white"):
-        try:
-            self.color = self.codes[color]
-        except KeyError:
-            self.color = self.codes["white"]
-
-    def get(self, string):
-        """Get a list of strings if there are multiple strings or just
-        return the single string if there is only one.
-
-        :param string:  String(s) to color.
-        :return:        Single colored string or a list of colored
-                        strings.
-        """
-        return f"\u001b[0;3{self.color};40m{string}\u001b[0;0m"
-
-    def print(self, string, **kwargs):
-        print(self.get(string), **kwargs)
+color.populate_colors()
 
 
 class EnterDir:
@@ -133,7 +95,7 @@ class Tar:
     @staticmethod
     def _file_not_found(file):
         err = FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), file)
-        Colors("red").print(str(err), file=sys.stderr)
+        color.red.print(str(err), file=sys.stderr)
         raise err
 
     def compress(self):
