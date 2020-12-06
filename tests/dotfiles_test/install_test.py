@@ -8,6 +8,8 @@ import sys
 import unittest.mock
 
 import dotfiles
+
+# noinspection PyPackageRequirements
 import pytest
 
 from . import expected
