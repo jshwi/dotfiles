@@ -34,6 +34,7 @@ PIPENV_IGNORE_VIRTUALENVS=1
 LIBMAKE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # /lib/make/
 PYSHARED="${LIBMAKE}/pyshared"
 LIB="$(dirname "$LIBMAKE")"  # /lib/
+ENVIRONMENT_TEMPLATES="$LIB/environment"
 REPOPATH="$(dirname "$LIB")"  # /
 REPONAME="$(basename "$REPOPATH")"  # /<REPONAME>
 ENVFILE="${REPOPATH}/.env"  # /.env
@@ -505,16 +506,12 @@ make_tests () {
 #   `pytest')
 # ======================================================================
 make_coverage () {
-  modules="$(
-    python3 "${LIBMAKE}/modules.py" "${PYITEMS[@]}" --exclude "tests"
-  )"
-  echo "$modules"
   if python "$LIBMAKE/check_tests.py"; then
     items=( pytest coverage )
     for item in "${items[@]}"; do
       check_reqs "$item" --dev
     done
-    pytest --color=yes "$TESTS" --cov="$modules" -vv || return "$?"
+    pytest --color=yes --cov=. "$TESTS" -vv || return "$?"
     coverage xml
     unset items
   else
@@ -856,41 +853,10 @@ make_files () {
 #   `0' if all goes OK
 # ======================================================================
 list_env_vars () {
-  mapfile -t vars < "$TEMPLATE_ENV"
+  mapfile -t vars < "$ENVIRONMENT_TEMPLATES/env"
   for var in "${vars[@]}"; do
     echo "- $var"
   done
-}
-
-
-# ======================================================================
-# Source the .env file if it exists, otherwise explain error and exit
-#
-# Globals:
-#   ENVFILE
-# Outputs:
-#   environment variables needed to run the build
-# Returns:
-#   `0' if all goes OK
-# ======================================================================
-source_env () {
-  if [ -f "$ENVFILE" ]; then
-    source "$ENVFILE"
-  else
-    err \
-        "\.env file cannot be found" \
-        "cannot continue running with these values:"$'\n'"$(list_env_vars)"
-  fi
-}
-
-
-source_symlink () {
-  if [ -L "$ENVFILE" ]; then
-    echo "${BOLD}${YELLOW}Warning: .env is symlinked to it's template bin/env${RESET}"
-    echo "${YELLOW}. do not make any changes to this file as it may be added to version control${RESET}"
-    echo "${YELLOW}. remove symlink and copy bin/env to .env${RESET}"
-    echo "${YELLOW}. uncomment /.env in .gitignore${RESET}"
-  fi
 }
 
 
@@ -904,8 +870,6 @@ source_symlink () {
 #   `0' if all goes OK
 # ======================================================================
 make_build () {
-  source_env || return "$?"
-  source_symlink
   ( make_announce "clean" && make_clean ) || return "$?"
   ( make_announce "format" && make_format ) || return "$?"
   ( make_announce "typecheck" && make_typecheck ) || return "$?"
