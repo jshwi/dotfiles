@@ -1,6 +1,6 @@
 """
-cryptdir
-========
+dotfiles.src.cryptdir
+=====================
 """
 import argparse
 import contextlib
@@ -10,6 +10,12 @@ from . import Cleanup, color
 
 
 class Parser(argparse.ArgumentParser):
+    """Subclass ``argparse.ArgumentParser so that no results can be
+    returned`` if the right arguments are not provided. ``_check_valid``
+    will raise an error and display the parser's helps message in this
+    case.
+    """
+
     def __init__(self):
         # noinspection PyTypeChecker
         super().__init__(
@@ -57,6 +63,12 @@ class Parser(argparse.ArgumentParser):
 
 
 def encrypt(path, recipient):
+    """Encrypt a directory or file. If a directory compress the folder
+    into an archive.
+
+    :param path:        Path to the file or directory to encrypt.
+    :param recipient:   Recipient key holder for gnupg.
+    """
     tarfile = path + ".tar.gz"
     gpgfile = tarfile + ".gpg"
 
@@ -70,6 +82,10 @@ def encrypt(path, recipient):
 
 
 def decrypt(path):
+    """Decrypt a compressed tar directory or file.
+
+    :param path: Path the encrypted tar archive or file.
+    """
     tarfile = path.replace(".gpg", "")
     file = tarfile.replace(".tar.gz", "")
 
@@ -83,6 +99,10 @@ def decrypt(path):
 
 
 def main():
+    """Options to quickly encrypt or decrypt a directory or file. Mainly
+    created to avoid the multiple steps involved with encrypting a
+    directory.
+    """
     parser = Parser()
     if parser.decrypt:
         decrypt(parser.path)

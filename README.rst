@@ -1,5 +1,5 @@
-dotfiles
-========
+README
+======
 
 usage: ./install [-h] [-d] [-w]
 

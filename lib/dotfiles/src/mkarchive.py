@@ -1,5 +1,6 @@
 """
-mkarchive
+dotfiles.src.mkarchive
+======================
 """
 import argparse
 import os
@@ -9,6 +10,10 @@ from . import HOME, DATE, TIME, Tar, DirInfo, color
 
 
 def main():
+    """Tar and encrypt a file or directory. Move the encrypted file(s)
+    to a dated directory path. Prefix the archive with the time it was
+    prepared.
+    """
     parser = argparse.ArgumentParser(prog=color.cyan.get("mkarchive"))
 
     parser.add_argument(

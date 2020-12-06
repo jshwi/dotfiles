@@ -1,6 +1,6 @@
 """
-dotpy.src.__init__
-==================
+dotfiles.src.__init__
+======================
 """
 import datetime
 import errno
@@ -68,6 +68,12 @@ class EnterDir:
 
 
 class Yaml:
+    """Read from or write to yaml config files.
+
+    :param path:    Path to yaml file to be created or to be read from.
+    :param obj:     Dictionary object to write to yaml file.
+    """
+
     def __init__(self, path, obj=None):
         super().__init__()
         self.path = path
@@ -76,18 +82,28 @@ class Yaml:
         self.dict = obj if obj else {}
 
     def write(self):
+        """Write ``self.dict`` dictionary object to yaml."""
         if os.path.isdir(self.dir):
             with open(self.path, "w") as fout:
                 yaml.dump(self.dict, fout)
             self.exists = True
 
     def read(self):
+        """Read from existing yaml file into session dictionary."""
         if self.exists:
             with open(self.path) as fin:
                 self.dict.update(yaml.safe_load(fin))
 
 
 class Tar:
+    """Compress and extract tar archives.
+
+    :param infile:  The file or dir that will be compressed or
+                    extracted.
+    :param outfile: The file or dir that the infile will be compressed
+                    into or extracted into.
+    """
+
     def __init__(self, infile, outfile=None):
         self.infile = infile
         self.outfile = outfile
@@ -99,7 +115,7 @@ class Tar:
         raise err
 
     def compress(self):
-
+        """Compress file or dir to tar.gz file"""
         if os.sep in self.infile:
             dirname = os.path.dirname(self.infile)
         else:
@@ -123,18 +139,31 @@ class Tar:
                     self._file_not_found(self.infile)
 
     def extract(self):
+        """Extract a tar.gz archive."""
         outfile_dirname = os.path.dirname(self.outfile)
         with tarfile.open(self.infile) as tar:
             tar.extractall(path=outfile_dirname)
 
 
 class GPG:
+    """Encrypt and decrypt *.gpg files.
+
+    :param infile:  File to encrypt or file to decrypt.
+    :param outfile: File for infile to encrypt into or file for it to
+                    decrypt into.
+    """
+
     def __init__(self, infile, outfile):
         self.infile = infile
         self.outfile = outfile
 
     @staticmethod
     def popen(command):
+        """Run command and return it's exit-code.
+
+        :param command: Command to run.
+        :return:        Exit-code.
+        """
         child = subprocess.Popen(
             command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
@@ -151,22 +180,41 @@ class GPG:
         return child.returncode
 
     def encrypt(self, recipient):
+        """Encrypt a file.
+
+        :param recipient:   The gpg recipient key-holder who's private
+                            key can decrypt these files.
+        :return:            Exit code from command.
+        """
         return self.popen(
             ["gpg", "-o", self.outfile, "-r", recipient, "-e", self.infile]
         )
 
     def decrypt(self):
+        """Decrypt encrypted file if recipient key-holder.
+
+        :return: Exit code from command.
+        """
         return self.popen(["gpg", "-o", self.outfile, "-d", self.infile])
 
     @classmethod
     def add_batch_key(cls, keyfile):
         """Create a dummy .gnupg dir and keyrings for tests related to
         gpg keys
+
+        :param keyfile: Path to keyfile to read from.
         """
         return cls.popen(["gpg", "--batch", "--gen-key", keyfile])
 
 
 class CryptDir:
+    """Thin wrapper combining ``Tar`` and ``GPG`` to automate the task
+    of encrypting files and dirs (especially dirs).
+
+    :param infile: Pre-process file-name.
+    :param outfile: Post-process file-name
+    """
+
     def __init__(self, infile, outfile):
         self.infile = infile
         self.outfile = outfile
@@ -175,12 +223,14 @@ class CryptDir:
         print(". " + self.outfile + " -> " + self.outfile)
 
     def compress(self):
+        """Compress the item and announce."""
         tar = Tar(self.infile, self.outfile)
         print("Compressing " + self.infile)
         tar.compress()
         self._announce_rename()
 
     def encrypt(self, recipient):
+        """Encrypt the item and announce."""
         gpg = GPG(self.infile, self.outfile)
         print("Encrypting " + self.infile)
         exit_status = gpg.encrypt(recipient)
@@ -189,12 +239,14 @@ class CryptDir:
         self._announce_rename()
 
     def extract(self):
+        """Extract the item and announce."""
         tar = Tar(self.infile, self.outfile)
         print("Extracting " + self.infile)
         tar.extract()
         self._announce_rename()
 
     def decrypt(self):
+        """Decrypt the item and announce."""
         gpg = GPG(self.infile, self.outfile)
         print("Decrypting " + self.infile)
         exit_status = gpg.decrypt()
@@ -204,7 +256,14 @@ class CryptDir:
 
 
 class Cleanup(CryptDir):
-    def __init__(self, infile, outfile):
+    """Ensure the file or compressed files are removed through the
+    stages of encrypting a directory or file.
+
+    :param infile:  File to remove.
+    :param outfile: File to keep.
+    """
+
+    def __init__(self, infile, outfile):  # pylint: disable=W0235
         super().__init__(infile, outfile)
 
     def __enter__(self):
@@ -220,6 +279,12 @@ class Cleanup(CryptDir):
 
 
 class DirInfo:
+    """Get the directory information of added archive paths for
+    ``mkarchive``.
+
+    :param path: Path to the archive.
+    """
+
     def __init__(self, path):
         self.list = path.split(os.sep)[1:]
         self.old = f"/{self.list.pop(0)}"
@@ -231,6 +296,9 @@ class DirInfo:
         return _dir
 
     def collate_info(self):
+        """Gather the info from the lists and determine if an archive
+        path has already been created or not.
+        """
         for _dir in self.list:
             test_dir = os.path.join(self.old, _dir)
             if os.path.isdir(test_dir):
@@ -239,4 +307,5 @@ class DirInfo:
                 self.new = self._build_new_path(_dir)
 
     def get_info(self):
+        """:return: the old and new directories"""
         return self.old, self.new

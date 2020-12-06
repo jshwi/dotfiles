@@ -1,9 +1,16 @@
+"""
+dotfiles.src.tcommit
+====================
+"""
 import argparse
 import datetime
 import subprocess
 
 
 def main():
+    """Quickly add, commit and timestamp git commits. Options to push
+    immediately and append an addition message to the timestamp.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-m", "--message", action="store", help="additional message"

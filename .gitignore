@@ -1,6 +1,5 @@
-*coverage*
-!.coveragerc
 .cache/
+.coverage
 .env
 .idea/
 .mypy_cache
@@ -8,6 +7,7 @@
 __pycache__/
 _build
 bundle/
+coverage.xml
 src/vim/swp/*
 !src/vim/swp/.commitme
 src/vim/tmp/*
