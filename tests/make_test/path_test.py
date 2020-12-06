@@ -5,11 +5,6 @@ import unittest.mock
 import pyshared
 
 
-def test_name(project_name):
-    name = pyshared.get_name(echo=False)
-    assert name == project_name
-
-
 def test_path(nocolorcapsys, dotclone):
     name = pyshared.get_name(echo=False)
     argv = [__name__]

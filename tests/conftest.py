@@ -11,6 +11,10 @@ import pyshared
 import pytest
 
 
+TESTS = os.path.abspath(os.path.dirname(__file__))
+REPOPATH = os.path.dirname(TESTS)
+
+
 class NoColorCapsys:
     """Capsys but with a regex to remove ANSI escape codes
 
@@ -121,8 +125,7 @@ def fixture_dotclone(tmpdir, repo_dir):
     :param tmpdir:
     :param repo_dir:    The absolute path to this repository.
     """
-    name = pyshared.get_name(echo=False)
-    dotclone = os.path.join(tmpdir, name)
+    dotclone = os.path.join(tmpdir, os.path.basename(REPOPATH))
     command = ["git", "clone", repo_dir, dotclone]
     subprocess.call(
         command,
