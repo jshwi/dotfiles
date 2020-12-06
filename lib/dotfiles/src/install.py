@@ -129,7 +129,7 @@ def linkdest(source, dest, dry):
 
 
 def comment_yaml():
-
+    """Add informative comment to yaml config."""
     with open(CONFIG) as fin:
         conf = fin.read()
 
@@ -138,6 +138,12 @@ def comment_yaml():
 
 
 def link_dirs(dirs, dirpath, dry):
+    """Link dotfile dirs to HOME.
+
+    :param dirs:    Dotfile dirs in src.
+    :param dirpath: Path to link to.
+    :param dry:     Dry-mode: True or False.
+    """
     for dotdir, dotfiles in dirs.items():
         dotfile_source = os.path.join(SOURCE, dotdir)
         dotdir_dest = os.path.expanduser(dirpath) + dotdir
@@ -150,6 +156,12 @@ def link_dirs(dirs, dirpath, dry):
 
 
 def link_files(files, dirpath, dry):
+    """Link dotfile files from their symlinked dirs in HOME.
+
+    :param files:   Files within the symlink pointing to this repo.
+    :param dirpath: Path to link to.
+    :param dry:     Dry-mode: True or False.
+    """
     for file in files:
         dotfile_source = os.path.join(SOURCE, file)
         filename = os.path.basename(file)
@@ -158,7 +170,12 @@ def link_files(files, dirpath, dry):
 
 
 def link_all(conf, dry):
+    """Link all the files and dirs in src in this repo.
 
+    :param conf:    Read the schema for src and dst from config yaml
+                    file.
+    :param dry:     Dry-mode: True or False.
+    """
     for dot_type in conf:
 
         for dirpath, obj in conf[dot_type].items():
@@ -171,6 +188,9 @@ def link_all(conf, dry):
 
 
 def link_vimrc_version():
+    """Link the base dir to initialize the dynamic linking of the base
+    vimrc and the ide vimrc.
+    """
     src = os.path.join("rc", "vimrc.vim")
     dst = os.path.join(SOURCE, "vim", "vimrc")
     try:

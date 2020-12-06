@@ -214,7 +214,7 @@ def get_path(echo=True):
     )
     name = get_name(echo=False)
     path = pathlib.Path(REPOPATH)
-    pathlist = [p for p in path.rglob(name)]
+    pathlist = [path.rglob(name)]
     if pathlist:
         item = pathlist[0]
         if echo:
