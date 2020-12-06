@@ -117,3 +117,15 @@ def dry_run_backups(tmpdir, suffix):
         expected += f"[DRY-RUN]{line}\n"
     expected += "\n*** No files have been changed ***\n"
     return expected
+
+
+def mkarchive(tmpdir, target, date, time):
+    archive = f"{time}.{os.path.basename(target)}.tar.gz"
+    return [
+        f"Adding Documents/Archive/{date}/ to {tmpdir}",
+        "Making archive",
+        f". created {archive}",
+        "Storing archive",
+        f". {archive} -> ~/Documents/Archive/{date}/{archive}",
+        "Done",
+    ]
