@@ -136,20 +136,40 @@ def test_broken_symlink(nocolorcapsys):
 
 
 def get_config(tmpdir):
+    """Get the mocked config path.
+
+    :param tmpdir:  The temporary directory ``pytest`` fixture.
+    :return:        Path to the mock config file in the tmpdir.
+    """
     name = "tests.dotfiles_test.conftest"
     config_dir = os.path.join(tmpdir, ".config", name)
     return os.path.join(config_dir, name + ".yaml")
 
 
 def test_init_config(tmpdir, nocolorcapsys):
+    """Test initialization of a new config file in a brand-new install.
+
+    :param tmpdir:          The temporary directory ``pytest`` fixture.
+    :param nocolorcapsys:   The ``capsys`` fixture altered to remove
+                            ANSI escape codes.
+    """
     config = get_config(tmpdir)
     with unittest.mock.patch.object(sys, "argv", [__name__, "--init"]):
         dotfiles.install.main()
         out = nocolorcapsys.stdout()
         assert out == f"created default conf:\n{config}\n"
+    assert os.path.isfile(config)
 
 
 def test_init_config_force(tmpdir, nocolorcapsys):
+    """Test initialization of a new config file in an already existing
+    installation when using the -f/--force option and test that the old
+    config is overwritten.
+
+    :param tmpdir:          The temporary directory ``pytest`` fixture.
+    :param nocolorcapsys:   The ``capsys`` fixture altered to remove
+                            ANSI escape codes.
+    """
     config = get_config(tmpdir)
     test_init_config(tmpdir, nocolorcapsys)
     yaml = dotfiles.Yaml(config)
