@@ -20,6 +20,7 @@ def install(nocolorcapsys):
                             ANSI escape codes.
     :return:                Stdout.
     """
+    _ = dotfiles
     dotfiles.install.main()
     return nocolorcapsys.stdout()
 
@@ -41,7 +42,7 @@ def test_config_loaded_correctly(nocolorcapsys):
     install(nocolorcapsys)
 
 
-def test_output(nocolorcapsys):
+def test_output(tmpdir, nocolorcapsys):
     """Test that the actual output informing the user of the process
     matches the expected output.
 
@@ -50,7 +51,7 @@ def test_output(nocolorcapsys):
     :return:                Stdout.
     """
     out = install(nocolorcapsys)
-    assert out == expected.output(dotfiles.install.HOME)
+    assert out == expected.output(tmpdir)
 
 
 def test_symlinks(nocolorcapsys):
@@ -61,10 +62,10 @@ def test_symlinks(nocolorcapsys):
                             ANSI escape codes.
     """
     install(nocolorcapsys)
-    contents = os.listdir(dotfiles.install.HOME)
+    contents = os.listdir(dotfiles.HOME)
     for _, val in expected.PAIRS.items():
         if val in expected.FOLLOW_PATH:
-            path = os.path.join(dotfiles.install.HOME, val)
+            path = os.path.join(dotfiles.HOME, val)
             assert os.path.islink(path)
         else:
             assert val in contents
@@ -81,7 +82,7 @@ def test_backups(tmpdir, dotclone, nocolorcapsys, suffix):
                             the file taken from the ``dotfiles.SUFFIX``
                             constant so as to ensure a match.
     """
-    test_output(nocolorcapsys)
+    test_output(tmpdir, nocolorcapsys)
     out = install(nocolorcapsys)
     assert out == expected.backups(tmpdir, suffix)
 
@@ -96,15 +97,15 @@ def test_dry_run(nocolorcapsys):
                             ANSI escape codes.
     """
     sys.argv.append("--dry")
-    freeze_dir = os.listdir(dotfiles.install.HOME)
+    freeze_dir = os.listdir(dotfiles.HOME)
     out = install(nocolorcapsys)
-    assert out == expected.dry_run(dotfiles.install.HOME)
-    updated_dir = os.listdir(dotfiles.install.HOME)
+    assert out == expected.dry_run(dotfiles.HOME)
+    updated_dir = os.listdir(dotfiles.HOME)
     assert updated_dir == freeze_dir
 
 
 @pytest.mark.usefixtures("dotclone")
-def test_dry_run_backups(nocolorcapsys, suffix):
+def test_dry_run_backups(tmpdir, nocolorcapsys, suffix):
     """Test that the actual output informing the user of the process,
     including the notice that this is a dry-run of a run including
     backups, matches the expected output. Also ensure that no files were
@@ -114,12 +115,12 @@ def test_dry_run_backups(nocolorcapsys, suffix):
                             ANSI escape codes.
     :param suffix:
     """
-    test_output(nocolorcapsys)
+    test_output(tmpdir, nocolorcapsys)
     sys.argv.append("--dry")
-    freeze_dir = os.listdir(dotfiles.install.HOME)
+    freeze_dir = os.listdir(dotfiles.HOME)
     out = install(nocolorcapsys)
-    assert out == expected.dry_run_backups(dotfiles.install.HOME, suffix)
-    updated_dir = os.listdir(dotfiles.install.HOME)
+    assert out == expected.dry_run_backups(dotfiles.HOME, suffix)
+    updated_dir = os.listdir(dotfiles.HOME)
     assert updated_dir == freeze_dir
 
 
@@ -132,6 +133,6 @@ def test_broken_symlink(nocolorcapsys):
                             ANSI escape codes.
     """
     install(nocolorcapsys)
-    vimrc = os.path.join(dotfiles.install.HOME, ".vim", "vimrc")
+    vimrc = os.path.join(dotfiles.HOME, ".vim", "vimrc")
     os.remove(vimrc)  # break link
     install(nocolorcapsys)

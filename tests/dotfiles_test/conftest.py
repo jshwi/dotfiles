@@ -6,38 +6,40 @@ import dotfiles
 import pytest
 
 DOTFILES = ".dotfiles"
+CONFIG = ".config"
 
 
-@pytest.fixture(name="mock_constants", autouse=True)
-def fixture_mock_install_constants(
-    nocolorcapsys, monkeypatch, tmpdir, entry_point
-):
+@pytest.fixture(name="monkeypatch_home", autouse=True)
+def fixture_monkeypatch_default(tmpdir, monkeypatch, entry_point):
+    def expanduser(path):
+        return path.replace("~/.", f"{tmpdir}/.")
+
+    monkeypatch.setattr(os.path, "expanduser", expanduser)
+    sys.argv = [entry_point]
+
+
+@pytest.fixture(name="mock_install_constants", autouse=True)
+def fixture_mock_install_constants(tmpdir):
     """Run the install process and return it's output stripped of any
     ANSI escaped color codes. The returned output can be used or ignored
     to control the stream of stdout/ stderr.
 
-    :param entry_point:
     :param tmpdir:
-    :param monkeypatch:
-    :param nocolorcapsys:   The ``capsys`` fixture altered to remove
-                            ANSI escape codes.
-    :return:                Stdout.
     """
-
-    def expanduser(path):
-        return path.replace("~/.", f"{tmpdir}/.")
-
-    sys.argv = [entry_point]
-    monkeypatch.setattr(dotfiles.install.os.path, "expanduser", expanduser)
     dotfiles.install.HOME = tmpdir
     dotfiles.install.CONFIGDIR = os.path.join(
-        dotfiles.install.HOME, ".config", __name__
+        dotfiles.install.HOME, CONFIG, __name__
     )
     dotfiles.install.CONFIG = os.path.join(
         dotfiles.install.CONFIGDIR, __name__ + ".yaml"
     )
     dotfiles.install.DOTFILES = os.path.join(tmpdir, DOTFILES)
     dotfiles.install.SOURCE = os.path.join(tmpdir, DOTFILES, "src")
+
+
+@pytest.fixture(name="mock_mkarchive_constants", autouse=True)
+def fixture_mock_mkarchive_constants(tmpdir):
+    dotfiles.mkarchive.HOME = tmpdir
 
 
 @pytest.fixture(name="suffix")
@@ -51,7 +53,7 @@ def fixture_suffix():
 
 
 @pytest.fixture(name="recipient")
-def fixture_recipient(tmpdir, nocolorcapsys):
+def fixture_recipient(tmpdir):
     """Create a .gnupg directory along with a temporary encryption and
     decryption key etc. to use during testing
 
