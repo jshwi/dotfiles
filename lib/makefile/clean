@@ -1,0 +1,5 @@
+#!/bin/bash -
+# shellcheck disable=SC1090
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/src/__init__.sh"
+
+make_clean

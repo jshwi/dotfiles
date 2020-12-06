@@ -1,0 +1,33 @@
+# ==================================================================== #
+#                             .dotfiles .zshrc                         #
+# ==================================================================== #
+# __init__
+ZSH_GLOBAL="$HOME/.dotfiles/zsh/globals"
+source "$ZSH_GLOBAL"
+[[ ! -f "$SECRET" ]] && echo 'SSH_PORT="22"' > "$SECRET"
+source "$SECRET"
+VIMBIN="$(which vim)"
+[[ -d "$TRAVIS"  ]] && source "$TRAVIS"
+travissh="$HOME/.travis/travis.sh"
+[ -f "$travissh"  ] && source "$travissh"
+CNF="/usr/share/doc/pkgfile/command-not-found.zsh"
+[[ -f "$CNF" ]] && source "$CNF"
+
+setopt autocd
+setopt correctall
+unsetopt BEEP
+umask 077
+eval "$(dircolors "$DIRCOLORS")"
+
+autoload -U promptinit && promptinit  # command prompt
+autoload -Uz compinit && compinit  # advanced tab-completion
+
+# source global variables
+source "$ZSH_ALIASES"
+source "$ZSH_FUNCTIONS"
+source "$ZSH_THEMES"
+source "$ZSH_PLUGINS"
+source "$ZSH_PATHS"
+source "$ZSH_SH"
+source "$ZSH_ZSTYLE"
+source "$ZSH_SYNTAX"

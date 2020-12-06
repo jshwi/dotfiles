@@ -1,0 +1,15 @@
+*coverage*
+!.coveragerc
+.cache/
+.env
+.idea/
+.mypy_cache
+.netrwhist
+__pycache__/
+_build
+bundle/
+src/vim/swp/*
+!src/vim/swp/.commitme
+src/vim/tmp/*
+!src/vim/tmp/.commitme
+vimrc

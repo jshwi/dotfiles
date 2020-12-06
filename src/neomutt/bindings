@@ -1,0 +1,12 @@
+bind pager <up> previous-line  # scroll inside the message rather than the index
+bind pager <down> next-line
+
+# example: toggle between mailboxes
+# =================================
+#macro index <f1> '<sync-mailbox><enter-command>\
+#    source ~/.neomutt/neomutt/arpwatch\
+#    <enter><change-folder>!<enter>'
+#
+#macro index <f2> '<sync-mailbox><enter-command>\
+#    source ~/.neomutt/neomutt/$HOME\
+#    <enter><change-folder>!<enter>'
