@@ -3,6 +3,7 @@ import sys
 import unittest.mock
 
 import dotfiles
+import pytest
 
 
 def assert_unencrypted_files(test_dir, tarfile, gpgfile):
@@ -25,6 +26,16 @@ def test_under_the_hood(crypt_test_files, recipient):
     exit_code = gpg.encrypt(recipient)
     assert exit_code == 0
     assert os.path.exists(gpgfile)
+
+
+def test_tar_no_file(nocolorcapsys):
+    tar = dotfiles.Tar(os.path.join("no_exist_dir", "no_exist_file"))
+    with pytest.raises(FileNotFoundError):
+        tar.compress()
+        assert (
+            nocolorcapsys.stderr()
+            == "[Errno 2] No such file or directory: 'no_exist_dir'"
+        )
 
 
 def test_encrypt_dir(crypt_test_files, recipient):

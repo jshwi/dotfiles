@@ -7,9 +7,7 @@ import pathlib
 import re
 import subprocess
 
-import pyshared
 import pytest
-
 
 TESTS = os.path.abspath(os.path.dirname(__file__))
 REPOPATH = os.path.dirname(TESTS)
@@ -65,6 +63,12 @@ class NoColorCapsys:
         indices
         """
         return self._readouterr_index(0)
+
+    def stderr(self):
+        """Call this to return the stderr without referencing the tuple
+        indices
+        """
+        return self._readouterr_index(1)
 
 
 @pytest.fixture(name="nocolorcapsys")

@@ -133,8 +133,8 @@ class Tar:
     @staticmethod
     def _file_not_found(file):
         err = FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), file)
-        Colors("red").print(str(err))
-        sys.exit(1)
+        Colors("red").print(str(err), file=sys.stderr)
+        raise err
 
     def compress(self):
 
