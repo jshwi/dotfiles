@@ -58,3 +58,17 @@ def test_decrypt_dir(crypt_test_files, recipient):
         dotfiles.cryptdir.main()
 
     assert_unencrypted_files(test_dir, tarfile, gpgfile)
+
+
+def test_encrypt_with_no_recipient(nocolorcapsys, crypt_test_files):
+    assert_unencrypted_files(*crypt_test_files)
+    test_dir, tarfile, gpgfile = crypt_test_files
+    argv = [__name__, test_dir]
+
+    with unittest.mock.patch.object(sys, "argv", argv):
+
+        with pytest.raises(SystemExit):
+            dotfiles.cryptdir.main()
+
+    out = nocolorcapsys.stderr().splitlines()
+    assert out[0] == "Cannot encrypt directory without a recipient"
