@@ -197,7 +197,7 @@ def get_name(echo=True):
     return None
 
 
-def get_path():
+def get_path(echo=True):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-e",
@@ -210,7 +210,10 @@ def get_path():
     name = get_name(echo=False)
     path = pathlib.Path(REPOPATH)
     pathlist = [p for p in path.rglob(name) if path.stem not in args.exclude]
-    print(pathlist[0])
+    item = pathlist[0]
+    if echo:
+        print(item)
+    return str(item.resolve())
 
 
 def announce(hashcap, filename):
@@ -408,3 +411,26 @@ def check_tests():
         files.extend([p for p in path.rglob(pattern)])
     if not files:
         sys.exit(1)
+
+
+def modules():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "modules",
+        metavar="MODULES",
+        nargs="+",
+        help="series of modules",
+    )
+    parser.add_argument(
+        "-e",
+        "--exclude",
+        nargs="+",
+        default=[],
+        help="modules not to include in list",
+    )
+    args = parser.parse_args()
+    for module in args.modules:
+        if not module.endswith(".py") and os.path.basename(module) not in [
+            os.path.basename(p) for p in args.exclude
+        ]:
+            print(os.path.relpath(module, REPOPATH).replace(os.path.sep, "."))

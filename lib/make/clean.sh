@@ -1,9 +1,3 @@
-# --- paths ---
-LIBMAKE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  # /lib/make/
-LIB="$(dirname "$LIBMAKE")"  # /lib/
-REPOPATH="$(dirname "$LIB")"  # /
-
-
 # ======================================================================
 # Remove every build element from repository and remove installed binary
 # from site or user bin directory.

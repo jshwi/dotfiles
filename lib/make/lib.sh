@@ -93,17 +93,14 @@ VIRTUAL_ENV="$(pipenv --venv)"
 # --- */**/virtalenvs/<REPONAME>-*/* ---
 VIRTUAL_ENV_BIN="${VIRTUAL_ENV}/bin"
 VIRTUAL_ENV_LIB="${VIRTUAL_ENV}/lib"
-PYTHONVERSION="$(ls -t -U "$VIRTUAL_ENV_LIB")"
-PYTHONDIR="${VIRTUAL_ENV_LIB}/${PYTHONVERSION}"
-SITE_PACKAGES="${PYTHONDIR}/site-packages"
+SITE_PACKAGES="${VIRTUAL_ENV_LIB}/$(ls -t -U "$VIRTUAL_ENV_LIB")/site-packages"
 
 # --- PYTHONPATH ---
 PYTHONPATH="${PYTHONPATH}:${REPOPATH}"
 PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV_LIB}"
 PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV_BIN}"
-PYTHONPATH="${PYTHONPATH}:${LIBMAKE}"
 PYTHONPATH="${PYTHONPATH}:${SITE_PACKAGES}"
-PYTHONPATH="${PYTHONPATH}:${PYSHARED}"
+PYTHONPATH="${PYTHONPATH}:${LIBMAKE}"
 export PYTHONPATH
 
 # --- PATH ---
@@ -133,7 +130,7 @@ PYITEMS=(
   "$APP_PATH"
   "$TESTS"
   "$DOCSCONF"
-  "$LIBMAKE"
+  "$PYSHARED"
 )
 
 
@@ -360,7 +357,7 @@ master_docs () {
 # ======================================================================
 make_deploy_docs () {
   branch="${1:-"master"}"
-  if [[ "$TRAVIS_BRANCH" =~ ^"$branch"$|^[0-9]+\.[0-9]+\.X$ ]]; then
+  if [[ "$TRAVIS_BRANCH" =~ ^("$branch"$|^[0-9]+\.[0-9]+\.X)$ ]]; then
       if [[ -n "$GH_NAME" && -n "$GH_EMAIL" ]]; then
         master_docs || return "$?"
       else
@@ -508,12 +505,16 @@ make_tests () {
 #   `pytest')
 # ======================================================================
 make_coverage () {
+  modules="$(
+    python3 "${LIBMAKE}/modules.py" "${PYITEMS[@]}" --exclude "tests"
+  )"
+  echo "$modules"
   if python "$LIBMAKE/check_tests.py"; then
     items=( pytest coverage )
     for item in "${items[@]}"; do
       check_reqs "$item" --dev
     done
-    pytest --color=yes "$TESTS" --cov="${PYITEMS[*]}" -vv || return "$?"
+    pytest --color=yes "$TESTS" --cov="$modules" -vv || return "$?"
     coverage xml
     unset items
   else

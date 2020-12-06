@@ -22,7 +22,6 @@
 # shellcheck disable=SC1090
 #=======================================================================
 LIBMAKE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 source "$LIBMAKE/lib.sh"
 
 which-pipenv "$@" || exit 1
