@@ -7,7 +7,6 @@ import pathlib
 import re
 import subprocess
 
-# noinspection PyPackageRequirements
 import pytest
 
 TESTS = os.path.abspath(os.path.dirname(__file__))

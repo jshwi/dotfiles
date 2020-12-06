@@ -2,16 +2,15 @@
 tests.dotfiles_test.install_test.py
 ===================================
 """
+# pylint: disable=R0801
 import os
 import sys
+import unittest.mock
 
 import dotfiles
-
-# noinspection PyPackageRequirements
 import pytest
 
 from . import expected
-import unittest.mock
 
 
 def install(nocolorcapsys):

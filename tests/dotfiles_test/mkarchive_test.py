@@ -5,6 +5,7 @@ tests.dotfiles_test.mkarchive_test
 Test making of the archive and moving it to the dynamically created
 dated directory path.
 """
+# pylint: disable=R0801
 import os
 import sys
 import unittest.mock
@@ -42,7 +43,7 @@ def test_mkarchive_file(nocolorcapsys, dotclone, tmpdir):
         assert out == _expected
 
 
-def test_mkarchive_no_file(nocolorcapsys, dotclone, tmpdir):
+def test_mkarchive_no_file(nocolorcapsys, dotclone):
     target = os.path.join(dotclone, "this_is_not_a_file.txt")
     with unittest.mock.patch.object(sys, "argv", [__name__, target]):
         with pytest.raises(FileNotFoundError):

@@ -7,8 +7,6 @@ import pathlib
 import sys
 
 import dotfiles
-
-# noinspection PyPackageRequirements
 import pytest
 
 DOTFILES = ".dotfiles"
