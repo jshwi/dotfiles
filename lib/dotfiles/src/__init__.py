@@ -204,7 +204,7 @@ class CryptDir:
 
 
 class Cleanup(CryptDir):
-    def __init__(self, infile, outfile):
+    def __init__(self, infile, outfile):  # pylint: disable=W0235
         super().__init__(infile, outfile)
 
     def __enter__(self):
