@@ -159,6 +159,11 @@ class GPG:
 
     @staticmethod
     def popen(command):
+        """Run command and return it's exit-code.
+
+        :param command: Command to run.
+        :return:        Exit-code.
+        """
         child = subprocess.Popen(
             command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
@@ -251,6 +256,13 @@ class CryptDir:
 
 
 class Cleanup(CryptDir):
+    """Ensure the file or compressed files are removed through the
+    stages of encrypting a directory or file.
+
+    :param infile:  File to remove.
+    :param outfile: File to keep.
+    """
+
     def __init__(self, infile, outfile):  # pylint: disable=W0235
         super().__init__(infile, outfile)
 
