@@ -31,6 +31,13 @@ source "${HOME}/.dotfiles/lib/makefile/src/virtualenv.sh"
 # :param env:   Name of the virtual env
 # :param path:  Path to the virtual env
 # =============================================================================
+
+# --- repo env ---
+REPOPATH="${HOME}/.dotfiles"
+LIB="${REPOPATH}/lib"
+LIBMAKE="${LIB}/make"
+source "${LIBMAKE}/virtualenv.sh"
+
 venv() {
     env="${1:-"venv"}"; path_="${2:-"."}"
     if [[ ! -d "$env" ]]; then
