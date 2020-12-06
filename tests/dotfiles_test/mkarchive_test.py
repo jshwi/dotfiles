@@ -10,6 +10,8 @@ import sys
 import unittest.mock
 
 import dotfiles
+import pytest
+
 from . import expected
 
 
@@ -20,9 +22,10 @@ def test_mkarchive(nocolorcapsys, dotclone, tmpdir):
     :param dotclone:        Path to cloned version of this repository
     :param tmpdir:          The temporary directory ``pytest`` fixture.
     """
-    argv = [__name__, dotclone]
-    _expected = expected.mkarchive(tmpdir, dotfiles.DATE, dotfiles.TIME)
-    with unittest.mock.patch.object(sys, "argv", argv):
+    _expected = expected.mkarchive(
+        tmpdir, dotclone, dotfiles.DATE, dotfiles.TIME
+    )
+    with unittest.mock.patch.object(sys, "argv", [__name__, dotclone]):
         dotfiles.mkarchive.main()
         out = nocolorcapsys.stdout().splitlines()
         assert out == _expected
@@ -30,11 +33,19 @@ def test_mkarchive(nocolorcapsys, dotclone, tmpdir):
 
 def test_mkarchive_file(nocolorcapsys, dotclone, tmpdir):
     target = os.path.join(dotclone, "README.rst")
-    argv = [__name__, target]
     _expected = expected.mkarchive(
         tmpdir, target, dotfiles.DATE, dotfiles.TIME
     )
-    with unittest.mock.patch.object(sys, "argv", argv):
+    with unittest.mock.patch.object(sys, "argv", [__name__, target]):
         dotfiles.mkarchive.main()
         out = nocolorcapsys.stdout().splitlines()
         assert out == _expected
+
+
+def test_mkarchive_no_file(nocolorcapsys, dotclone, tmpdir):
+    target = os.path.join(dotclone, "this_is_not_a_file.txt")
+    with unittest.mock.patch.object(sys, "argv", [__name__, target]):
+        with pytest.raises(FileNotFoundError):
+            dotfiles.mkarchive.main()
+            err = nocolorcapsys.stderr().splitlines()
+            assert err == f"[Errno 2] No such file or directory: '{target}'"

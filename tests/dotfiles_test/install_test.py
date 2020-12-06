@@ -11,6 +11,7 @@ import dotfiles
 import pytest
 
 from . import expected
+import unittest.mock
 
 
 def install(nocolorcapsys):
@@ -131,3 +132,13 @@ def test_broken_symlink(nocolorcapsys):
     vimrc = os.path.join(dotfiles.install.HOME, ".vim", "vimrc")
     os.remove(vimrc)  # break link
     install(nocolorcapsys)
+
+
+def test_init_config(tmpdir, nocolorcapsys):
+    name = "tests.dotfiles_test.conftest"
+    config_dir = os.path.join(tmpdir, ".config", name)
+    config = os.path.join(config_dir, name + ".yaml")
+    with unittest.mock.patch.object(sys, "argv", [__name__, "--init"]):
+        dotfiles.install.main()
+        out = nocolorcapsys.stdout()
+        assert out == f"created default conf:\n{config}\n"
