@@ -1,6 +1,0 @@
-#!/usr/bin/env python3
-"""Entry point for dotpy.reponame"""
-import dotfiles
-
-if __name__ == "__main__":
-    dotfiles.env.main()
