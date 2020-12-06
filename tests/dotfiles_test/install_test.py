@@ -97,11 +97,11 @@ def test_dry_run(nocolorcapsys):
                             ANSI escape codes.
     """
     sys.argv.append("--dry")
-    freeze_dir = os.listdir(dotfiles.HOME)
+    freeze_dir = os.listdir(dotfiles.install.HOME)
     out = install(nocolorcapsys)
-    assert out == expected.dry_run(dotfiles.HOME)
-    updated_dir = os.listdir(dotfiles.HOME)
-    assert updated_dir == freeze_dir
+    assert out == expected.dry_run(dotfiles.install.HOME)
+    updated_dir = os.listdir(dotfiles.install.HOME)
+    assert freeze_dir == updated_dir
 
 
 @pytest.mark.usefixtures("dotclone")
@@ -117,11 +117,11 @@ def test_dry_run_backups(tmpdir, nocolorcapsys, suffix):
     """
     test_output(tmpdir, nocolorcapsys)
     sys.argv.append("--dry")
-    freeze_dir = os.listdir(dotfiles.HOME)
+    freeze_dir = os.listdir(dotfiles.install.HOME)
     out = install(nocolorcapsys)
-    assert out == expected.dry_run_backups(dotfiles.HOME, suffix)
-    updated_dir = os.listdir(dotfiles.HOME)
-    assert updated_dir == freeze_dir
+    assert out == expected.dry_run_backups(dotfiles.install.HOME, suffix)
+    updated_dir = os.listdir(dotfiles.install.HOME)
+    assert freeze_dir == updated_dir
 
 
 @pytest.mark.usefixtures("dotclone")
@@ -133,6 +133,6 @@ def test_broken_symlink(nocolorcapsys):
                             ANSI escape codes.
     """
     install(nocolorcapsys)
-    vimrc = os.path.join(dotfiles.HOME, ".vim", "vimrc")
+    vimrc = os.path.join(dotfiles.install.HOME, ".vim", "vimrc")
     os.remove(vimrc)  # break link
     install(nocolorcapsys)

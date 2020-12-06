@@ -39,7 +39,7 @@ def fixture_mock_install_constants(tmpdir):
 
 @pytest.fixture(name="mock_mkarchive_constants", autouse=True)
 def fixture_mock_mkarchive_constants(tmpdir):
-    dotfiles.mkarchive.HOME = tmpdir
+    dotfiles.mkarchive.HOME = str(tmpdir)
 
 
 @pytest.fixture(name="suffix")
