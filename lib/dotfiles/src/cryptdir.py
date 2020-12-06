@@ -6,14 +6,14 @@ import argparse
 import contextlib
 import sys
 
-from . import Cleanup, Colors
+from . import Cleanup, color
 
 
 class Parser(argparse.ArgumentParser):
     def __init__(self):
         # noinspection PyTypeChecker
         super().__init__(
-            prog=Colors("cyan").get("cryptdir"),
+            prog=color.cyan.get("cryptdir"),
             formatter_class=lambda prog: argparse.HelpFormatter(
                 prog, max_help_position=42
             ),
@@ -45,7 +45,7 @@ class Parser(argparse.ArgumentParser):
 
     def _check_valid(self):
         if not self.decrypt and not self.recipient:
-            Colors("red").print(
+            color.red.print(
                 "Cannot encrypt directory without a recipient",
                 file=sys.stderr,
             )

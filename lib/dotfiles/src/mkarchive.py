@@ -5,11 +5,11 @@ import argparse
 import os
 import pathlib
 
-from . import HOME, DATE, TIME, Tar, DirInfo
+from . import HOME, DATE, TIME, Tar, DirInfo, color
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog=color.cyan.get("mkarchive"))
 
     parser.add_argument(
         "path", metavar="PATH", action="store", help="path to archive"

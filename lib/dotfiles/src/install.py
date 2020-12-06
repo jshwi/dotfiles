@@ -13,8 +13,8 @@ from . import (
     CONFIGDIR,
     DOTCONTENTS,
     SOURCE,
-    Colors,
     Yaml,
+    color,
     comments,
 )
 
@@ -24,7 +24,7 @@ class Parser(argparse.ArgumentParser):
 
     def __init__(self):
         super().__init__(
-            prog=Colors("cyan").get("./install"),
+            prog=color.cyan.get("./install"),
             description=(
                 'symlinks "$HOME" dotfiles and '
                 "backs up any files that have the same name"
@@ -70,15 +70,15 @@ def move(source, dest, dry):
     :param dry:     Print what would but do not do anything if True.
                     Announce that this is happening.
     """
-    yellow = Colors("yellow")
-    notify = f"{yellow.get('[BACKUP ]')} {source} {yellow.get('->')} {dest}"
+    backup, arrow = color.yellow.get("[BACKUP ]", "->")
+    notify = f"{backup} {source} {arrow} {dest}"
 
     if not dry:
         os.rename(source, dest)
         print(notify)
 
     else:
-        print(f"[{Colors('magenta').get('DRY-RUN')}]{notify}")
+        print(f"[{color.purple.get('DRY-RUN')}]{notify}")
 
 
 def symlink(source, dest, dry):
@@ -90,8 +90,8 @@ def symlink(source, dest, dry):
     :param dry:     Print what would but do not do anything if True.
                     Announce that this is happening.
     """
-    cyan = Colors("cyan")
-    notify = f"{cyan.get('[SYMLINK]')} {source} {cyan.get('->')} {dest}"
+    link, arrow = color.cyan.get("[SYMLINK]", "->")
+    notify = f"{link} {source} {arrow} {dest}"
 
     if not dry:
         try:
@@ -102,7 +102,7 @@ def symlink(source, dest, dry):
             pass
 
     else:
-        print(f"[{Colors('magenta').get('DRY-RUN')}]{notify}")
+        print(f"[{color.purple.get('DRY-RUN')}]{notify}")
 
 
 def linkdest(source, dest, dry):
@@ -213,5 +213,5 @@ def main():
         link_all(conf.dict, parser.dry)
 
         if parser.dry:
-            notice = Colors("magenta").get("***")
+            notice = color.purple.get("***")
             print(f"\n{notice} No files have been changed {notice}")
