@@ -25,6 +25,7 @@ vulture = "==2.1"
 
 [packages]
 appdirs = "==1.4.4"
+object-colors = "==1.0.8"
 pyaml = "==20.4.0"
 
 [requires]
