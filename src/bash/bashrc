@@ -1,0 +1,16 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+alias ls='ls --color=auto'
+PS1='[\u@\h \W]\$ '
+
+# added by travis gem
+[ -f /home/stephen/.travis/travis.sh ] && source /home/stephen/.travis/travis.sh
+
+HISTFILE="$HOME/.bash/bash_history"
+export HISTFILE
+

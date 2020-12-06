@@ -1,0 +1,2 @@
+# shellcheck disable=SC1091
+source "/c/Users/swhitlock/.dotfiles/bash/bashrc.win"

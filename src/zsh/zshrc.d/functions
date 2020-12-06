@@ -1,0 +1,219 @@
+#!/bin/bash -
+#==============================================================================
+#
+#          FILE: functions.sh
+#
+#         USAGE: ./functions.sh
+#
+#   DESCRIPTION:
+#
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: YOUR NAME (),
+#  ORGANIZATION:
+#       CREATED: 08/08/20 11:14
+#      REVISION:  ---
+#
+# shellcheck source=/dev/null
+#==============================================================================
+DOTFILES="$HOME/.dotfiles"
+LIB="$DOTFILES/lib"
+DOTSH="$LIB/dotsh"
+source "$DOTSH/lib.sh"
+
+# =============================================================================
+# venv
+# Activate virtualenv
+#
+# :param env:   Name of the virtual env
+# :param path:  Path to the virtual env
+# =============================================================================
+venv() {
+    env="${1:-"venv"}"; path_="${2:-"."}"
+    if [[ ! -d "$env" ]]; then
+        env=".venv"
+    fi
+    if [[ ! -d "$env" ]]; then
+        if [ $# -eq 0 ]; then
+            printf "cannot find \`venv' or \`.venv' in this directory"$'\n'
+            printf ". try entering the path to the virtual environment manually"$'\n'
+            printf "  i.e. \`venv \"/path/to/virtualenv\"'"$'\n'
+        else
+            printf "cannot find %s"$'\n' "$1"
+        fi
+        return 1
+    fi
+    venv="$path_/$env"
+    activate="$venv/bin/activate"
+    source "$activate"
+}
+
+
+# =============================================================================
+# venv_module
+# Activate virtualenv if not activated
+# =============================================================================
+venv_module() {
+    if [[ "$VIRTUAL_ENV" == "" ]]; then
+        venv "$@"
+    fi
+}
+
+
+# =============================================================================
+# gitstamp
+# Automatic commit with message and timestamp
+# =============================================================================
+gitstamp() {
+    msg="${1:=""}"
+    git commit -m "{\"$msg\": \"$(dt)\"}"
+}
+
+
+# =============================================================================
+# dtname
+# Return a name in the following format
+# name.date:time.extension
+#
+# :param name: The command's name
+# =============================================================================
+dtname() {
+    name="${1:=""}"
+    extension="$2"
+    output="$name.$(date +'%Y.%m.%d:%H.%M.%S')"
+    if [[ -z "$2" ]]; then
+        echo "$output"
+    else
+        echo "$output"."$extension"
+    fi
+}
+
+
+# =============================================================================
+# sign-prev
+# Gpg sign and rebase previous commits
+#
+# :optional param: commit hash - default: previous commit
+# =============================================================================
+sign-prev() {
+    commit=$1
+    if [[ $# -eq 0 ]]; then
+        if git cat-file -e HEAD^ > /dev/null 2>&1; then
+            commit="HEAD^"
+        else
+            commit="--root"
+        fi
+    fi
+    git rebase --exec 'git commit --amend --no-edit -n -S' -i "$commit"
+}
+
+
+cpbak () {
+    srcfile="$(basename "$1")"
+    dstname="$(date +'%Y.%m.%d:%H.%M.%S').${srcfile}"
+    fulldst="$2/$dstname"
+    cp "$srcfile" "$fulldst"
+    echo "backed up \`$1' to \`$fulldst'"
+}
+
+
+no-ci () {
+    git commit -m "[no ci]" "$@"
+}
+
+
+mkportfile () {
+    if [[ ! -f "$SECRET" ]]; then
+        {
+            echo '#!/bin/bash -'
+            echo 'SSH_PORT="22"'
+            echo 'export SSH_PORT'
+
+        } > "$SECRET"
+    fi
+}
+
+
+reset-chmod () {
+    opt="$1"; _path="$2"
+    if [[ "$opt" == "-f" ]] || [[ "$opt" == "--file" ]] || [[ "$opt" == "--all" ]]; then
+        find "$_path" -type f -exec chmod 644 {} \;
+    fi
+    if [[ "$opt" == "-d" ]] || [[ "$opt" == "--dir" ]] || [[ "$opt" == "--all" ]]; then
+        find "$_path" -type d -exec chmod 755 {} \;
+    fi
+}
+
+
+cwdpurge () {
+    arg="$1"; item="$2"
+    if [[ "$arg" == "empty" ]]; then
+        if [[ "$item" == "dir" ]]; then
+            find . -type d -empty -delete
+        fi
+    elif [[ "$arg" == "broken" ]]; then
+        if [[ "$arg" == "item" ]]; then
+            find . -xtype l -delete
+        fi
+    fi
+}
+
+
+nocigitcommit () {
+    git commit -m "[ci skip] $1"
+}
+
+
+fsearch () {
+    sudo updatedb
+    locate "$1" \
+        | grep -v Repositories \
+        | grep -v Archive \
+        | grep -v virtualenvs \
+        | grep -v pylint.d \
+        | grep -v JetBrains \
+        | grep -v gitkraken
+}
+
+
+clean_data_dirs () {
+    # shellcheck disable=SC2207
+    items=( $(fsearch "$1") )
+    for i in "${items[@]}"; do
+    rm -rf "$i"
+    done
+}
+
+
+getfw () {
+    if ! filewatcher="$(command -v black)"; then
+      filewatcher="could not find black in \$PATH"
+    fi
+    echo "Name: Black"
+    echo "File type: Python"
+    echo "Scope: Project Files"
+    echo "Program: $filewatcher"
+    echo "Arguments: \$FilePath\$"
+    echo "Output paths to refresh: \$FilePath\$"
+    echo "Working directory: \$ProjectFileDir\$"
+    echo 'Uncheck "Auto-save edited files to trigger the watcher" in Advanced Options'
+}
+
+
+vim () {
+  linkvim "$@"
+  if [[ "$1" =~ ^("-i"|"--ide")$ ]]; then shift; fi
+  "$_VIM" "$@"
+}
+
+
+cryptdir () {
+  dotcryptdir "$1" --recip "$2"
+}
+
+
+decryptdir () {
+  dotcryptdir "$1" -d
+}

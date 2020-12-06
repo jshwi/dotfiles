@@ -1,0 +1,12 @@
+[user]
+	name = jshwi
+	email = stephen@jshwisolutions.com
+	signingkey = 8F15D24F
+[core]
+	editor = vim
+[credential]
+	helper = store
+[commit]
+	template = ~/.git.d/committemplate
+[pull]
+	ff = only
