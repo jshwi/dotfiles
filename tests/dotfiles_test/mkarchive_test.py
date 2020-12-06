@@ -49,3 +49,14 @@ def test_mkarchive_no_file(nocolorcapsys, dotclone, tmpdir):
             dotfiles.mkarchive.main()
             err = nocolorcapsys.stderr().splitlines()
             assert err == f"[Errno 2] No such file or directory: '{target}'"
+
+
+def test_mkarchive_relative_file(nocolorcapsys, dotclone, tmpdir):
+    _expected = expected.mkarchive(
+        tmpdir, "LICENSE", dotfiles.DATE, dotfiles.TIME
+    )
+    with dotfiles.EnterDir(dotclone):
+        with unittest.mock.patch.object(sys, "argv", [__name__, "LICENSE"]):
+            dotfiles.mkarchive.main()
+            out = nocolorcapsys.stdout().splitlines()
+            assert out == _expected

@@ -68,12 +68,12 @@ class EnterDir:
 
 
 class Yaml:
-    def __init__(self, path):
+    def __init__(self, path, obj=None):
         super().__init__()
         self.path = path
         self.dir = os.path.dirname(path)
         self.exists = os.path.isfile(self.path)
-        self.dict = {}
+        self.dict = obj if obj else {}
 
     def write(self):
         if os.path.isdir(self.dir):

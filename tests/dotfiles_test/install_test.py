@@ -134,11 +134,35 @@ def test_broken_symlink(nocolorcapsys):
     install(nocolorcapsys)
 
 
-def test_init_config(tmpdir, nocolorcapsys):
+def get_config(tmpdir):
     name = "tests.dotfiles_test.conftest"
     config_dir = os.path.join(tmpdir, ".config", name)
-    config = os.path.join(config_dir, name + ".yaml")
+    return os.path.join(config_dir, name + ".yaml")
+
+
+def test_init_config(tmpdir, nocolorcapsys):
+    config = get_config(tmpdir)
     with unittest.mock.patch.object(sys, "argv", [__name__, "--init"]):
         dotfiles.install.main()
         out = nocolorcapsys.stdout()
         assert out == f"created default conf:\n{config}\n"
+
+
+def test_init_config_force(tmpdir, nocolorcapsys):
+    config = get_config(tmpdir)
+    test_init_config(tmpdir, nocolorcapsys)
+    yaml = dotfiles.Yaml(config)
+    yaml.read()
+    yaml.dict["new_key"] = "new"
+    yaml.write()
+    with open(config) as fin:
+        contents_1 = fin.read()
+    with unittest.mock.patch.object(
+        sys, "argv", [__name__, "--init", "--force"]
+    ):
+        dotfiles.install.main()
+        out = nocolorcapsys.stdout()
+        assert out == f"created default conf:\n{config}\n"
+    with open(config) as fin:
+        contents_2 = fin.read()
+    assert contents_2 != contents_1
