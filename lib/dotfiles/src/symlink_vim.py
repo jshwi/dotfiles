@@ -1,5 +1,6 @@
 """
-vim
+dotfiles.src.symlink_vim
+========================
 """
 import argparse
 import os

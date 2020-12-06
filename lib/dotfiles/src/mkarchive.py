@@ -1,5 +1,6 @@
 """
-mkarchive
+dotfiles.src.mkarchive
+======================
 """
 import argparse
 import os

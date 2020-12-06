@@ -1,3 +1,9 @@
+"""
+dotfiles
+========
+
+Classes and functions for everyday shell use - primarily for zsh.
+"""
 from .src import (
     CONFIG,
     CONFIGDIR,

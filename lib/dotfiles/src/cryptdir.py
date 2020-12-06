@@ -1,6 +1,6 @@
 """
-cryptdir
-========
+dotfiles.src.cryptdir
+=====================
 """
 import argparse
 import contextlib

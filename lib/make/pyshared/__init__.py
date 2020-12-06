@@ -212,12 +212,9 @@ def get_path(echo=True):
         default=[],
         help="exclude from search for path",
     )
-    args = parser.parse_args()
     name = get_name(echo=False)
     path = pathlib.Path(REPOPATH)
-    pathlist = [
-        p for s in path.parts for p in path.rglob(name) if s in args.exclude
-    ]
+    pathlist = [p for p in path.rglob(name)]
     if pathlist:
         item = pathlist[0]
         if echo:

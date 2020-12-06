@@ -1,6 +1,6 @@
 """
-dotfiles.__init__
-=================
+dotfiles.src.install
+====================
 """
 import argparse
 import os

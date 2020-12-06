@@ -1,6 +1,6 @@
 """
-dotpy.src.__init__
-==================
+dotfiles.src.__init__
+======================
 """
 import datetime
 import errno
