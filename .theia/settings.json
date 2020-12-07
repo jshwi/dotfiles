@@ -9,7 +9,6 @@
         "transform": "snakecase"
     },
     "restructuredtext.confPath": "${workspaceFolder}/docs",
-    "python.pythonPath": ".venv/bin/python",
     "python.venvPath": "${workspaceFolder}/.venv",
     "python.envFile": "${workspaceFolder}/.env",
     "python.formatting.provider": "black",

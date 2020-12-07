@@ -7,6 +7,6 @@ USER gitpod
 RUN sudo apt update
 RUN sudo install -y zsh
 RUN sudo apt clean
-RUN sudo rm -rf /var/cache/apt/* /var/lib/apt/lists/* /tmp/*
+RUN sudo rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
 # More information: https://www.gitpod.io/docs/42_config_docker/
