@@ -1,5 +1,23 @@
 #!/bin/bash -
+# ======================================================================
+#
+#          FILE: deploy-cov
+#
+#         USAGE: deploy-cov
+#
+#   DESCRIPTION:
+#
+#       OPTIONS: ---
+#  REQUIREMENTS: python3.8,pipenv
+#          BUGS: ---
+#         NOTES: This script aims to follow Google's `Shell Style Guide'
+#                https://google.github.io/styleguide/shellguide.html
+#        AUTHOR: Stephen Whitlock (jshwi), stephen@jshwisolutions.com
+#  ORGANIZATION: Jshwi Solutions
+#       CREATED: 08/12/20 22:01:41
+#      REVISION: 1.0.0
 # shellcheck disable=SC1090
+# ======================================================================
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/src/__init__.sh"
 
 make_clean
