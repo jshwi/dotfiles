@@ -1,30 +1,50 @@
-SOURCE="$(cd "$(dirname "$0")" && pwd)"  # /lib/make/
-MAKEFILE="$(dirname "$SOURCE")"
-LIB="$(dirname "$MAKEFILE")"  # /lib/
-REPOPATH="$(dirname "$LIB")"  # /
+# ======================================================================
+#
+#          FILE: virtualenv.sh
+#
+#         USAGE: virtualenv.sh
+#
+#   DESCRIPTION:
+#
+#       OPTIONS: ---
+#  REQUIREMENTS: python3.8,pipenv
+#          BUGS: ---
+#         NOTES: This script aims to follow Google's `Shell Style Guide'
+#                https://google.github.io/styleguide/shellguide.html
+#        AUTHOR: Stephen Whitlock (jshwi), stephen@jshwisolutions.com
+#  ORGANIZATION: Jshwi Solutions
+#       CREATED: 08/12/20 22:01:41
+#      REVISION: 1.0.0
+# ======================================================================
+# --- location ---
+_MAKEFILE="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
+_LIB="$(dirname "$_MAKEFILE")"
+_REPOPATH="$(dirname "$_LIB")"
+
+# get path to pipenv environment
+# if one doesn't exist, create it
 PIPENV_IGNORE_VIRTUALENVS=1
-export PIPENV_IGNORE_VIRTUALENVS
-cd "$REPOPATH" || return 1
+cd "$_REPOPATH" || return 1
 if ! pipenv --venv >/dev/null 2>&1; then
   pipenv install || return 1
 fi
-_VIRTUAL_ENV="$(pipenv --venv)"
+_VENV="$(pipenv --venv)"
+_VENV_BIN="${_VENV}/bin"
+_VENV_LIB="${_VENV}/lib"
 cd - >/dev/null 2>&1 || return 1
-VIRTUAL_ENV_BIN="${_VIRTUAL_ENV}/bin"
-VIRTUAL_ENV_LIB="${_VIRTUAL_ENV}/lib"
-SITE_PACKAGES="${VIRTUAL_ENV_LIB}/$(ls -t -U "$VIRTUAL_ENV_LIB")/site-packages"
-PYTHONPATH="${PYTHONPATH}:${REPOPATH}"
-PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV_LIB}"
-PYTHONPATH="${PYTHONPATH}:${VIRTUAL_ENV_BIN}"
-PYTHONPATH="${PYTHONPATH}:${SITE_PACKAGES}"
-PYTHONPATH="${PYTHONPATH}:${MAKEFILE}"
-PATH="${PATH}:${VIRTUAL_ENV_BIN}"
 OLDPWD="$PWD"
+
+# --- compile PYTHONPATH ---
+PYTHONPATH="${PYTHONPATH}:${_MAKEFILE}"
+PYTHONPATH="${PYTHONPATH}:${_REPOPATH}"
+PYTHONPATH="${PYTHONPATH}:${_VENV_BIN}"
+PYTHONPATH="${PYTHONPATH}:${_VENV_LIB}/$(ls -t -U "$_VENV_BIN")/site-packages"
+
+# --- compile PATH ---
+PATH="${PATH}:${_VENV_BIN}"
+
+# --- export env ---
 export PIPENV_IGNORE_VIRTUALENVS
-export export PIPENV_IGNORE_VIRTUALENVS
-export VIRTUAL_ENV_BIN
-export VIRTUAL_ENV_LIB
-export SITE_PACKAGES
 export PYTHONPATH
 export PATH
 export OLDPWD
