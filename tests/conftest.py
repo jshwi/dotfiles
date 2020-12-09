@@ -100,28 +100,8 @@ def fixture_repo_dir(test_dir):
     return os.path.dirname(test_dir)
 
 
-@pytest.fixture(name="package_dir")
-def fixture_package_dir(repo_dir):
-    """The absolute path to the ``dotfiles`` package.
-
-    :param repo_dir:    The absolute path to this repository.
-    :return:            The absolute path to the ``dotfiles`` package.
-    """
-    return os.path.join(repo_dir, "dotfiles")
-
-
-@pytest.fixture(name="entry_point")
-def fixture_init_py(package_dir):
-    """The absolute path to the __init__.py file in the ``dotfiles``
-    package.
-
-    :param package_dir: The absolute path to the ``dotfiles`` package.
-    """
-    return os.path.join(package_dir, "__init__.py")
-
-
-@pytest.fixture(name="dotclone", autouse=True)
-def fixture_dotclone(tmpdir, repo_dir):
+@pytest.fixture(name="repoclone", autouse=True)
+def fixture_repoclone(tmpdir, repo_dir):
     """Clone this repository to the temporary dir returned from
     ``tmpdir`` so that tests can be run without effecting this
     repository.
@@ -129,53 +109,12 @@ def fixture_dotclone(tmpdir, repo_dir):
     :param tmpdir:      The temporary directory ``pytest`` fixture.
     :param repo_dir:    The absolute path to this repository.
     """
-    dotclone = os.path.join(tmpdir, os.path.basename(REPOPATH))
-    command = ["git", "clone", repo_dir, dotclone]
-    subprocess.call(
-        command,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    return dotclone
-
-
-@pytest.fixture(name="mock_vscode_config_dir", autouse=True)
-def fixture_mock_vscode_config_dir(tmpdir):
-    """Create a replica of the path to the user's local vscode settings
-    in the temporary directory and return the path variable.
-
-    :param tmpdir:  The temporary directory ``pytest`` fixture.
-    :return:        The path to the temp vscode config dir.
-    """
-    config_dir = os.path.join(tmpdir, ".config", "Code", "User")
-    dir_object = pathlib.Path(config_dir)
-    dir_object.mkdir(parents=True, exist_ok=True)
-    return config_dir
-
-
-@pytest.fixture(name="dir_to_encrypt")
-def fixture_dir_to_encrypt(tmpdir):
-    """Create and return a temporary directory to be encrypted.
-
-    :param tmpdir:  The temporary directory ``pytest`` fixture.
-    :return:        Directory to be encrypted
-    """
-    dir_to_encrypt = pathlib.Path(tmpdir) / "dir_to_encrypt"
-    dir_to_encrypt.mkdir(parents=True, exist_ok=True)
-    for num in list(range(10)):
-        test_file = dir_to_encrypt / f"{num}.txt"
-        test_file.touch()
-    return str(dir_to_encrypt.resolve())
-
-
-@pytest.fixture(name="crypt_test_files")
-def fixture_crypt_test_files(dir_to_encrypt):
-    """Paths to the regular file, tarred file and encrypted file.
-
-    :param dir_to_encrypt:      Directory to be encrypted
-    :return:                    Directory to encrypt, name of tarred
-                                dir and name of encrypted dir.
-    """
-    tarfile = dir_to_encrypt + ".tar.gz"
-    gpgfile = tarfile + ".gpg"
-    return dir_to_encrypt, tarfile, gpgfile
+    repoclone = os.path.join(tmpdir, os.path.basename(REPOPATH))
+    command = ["git", "clone", repo_dir, repoclone]
+    if not os.path.isdir(repoclone):
+        subprocess.call(
+            command,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    return repoclone

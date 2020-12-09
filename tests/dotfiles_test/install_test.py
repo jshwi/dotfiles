@@ -68,7 +68,7 @@ def test_symlinks(nocolorcapsys):
             assert val in contents
 
 
-@pytest.mark.usefixtures("dotclone")
+@pytest.mark.usefixtures("repoclone")
 def test_backups(tmpdir, nocolorcapsys, suffix):
     """Test that the actual output informing the user of the process,
     including the backing up of files, matches the expected output.
@@ -101,7 +101,7 @@ def test_dry_run(nocolorcapsys):
     assert freeze_dir == updated_dir
 
 
-@pytest.mark.usefixtures("dotclone")
+@pytest.mark.usefixtures("repoclone")
 def test_dry_run_backups(tmpdir, nocolorcapsys, suffix):
     """Test that the actual output informing the user of the process,
     including the notice that this is a dry-run of a run including
@@ -121,7 +121,7 @@ def test_dry_run_backups(tmpdir, nocolorcapsys, suffix):
     assert freeze_dir == updated_dir
 
 
-@pytest.mark.usefixtures("dotclone")
+@pytest.mark.usefixtures("repoclone")
 def test_broken_symlink(nocolorcapsys):
     """Test that the process can detect a broken symlink and then remove
     it and create a working link.

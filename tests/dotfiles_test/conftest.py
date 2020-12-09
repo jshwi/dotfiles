@@ -16,20 +16,19 @@ CONFIG = ".config"
 
 
 @pytest.fixture(name="monkeypatch_home", autouse=True)
-def fixture_monkeypatch_default(tmpdir, monkeypatch, entry_point):
+def fixture_monkeypatch_default(tmpdir, monkeypatch):
     """Patch ``os.path.expanduser`` to treat the ``HOME`` shorthand of
     ``~/`` as ``tmpdir``.
 
     :param tmpdir:      The temporary directory ``pytest`` fixture.
     :param monkeypatch: The monkeypatch ``pytest`` fixture.
-    :param entry_point: The "entry point" set for testing.
     """
 
     def expanduser(path):
         return path.replace("~/.", f"{tmpdir}/.")
 
     monkeypatch.setattr(os.path, "expanduser", expanduser)
-    sys.argv = [entry_point]
+    sys.argv = [__name__]
 
 
 @pytest.fixture(name="mock_constants", autouse=True)
@@ -104,3 +103,45 @@ def fixture_recipient(tmpdir):
     assert exit_code == 0
 
     return recipient
+
+
+@pytest.fixture(name="mock_vscode_config_dir", autouse=True)
+def fixture_mock_vscode_config_dir(tmpdir):
+    """Create a replica of the path to the user's local vscode settings
+    in the temporary directory and return the path variable.
+
+    :param tmpdir:  The temporary directory ``pytest`` fixture.
+    :return:        The path to the temp vscode config dir.
+    """
+    config_dir = os.path.join(tmpdir, ".config", "Code", "User")
+    dir_object = pathlib.Path(config_dir)
+    dir_object.mkdir(parents=True, exist_ok=True)
+    return config_dir
+
+
+@pytest.fixture(name="dir_to_encrypt")
+def fixture_dir_to_encrypt(tmpdir):
+    """Create and return a temporary directory to be encrypted.
+
+    :param tmpdir:  The temporary directory ``pytest`` fixture.
+    :return:        Directory to be encrypted
+    """
+    dir_to_encrypt = pathlib.Path(tmpdir) / "dir_to_encrypt"
+    dir_to_encrypt.mkdir(parents=True, exist_ok=True)
+    for num in list(range(10)):
+        test_file = dir_to_encrypt / f"{num}.txt"
+        test_file.touch()
+    return str(dir_to_encrypt.resolve())
+
+
+@pytest.fixture(name="crypt_test_files")
+def fixture_crypt_test_files(dir_to_encrypt):
+    """Paths to the regular file, tarred file and encrypted file.
+
+    :param dir_to_encrypt:      Directory to be encrypted
+    :return:                    Directory to encrypt, name of tarred
+                                dir and name of encrypted dir.
+    """
+    tarfile = dir_to_encrypt + ".tar.gz"
+    gpgfile = tarfile + ".gpg"
+    return dir_to_encrypt, tarfile, gpgfile
