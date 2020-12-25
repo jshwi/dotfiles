@@ -35,10 +35,10 @@ cd - >/dev/null 2>&1 || return 1
 OLDPWD="$PWD"
 
 # --- compile PYTHONPATH ---
-PYTHONPATH="${PYTHONPATH}:${_MAKEFILE}"
 PYTHONPATH="${PYTHONPATH}:${_REPOPATH}"
 PYTHONPATH="${PYTHONPATH}:${_VENV_BIN}"
-PYTHONPATH="${PYTHONPATH}:${_VENV_LIB}/$(ls -t -U "$_VENV_BIN")/site-packages"
+PYTHONPATH="${PYTHONPATH}:"${_LIB}
+PYTHONPATH="${PYTHONPATH}:${_VENV_LIB}/$(ls -t -U "$_VENV_LIB")/site-packages"
 
 # --- compile PATH ---
 PATH="${PATH}:${_VENV_BIN}"

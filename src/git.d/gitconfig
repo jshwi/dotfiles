@@ -10,3 +10,5 @@
 	template = ~/.git.d/committemplate
 [pull]
 	ff = only
+[advice]
+	detachedHead = false
