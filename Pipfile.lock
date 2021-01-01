@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "dc13784d42865a5f1437cd0e8ebbe4e3b110d43c08016577f31e6a532422f51f"
+            "sha256": "28963a620aabe7c6e00b4db3b92bd65a7fafb9733a83b6747c1ae6d1737fe35e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -478,14 +478,6 @@
             ],
             "version": "==0.4.3"
         },
-        "object-colors": {
-            "hashes": [
-                "sha256:8573351c9ca383aacce01f77cdb8b770a828b3f1a9b23ff9952c128c7b5cd0a3",
-                "sha256:ef42b6276f1a1124e5c55b59e603ff82bfe63a888e14e9787c90f6d7ac47737b"
-            ],
-            "index": "pypi",
-            "version": "==1.0.8"
-        },
         "packaging": {
             "hashes": [
                 "sha256:24e0da08660a87484d1602c30bb4902d74816b6985b93de36926f5bc95741858",
@@ -592,10 +584,6 @@
             ],
             "index": "pypi",
             "version": "==2.6.0"
-        },
-        "pymake": {
-            "git": "https://github.com/jshwi/pymake.git",
-            "ref": "52a6e9a5a2abf595480d696485e9eee9136c042e"
         },
         "pyparsing": {
             "hashes": [

@@ -20,7 +20,6 @@ sphinx = "==3.3.1"
 sphinxcontrib-fulltoc = "==1.2.0"
 sphinxcontrib-programoutput = "==0.16"
 vulture = "==2.1"
-pymake = {ref = "dev/0.1", git = "https://github.com/jshwi/pymake.git"}
 
 [packages]
 appdirs = "==1.4.4"
