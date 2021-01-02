@@ -147,3 +147,5 @@ let Tlist_Ctags_Cmd = '/usr/bin/ctags-exuberant'
 
 let g:ycm_server_keep_logfiles = 1
 let g:ycm_server_log_level = 'debug'
+
+set viminfo='100,n$HOME/.vim/files/info/viminfo

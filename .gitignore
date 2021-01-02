@@ -12,4 +12,5 @@ src/vim/swp/*
 !src/vim/swp/.commitme
 src/vim/tmp/*
 !src/vim/tmp/.commitme
+viminfo
 vimrc
