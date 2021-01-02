@@ -145,3 +145,5 @@ vnoremap <leader>p "_dP
 xnoremap p pgvy
 let Tlist_Ctags_Cmd = '/usr/bin/ctags-exuberant'
 
+let g:ycm_server_keep_logfiles = 1
+let g:ycm_server_log_level = 'debug'

@@ -1,7 +1,7 @@
 ttcommit () {
     msg="$1"
     git add .
-    git commit -m "$(date +'%Y%m%dT%S%M%H') $msg"
+    git commit -m "[$(date +'%Y%m%dT%S%M%H')] $msg"
     git push
 }
 
