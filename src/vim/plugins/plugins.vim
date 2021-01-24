@@ -126,6 +126,7 @@ Plugin 'wakatime/vim-wakatime'
 Plugin 'waxlamp/jslint.vim'
 Plugin 'wincent/ferret'
 Plugin 'wincent/terminus'
+Plugin 'powerman/vim-plugin-AnsiEsc'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required

@@ -172,7 +172,6 @@ alias reloaddns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 alias windir='cd /mnt/c/Users/swhit'
 alias winhome='cd /mnt/c/Users/swhit'
 alias dos2nixdir='find . -type f -print0 | xargs -0 dos2unix'
-alias python="python3.9"
 alias pip-update-all="pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U"
 alias git-ctags="git ls-files | xargs ctags"
 alias yay="yay --aur"

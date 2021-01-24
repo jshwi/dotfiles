@@ -66,8 +66,8 @@ PATH="$PATH:$DOTFILES/bin"
 export PATH
 
 # --- PYTHONPATH ---
-PYTHONPATH="${PYTHONPATH}:$DOTFILES_LIB"
-export PYTHONPATH
+# PYTHONPATH="${PYTHONPATH}:$DOTFILES_LIB"
+# export PYTHONPATH
 
 # --- MANPATH ---
 MANPATH="$MANPATH:/usr/share/man"
@@ -134,7 +134,7 @@ autoload -Uz compinit && compinit  # advanced tab-completion
 # -- RUNTIME ---
 source "$THEMES"
 source "$PLUGINS"
-source "$FUNCTIONS"
+# source "$FUNCTIONS"
 source "$FUNCTIONS_TMP"
 source "$ALIASES"
 
@@ -154,3 +154,44 @@ source "$ZSH/oh-my-zsh.sh"
 DOT_TRAVIS="$HOME/.travis"
 [ ! -s "$DOT_TRAVIS/travis.sh" ] || source "$DOT_TRAVIS/travis.sh"
 alias pmk="pymake"
+alias qckcmt="git add .; git commit -m quickcommit; git push"
+
+write_fixture () {
+    file="$1"; name="$2";
+    echo "@pytest.fixture(name=\"$name\")"           >> "$file"
+    echo "def fixture_$name():"                     >> "$file"
+    echo "    # function template yet to be filled" >> "$file"
+    echo "    pass"                                 >> "$file"
+    echo                                            >> "$file"
+}
+alias pe=pipenv
+alias pymake="pyaud"
+alias fullapt="fullapt -l 4"
+source /etc/zsh_command_not_found
+
+
+act () {
+  logdir="${HOME}/.cache/act/log"
+  archive="${logdir}/$(date +'%Y%m%d')"
+  if [ ! -d "$archive" ]; then
+    mkdir -p "$archive"
+  fi
+  _act="/usr/local/bin/act"
+  basename="$(
+      python -c \
+          "import subprocess; \
+          output = subprocess.check_output( \
+                ['act', '--list'] \
+          ).decode('utf-8').split(); \
+          print(output[-1])"
+  )"
+  _a_file="${archive}/${basename}-$(date +'%H%M%S').log"
+  logfile="${logdir}/${basename}.log"
+  echo >> "$logfile"
+  unbuffer \
+      "$_act" "$@" 2>&1 |\
+      tee "$logfile"
+
+  cp "$logfile" "$_a_file"
+}
+alias python="python3"
